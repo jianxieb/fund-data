@@ -1,0 +1,20 @@
+/* Panels, tables and notes shared by the event-study pages (行情条件, 美国中期选举, 均线穿越). */
+.ds-panel{background:white;border:1px solid var(--ds-border);border-radius:12px;margin:16px 0;min-width:0}
+.ds-panel-head{padding:19px 22px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.ds-panel-head h2{font-size:18px}
+.ds-panel-head p,.ds-coverage{font-size:12px;color:var(--ds-muted);margin-top:4px}
+.ds-coverage{white-space:nowrap}
+.ds-scroll{overflow:auto;max-width:100%;scrollbar-width:thin}
+.ds-panel table{font-size:14px;white-space:nowrap}
+.ds-panel thead th{font-size:12px;font-weight:550;background:#f6f8f3;color:#536656}
+.ds-foot,.ds-pagination{padding:11px 22px;border-top:1px solid var(--ds-border);font-size:12px;color:var(--ds-muted)}
+.ds-pagination{display:flex;justify-content:flex-end;align-items:center;gap:14px}
+.ds-note{margin:-5px 2px 17px;font-size:12px;color:#656e5d}
+.ds-faint{font-size:12px;color:var(--ds-muted)}
+.ds-method{padding:12px 0;font-size:13px;color:var(--ds-muted)}
+.ds-method summary{font-weight:600;color:#39533f;cursor:pointer}
+.ds-method p{margin:10px 0}
+.ds-method a{color:#325c42;text-decoration:underline;text-underline-offset:3px}
+.ds-loading{padding:24px}
+@media(max-width:800px){.ds-panel-head{padding:16px}.ds-foot{padding:10px 16px}}
+@media(max-width:500px){.ds-panel-head .segmented{flex-wrap:wrap}.ds-foot{line-height:1.7}}

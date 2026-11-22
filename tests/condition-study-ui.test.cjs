@@ -14,7 +14,7 @@ function sessions(closes, start = '2001-01-02') {
     return row;
   });
 }
-// A seeded random walk: realistic enough that the latest-close fit keeps some conditions and drops others.
+// A seeded random walk: realistic enough that the automatic match keeps some conditions and drops others.
 function walk(n, seed) {
   let s = seed >>> 0;
   const u = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) + .5) / 4294967296;
@@ -28,9 +28,11 @@ function walk(n, seed) {
 const vixFor = (series, skip = 40) => series.filter((_, i) => i !== skip).map(([date], i) => [date, Number((14 + 14 * Math.abs(Math.sin(i / 23)) + (i % 7)).toFixed(2))]);
 const element = tag => ({ tag, className:'', textContent:'', children:[], append(...nodes) { this.children.push(...nodes); } });
 const text = node => node.textContent || node.children.map(text).filter(Boolean).join(' ');
+const pct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
+const short = { dd252:'距252日高点', r21:'近21日', r5:'近5日', r1:'当日', ma200:'距200日线', vix:'VIX', vol21:'波动率', r3:'近3日', r63:'近63日' };
 
 function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2600, seed)), badIdentity = false, dividends = 'excluded', fail = false,
-  vix = vixFor(series), vixMode = 'ok' } = {}) {
+  vix = vixFor(series), vixMode = 'ok', highsMode = 'ok' } = {}) {
   const assets = ['NDX', 'GSPC'].map(code => ({ id:'index:^' + code, code:'^' + code, kind:'index', currency:'USD', basis:'price_index' }));
   if (badIdentity) assets[0].basis = 'etf_price';
   const location = { hash }, listeners = {}, downloads = [], modals = [], renders = [], state = { fail, fetches:[] }, nodes = {};
@@ -38,19 +40,31 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
     historyUrl:'data/condition-study/VIX-0123456789abcdef.json', sha256:'0'.repeat(64), ...(vixMode === 'stale' ? { refreshMissing:'source timed out' } : {}) };
   const vixHistory = { schemaVersion:1, id:vixRow.id, basis:vixRow.basis, field:'CLOSE', closedSessionsOnly:true, first:vixRow.first, asOf:vixRow.asOf,
     series:vixMode === 'unordered' ? [...vix.slice(0, 5), vix[6], vix[5], ...vix.slice(7)] : vix };
+  // Daily highs 0.6% above each close; "mismatch" publishes one close that disagrees with the index file.
+  const highs = series.map(([date, close]) => [date, Number((close * 1.006).toFixed(2))]);
+  const highCloses = series.map(([date, close], i) => [date, highsMode === 'mismatch' && i === series.length - 300 ? close + .01 : close]);
+  const highRows = ['NDX', 'GSPC'].map(code => ({ id:'index:^' + code, code:'^' + code, currency:'USD', basis:'price_index_high', status:'available',
+    first:series[0][0], asOf:series.at(-1)[0], historyUrl:'data/drop-study/' + code + '-0123456789abcdef.json', sha256:'0'.repeat(64),
+    ...(highsMode === 'stale' ? { refreshMissing:'source timed out' } : {}) }));
   async function fetch(url) {
     state.fetches.push(url);
-    if (vixMode === 'down') return { ok:false, status:503 };
-    if (url.startsWith('data/condition-study/catalog.json')) return { ok:true, json:async () => ({ schemaVersion:1, assets:[vixRow] }) };
+    if (url.startsWith('data/condition-study/catalog.json'))
+      return vixMode === 'down' ? { ok:false, status:503 } : { ok:true, json:async () => ({ schemaVersion:1, assets:[vixRow] }) };
     if (url === vixRow.historyUrl) return { ok:true, text:async () => JSON.stringify(vixHistory) };
+    if (url.startsWith('data/drop-study/catalog.json'))
+      return highsMode === 'down' ? { ok:false, status:503 } : { ok:true, json:async () => ({ schemaVersion:1, assets:highRows }) };
+    const row = highRows.find(r => r.historyUrl === url);
+    if (row) return { ok:true, text:async () => JSON.stringify({ schemaVersion:1, id:row.id, currency:'USD', basis:row.basis, dividends:'excluded',
+      closedSessionsOnly:true, dateConvention:'exchange_local_date', field:'indicators.quote[0].high', first:row.first, asOf:row.asOf, series:highs, closes:highCloses }) };
     return { ok:false, status:404 };
   }
+  const sources = { '#condition-vix-source':'data/condition-study/catalog.json?v=test', '#drop-high-source':'data/drop-study/catalog.json?v=test' };
   const context = {
     window:{ Changheng:M, ChanghengConditionStudyModel:C, ChanghengResearchHistory:{
       indexCatalog:async () => assets,
       history:async () => { if (state.fail) throw new Error('缺少日线 <503>'); return { dividends, series }; } } },
     document:{ addEventListener:(type, listener) => { listeners[type] = listener; }, createElement:element,
-      querySelector:selector => selector === '#condition-vix-source' ? { dataset:{ src:'data/condition-study/catalog.json?v=test' } } : nodes[selector] || null },
+      querySelector:selector => sources[selector] ? { dataset:{ src:sources[selector] } } : nodes[selector] || null },
     location, URLSearchParams, setTimeout, fetch, innerWidth:1600, innerHeight:900, scrollX:0, scrollY:1000,
     history:{ replaceState:(_, __, next) => { location.hash = next; } } };
   vm.createContext(context);
@@ -60,41 +74,61 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
     menu:(id, label, choices, value) => '<div id="' + id + '">' + label + '：' + choices.find(x => x[0] === value)?.[1] + '</div>',
     render:() => renders.push(ui.view(H)), openModal:html => modals.push(html), modalTitle:(title, subtitle) => '<h2>' + title + '</h2><p>' + subtitle + '</p>',
     download:(...args) => downloads.push(args) };
-  function click(kind, value) {
-    const selector = kind === 'event' ? '[data-cs-event]' : '[data-cs-action]';
-    const target = kind === 'event' ? { dataset:{ csEvent:value } } : { dataset:{ csAction:value }, disabled:false };
-    listeners.click({ target:{ closest:s => s === selector ? target : null } });
-  }
+  // Each control is found by the attribute the page listens for.
+  function press(selector, target) { listeners.click({ target:{ closest:s => s === selector ? target : null } }); }
+  const click = (kind, value) => kind === 'event' ? press('[data-cs-event]', { dataset:{ csEvent:value } }) : press('[data-cs-action]', { dataset:{ csAction:value }, disabled:false });
+  const chip = (h, disabled = false) => press('[data-cs-horizon]', { dataset:{ csHorizon:String(h) }, disabled });
+  const choice = (id, value) => press('[data-cs-choice]', { dataset:{ csChoice:id, value } });
   function toggle(id, checked) { listeners.change({ target:{ dataset:{ csToggle:id }, checked } }); }
-  // Bound edits apply on the next timer tick, after focus has moved on.
+  // Typed values apply on the next timer tick, after focus has moved on.
   async function enter(id, side, value) {
     const input = { dataset:{ csMetric:id, csBound:side }, value, error:'', setCustomValidity(v) { this.error = v; }, reportValidity() { return !this.error; } };
     listeners.change({ target:input });
     await settle();
     return input;
   }
+  async function param(key, value) {
+    const input = { dataset:{ csParam:key }, value, error:'', setCustomValidity(v) { this.error = v; }, reportValidity() { return !this.error; } };
+    listeners.change({ target:input });
+    await settle();
+    return input;
+  }
+  async function setDate(value) {
+    listeners.change({ target:{ id:'cs-ref', value, dataset:{} } });
+    return settle();
+  }
+  function submitWait(wait) {
+    let closed = false;
+    listeners.submit({ target:{ id:'cs-wait-form', elements:{ wait:{ valueAsNumber:wait } }, closest:() => ({ close() { closed = true; } }) }, preventDefault() {} });
+    return closed;
+  }
   async function settle() {
     await new Promise(resolve => setTimeout(resolve, 2));
-    for (let i = 0; i < 5; i++) await new Promise(setImmediate);
+    for (let i = 0; i < 6; i++) await new Promise(setImmediate);
     return ui.view(H);
   }
-  ui.view(H);
+  const first = ui.view(H);
   const data = C.compute(series, ['ok', 'stale'].includes(vixMode) ? { vix } : {});
-  return { ui, H, series, vix, data, location, listeners, downloads, modals, renders, state, nodes, click, toggle, enter, settle };
+  // Both index files are the same walk here, so the other index's move equals the index's own.
+  const frameFor = (options = {}) => C.frame(data, { peer:series, ...options });
+  return { ui, H, series, vix, highs, data, view:frameFor(), frameFor, first, location, listeners, downloads, modals, renders, state, nodes,
+    click, chip, choice, toggle, enter, param, setDate, submitWait, settle };
 }
 const checked = (html, id) => new RegExp('id="cs-' + id + '-on"[^>]*\\schecked').test(html);
 const inputValue = (html, id, side) => html.match(new RegExp('id="cs-' + id + '-' + side + '"[^>]*value="([^"]*)"'))?.[1];
+const nameOf = m => ({ rN:'近 10 日涨跌', ddN:'距近 63 日最高收盘', drops:'近 21 日跌超 5% 的天数', peer1:'标普500当日涨跌' })[m.id] || m.label;
 
 test('with no conditions in the address, the page matches the latest close and says what it left out', async () => {
-  const f = fixture(), html = await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const f = fixture();
+  assert.match(f.first, /正在读取纳斯达克100历史收盘/);
+  const html = await f.settle();
+  const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   assert.ok(fit.added.length >= 1 && fit.skipped.length >= 1, 'the fixture must exercise both kept and dropped conditions');
   assert.equal(f.location.hash, '#condition-study');
-  assert.match(html, /data-cs-action="fit" aria-pressed="true">✓ 已按最新收盘匹配/);
-  const skipped = fit.steps.filter(s => s.band && !s.kept).map(s => ({ dd252:'距252日高点', r21:'近21日', r5:'近5日', r1:'当日', ma200:'距200日线',
-    vix:'VIX', vol21:'波动率', r3:'近3日', r63:'近63日' })[s.id]);
-  assert.ok(html.includes('已按 ' + f.data.asOf + ' 收盘选取 ' + fit.added.length + ' 项，保留至少 10 段历史；' + skipped.join('、') + ' 加入后不足 10 段，未勾选。'));
-  for (const m of C.metrics) assert.equal(checked(html, m.id), fit.added.includes(m.id), m.id);
+  assert.match(html, /data-cs-action="fit" aria-pressed="true">✓ 已按参照日匹配/);
+  const skipped = fit.steps.filter(s => s.band && !s.kept).map(s => short[s.id]);
+  assert.ok(html.includes('已按 ' + f.data.asOf + ' 的读数选取 ' + fit.added.length + ' 项，保留至少 10 段历史；' + skipped.join('、') + ' 加入后不足 10 段，未勾选。改任一数字即转为自选。'));
+  for (const m of C.metrics) if (!m.choice) assert.equal(checked(html, m.id), fit.added.includes(m.id), m.id);
   for (const id of fit.added) {
     assert.equal(inputValue(html, id, 'lo'), String(fit.conditions[id].lo ?? ''));
     assert.equal(inputValue(html, id, 'hi'), String(fit.conditions[id].hi ?? ''));
@@ -102,24 +136,28 @@ test('with no conditions in the address, the page matches the latest close and s
   assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
   assert.ok(html.includes(f.data.asOf + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
   assert.match(html, /含最新收盘/);
-  for (const [, title] of C.groups) assert.ok(html.includes('<legend>' + title + '</legend>'));
-  for (const label of ['1周', '1个月', '3个月', '1年', '全部交易日', '期间最大回撤', '相对信号日最低']) assert.ok(html.includes(label), label);
+  for (const [g, title] of C.groups) assert.equal(html.includes('<legend>' + title + '</legend>'), g !== 'obs', g);
+  assert.ok(html.includes('<input id="cs-ref" type="date" min="' + f.data.first + '" max="' + f.data.asOf + '" value="' + f.data.asOf + '"><small>最新收盘</small>'));
+  for (const [h, term] of [[1, '1日'], [4, '4日'], [5, '1周'], [252, '1年'], [504, '2年']])
+    assert.match(html, new RegExp('data-cs-horizon="' + h + '" aria-pressed="' + C.defaultHorizons.includes(h) + '" title="' + h + ' 个交易日">' + term + '<'), term);
+  for (const label of ['1周', '1个月', '3个月', '1年', '全部交易日', '期间最大回撤', '自信号日最大跌幅']) assert.ok(html.includes(label), label);
   assert.match(html, /<svg data-cs-chart="main"[^>]+role="img"/);
   assert.match(html, /最近 63 个交易日（/);
   assert.match(html, /历史中位数/);
+  assert.doesNotMatch(html, /<line class="cs-mark"/, 'no observation period, no marker');
 });
 
 test('ticking or editing a condition switches to manual and keeps readable ranges in the address', async () => {
   const f = fixture();
   await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), extra = C.metrics.find(m => !fit.added.includes(m.id) && C.suggest(f.data, m.id)).id;
+  const fit = C.fit(f.view, { gap:21 }), extra = C.metrics.find(m => !m.choice && !fit.added.includes(m.id) && C.suggest(f.view, m.id)).id;
   f.toggle(extra, true);
   let html = await f.settle();
-  const manual = { ...fit.conditions, [extra]:C.suggest(f.data, extra) };
+  const manual = { ...fit.conditions, [extra]:C.suggest(f.view, extra) };
   const expected = C.metrics.filter(m => manual[m.id]).map(m => m.id + '=' + C.formatRange(manual[m.id])).join('&');
   assert.equal(f.location.hash, '#condition-study?' + expected);
   assert.match(f.location.hash, /~/);
-  assert.match(html, /data-cs-action="fit" aria-pressed="false">按最新收盘匹配/);
+  assert.match(html, /data-cs-action="fit" aria-pressed="false">按参照日匹配/);
   assert.ok(html.includes('自选 ' + Object.keys(manual).length + ' 项条件'));
   assert.ok(checked(html, extra));
 
@@ -153,12 +191,185 @@ test('ticking or editing a condition switches to manual and keeps readable range
   assert.equal(checked(html, extra), false);
 });
 
+test('a chosen reference date re-reads every row and the match, and returns to the latest close on request', async () => {
+  const f = fixture();
+  await f.settle();
+  const at = f.data.n - 400, date = f.data.dates[at];
+  let html = await f.setDate(date);
+  assert.equal(f.location.hash, '#condition-study?date=' + date);
+  const fit = C.fit(f.view, { gap:21, ref:at }), r = C.study(f.view, { conditions:fit.conditions, gap:21, ref:at });
+  assert.ok(html.includes('已按 ' + date + ' 的读数选取 ' + fit.added.length + ' 项'));
+  assert.ok(html.includes('value="' + date + '"><button type="button" class="text-link" data-cs-action="latest">回到最新</button>'));
+  assert.ok(html.includes('<span>指标</span><span>' + date + '</span>'), 'the readings column is headed by the reference date');
+  assert.ok(html.includes(date + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
+  assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
+  assert.ok(html.includes('参照日 ' + date + ' 前后'));
+  if (r.episodes.slice(0, 15).some(e => e.date === r.reference.episode)) assert.match(html, /含参照日/);
+  for (const id of fit.added) assert.equal(inputValue(html, id, 'lo'), String(fit.conditions[id].lo ?? ''), id);
+
+  // A weekend resolves to the session before it; a hand-typed one says which session it used.
+  const saturday = new Date(date + 'T00:00:00Z');
+  while (saturday.getUTCDay() !== 6) saturday.setUTCDate(saturday.getUTCDate() + 1);
+  const weekend = saturday.toISOString().slice(0, 10), friday = f.data.dates[C.sessionOn(f.data, weekend)];
+  await f.setDate(weekend);
+  assert.equal(f.location.hash, '#condition-study?date=' + friday);
+  const typed = fixture({ hash:'#condition-study?date=' + weekend });
+  assert.ok((await typed.settle()).includes(weekend + ' 无收盘，用 ' + friday));
+
+  // Ranges typed by hand stay put when the date moves; only the readings change.
+  await f.enter('r1', 'hi', '-2');
+  const manual = f.location.hash;
+  assert.match(manual, /date=[^&]+&.*\br1=[^&]*~-2(&|$)/);
+  await f.setDate(f.data.asOf);
+  assert.equal(f.location.hash, manual.replace(/date=[^&]+&/, ''));
+  f.click('action', 'fit');
+  await f.settle();
+  await f.setDate(date);
+  f.click('action', 'latest');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study');
+  assert.match(html, /<small>最新收盘<\/small>/);
+});
+
+test('an observation period adds the recovery rows, moves where results start and shows each period', async () => {
+  const f = fixture({ hash:'#condition-study?obs=2&r1=~-2' });
+  let html = await f.settle();
+  const v = f.frameFor({ wait:2 }), r = C.study(v, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21 });
+  assert.ok(html.includes('<legend>观察期 · 信号后 2 个交易日</legend>'));
+  assert.ok(html.includes('<div id="cs-basis">收复判定：收盘</div>'));
+  assert.match(html, /从信号后第 2 个交易日（观察期末）收盘起算/);
+  assert.ok(html.includes('<th scope="col">观察 2 日结果</th><th scope="col">起算日</th>'));
+  assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
+  assert.match(html, /<line class="cs-mark"/);
+  const p = r.previews.recov;
+  assert.ok(html.includes('data-cs-choice="recov" data-value="no" aria-pressed="false">始终未收复<small>' + p.no + ' 段</small>'));
+  assert.ok(html.includes('data-cs-choice="recov" data-value="any" aria-pressed="true">不限</button>'));
+  assert.match(html, /先收复再跌回也算曾收复/);
+
+  f.choice('recov', 'no');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?obs=2&r1=~-2&recov=no');
+  const unrecovered = C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, recov:{ lo:0, hi:0 } }, gap:21 }), e = unrecovered.episodes[0];
+  assert.equal(unrecovered.historical, p.no, 'the count on the choice is the sample it leaves');
+  assert.ok(html.includes('匹配 <b>' + unrecovered.episodes.length + '</b> 段'));
+  assert.ok(html.includes('不限时 <b>' + C.count(v, { r1:{ lo:null, hi:-2 } }, 21) + '</b> 段'));
+  assert.ok(html.includes('始终未收复<small>观察期 ' + pct(e.observation.move)));
+  assert.ok(html.includes('<td>' + e.observation.anchorDate + '</td>'));
+  f.click('event', e.date);
+  const modal = f.modals.at(-1);
+  assert.match(modal, /<h3>观察期 · 2 个交易日<\/h3>/);
+  assert.ok(modal.includes('后续收益从 ' + e.observation.anchorDate + ' 收盘'));
+  assert.ok(modal.includes('<th scope="row">第 2 日</th><td>' + e.observation.anchorDate + '</td>'));
+  f.click('action', 'csv');
+  const header = f.downloads.at(-1)[1].replace(/^﻿/, '').split('\r\n')[0];
+  for (const name of ['观察期内收复前一日收盘', '首次收复日', '起算日', '期末收回比例%']) assert.ok(header.includes('"' + name + '"'), name);
+
+  // Without an observation period its conditions leave the address too.
+  f.ui.choose('wait', '0');
+  assert.equal(f.location.hash, '#condition-study?r1=~-2');
+  f.ui.choose('wait', 'custom');
+  assert.match(f.modals.at(-1), /id="cs-wait-form"/);
+  assert.equal(f.submitWait(0), false);
+  assert.equal(f.submitWait(253), false);
+  assert.equal(f.submitWait(7), true);
+  assert.equal(f.location.hash, '#condition-study?obs=7&r1=~-2');
+  assert.match(await f.settle(), /<div id="cs-wait">信号后观察期：7 个交易日<\/div>/);
+});
+
+test('a reference close still inside its observation period says how many sessions remain', async () => {
+  const closes = walk(2599, 2);
+  closes.push(Number((closes.at(-1) * .93).toFixed(2)));
+  const f = fixture({ hash:'#condition-study?obs=5&r1=~-5', series:sessions(closes) });
+  const html = await f.settle();
+  assert.ok(html.includes(f.data.asOf + ' 收盘满足信号日条件，观察期还差 5 个交易日'));
+  assert.match(html, /cs-now-status is-wait/);
+  assert.doesNotMatch(html, /另有 \d+ 个交易日满足信号日条件/);
+  assert.ok(html.includes('<b>—</b><small>观察期还差 5 个交易日</small>'));
+});
+
+test('the intraday-high basis uses closed-session highs that agree with the published closes', async () => {
+  const f = fixture({ hash:'#condition-study?obs=2&basis=high&r1=~-2' });
+  let html = await f.settle();
+  assert.ok(f.state.fetches.some(url => url.startsWith('data/drop-study/catalog.json')));
+  const v = f.frameFor({ wait:2, basis:'high', highs:f.highs }), r = C.study(v, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21 });
+  assert.ok(html.includes('<div id="cs-basis">收复判定：盘中最高价</div>'));
+  assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
+  assert.ok(html.includes('观察期 · 信号后 2 个交易日 · 按盘中最高价判定收复'));
+  const touched = r.episodes.slice(0, 15).find(e => e.observation.recovered);
+  if (touched) assert.match(html, /盘中曾触及，期末/);
+  f.click('event', r.episodes[0].date);
+  assert.match(f.modals.at(-1), /<th>盘中最高<\/th>/);
+
+  const mismatch = fixture({ hash:'#condition-study?obs=2&basis=high&r1=-100~', highsMode:'mismatch' });
+  html = await mismatch.settle();
+  const odd = mismatch.series.length - 300, kept = mismatch.highs.filter((_, i) => i !== odd);
+  const expected = C.study(mismatch.frameFor({ wait:2, basis:'high', highs:kept }), { conditions:{ r1:{ lo:-100, hi:null } }, gap:21 });
+  assert.ok(html.includes('匹配 <b>' + expected.episodes.length + '</b> 段'), 'a high whose close disagrees is left out, not trusted');
+
+  const down = fixture({ hash:'#condition-study?obs=2&basis=high&r1=~-2', highsMode:'down' });
+  html = await down.settle();
+  assert.match(html, /盘中最高价未能读取：最高价目录加载失败（503）/);
+  assert.match(html, /data-cs-action="retry-high"/);
+  assert.match(html, /匹配 <b>0<\/b> 段/);
+  const stale = fixture({ hash:'#condition-study?obs=2&basis=high&r1=~-2', highsMode:'stale' });
+  assert.ok((await stale.settle()).includes('最高价最近一次更新失败，沿用截至 ' + stale.data.asOf + ' 的数据。'));
+});
+
+test('chosen horizons drive the summary, the record columns, the fall window and the export', async () => {
+  const f = fixture({ hash:'#condition-study?r1=~-2' });
+  await f.settle();
+  f.chip(1);
+  let html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?h=1,5,21,63,252&r1=~-2');
+  assert.ok(html.includes('<th scope="row">1日<small>1 个交易日</small></th>'));
+  assert.ok(html.includes('<th scope="col">1日后</th>'));
+  for (const h of [5, 21, 63, 252]) { f.chip(h); await f.settle(); }
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?h=1&r1=~-2');
+  assert.match(html, /data-cs-horizon="1" aria-pressed="true" title="1 个交易日" disabled>1日</);
+  f.chip(1, true);
+  assert.equal(f.location.hash, '#condition-study?h=1&r1=~-2', 'the last horizon stays selected');
+  const r = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21, horizons:[1] }), e = r.episodes[0];
+  assert.ok(html.includes('自信号日最大跌幅<small>1日内</small>'));
+  const where = e.fall.pct === 0 ? '未再跌破' : '第 ' + e.fall.days + ' 日 · ' + e.fall.date;
+  assert.ok(html.includes(pct(e.fall.pct) + '</span><small>' + where));
+  assert.doesNotMatch(html, /<th scope="col">1周后<\/th>/);
+  f.click('action', 'csv');
+  const header = f.downloads.at(-1)[1].replace(/^﻿/, '').split('\r\n')[0];
+  assert.ok(header.includes('"1日累计涨跌%"') && !header.includes('"1周累计涨跌%"'));
+  assert.ok(header.includes('"自信号日最大跌幅%","最大跌幅日","距信号日交易日数"'));
+});
+
+test('look-back numbers typed into a row name re-read that row and keep its range', async () => {
+  const f = fixture({ hash:'#condition-study?rN=~-3' });
+  let html = await f.settle();
+  assert.ok(html.includes('近 <input class="cs-param" type="number" inputmode="decimal" data-cs-param="rNDays" value="10"'));
+  let input = await f.param('rNDays', '20');
+  assert.equal(input.error, '');
+  assert.equal(f.location.hash, '#condition-study?rNDays=20&rN=~-3');
+  html = await f.settle();
+  const v = f.frameFor({ params:{ rNDays:20 } });
+  assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ rN:{ lo:null, hi:-3 } }, gap:21 }).episodes.length + '</b> 段'));
+  assert.ok(html.includes('aria-label="关于近 20 日涨跌"'));
+  input = await f.param('rNDays', '0');
+  assert.equal(input.error, '请输入 1–2520 的整数');
+  input = await f.param('dropsPct', '5.125');
+  assert.equal(input.error, '请输入 0.01–99.99，最多两位小数');
+  assert.equal(f.location.hash, '#condition-study?rNDays=20&rN=~-3');
+  // While the match is automatic, a new look-back keeps it automatic.
+  const g = fixture();
+  await g.settle();
+  await g.param('ddNDays', '126');
+  assert.equal(g.location.hash, '#condition-study?ddNDays=126');
+  assert.match(await g.settle(), /✓ 已按参照日匹配[\s\S]*距近 <input class="cs-param"[^>]*value="126"/);
+});
+
 test('clearing leaves an honest empty state, and the match button restores the fit with market and spacing kept', async () => {
   const f = fixture({ hash:'#condition-study?market=spx&gap=63&r1=~-1' });
   let html = await f.settle();
   assert.match(html, /标普500/);
   assert.match(html, /63 个交易日 · 约3个月/);
-  assert.match(html, /aria-pressed="false"/);
+  assert.match(html, /data-cs-action="fit" aria-pressed="false"/);
   assert.equal(inputValue(html, 'r1', 'hi'), '-1');
   f.click('action', 'clear');
   html = await f.settle();
@@ -172,18 +383,24 @@ test('clearing leaves an honest empty state, and the match button restores the f
   f.click('action', 'fit');
   html = await f.settle();
   assert.equal(f.location.hash, '#condition-study?market=spx&gap=5');
-  assert.match(html, /✓ 已按最新收盘匹配/);
-  const fit = C.fit(f.data, { gap:5 });
+  assert.match(html, /✓ 已按参照日匹配/);
+  const fit = C.fit(f.view, { gap:5 });
   assert.ok(html.includes('选取 ' + fit.added.length + ' 项'));
-  assert.ok(html.includes('匹配 <b>' + C.study(f.data, { conditions:fit.conditions, gap:5 }).episodes.length + '</b> 段'));
+  assert.ok(html.includes('匹配 <b>' + C.study(f.view, { conditions:fit.conditions, gap:5 }).episodes.length + '</b> 段'));
+  f.ui.choose('gap', '1');
+  assert.match(await f.settle(), /不合并 · 每个交易日单独计/);
 });
 
 test('unknown address values fall back to the defaults instead of half-applying', async () => {
-  const f = fixture({ hash:'#condition-study?market=foo&gap=7&r1=abc&dd252=30~10&since252=2.5~' });
+  const f = fixture({ hash:'#condition-study?market=foo&gap=7&r1=abc&dd252=30~10&since252=2.5~&obs=300&h=7&date=2001-13-01&rNDays=0&recov=yes' });
   const html = await f.settle();
   assert.match(html, /纳斯达克100/);
   assert.match(html, /21 个交易日 · 约1个月/);
-  assert.match(html, /aria-pressed="true"/);
+  assert.match(html, /data-cs-action="fit" aria-pressed="true"/);
+  assert.match(html, /信号后观察期：不设/);
+  assert.match(html, /<small>最新收盘<\/small>/);
+  assert.ok(html.includes('data-cs-param="rNDays" value="10"'));
+  assert.doesNotMatch(html, /data-cs-choice/, 'observation rows need an observation period');
 });
 
 test('when nothing matches, each row shows what removing it would leave and export is off', async () => {
@@ -193,7 +410,7 @@ test('when nothing matches, each row shows what removing it would leave and expo
   assert.match(html, /没有同时满足全部条件的交易日/);
   assert.match(html, /data-cs-action="csv" disabled/);
   assert.match(html, /不满足：当日涨跌/);
-  assert.ok(html.includes('去掉后 <b>' + C.count(f.data, { dd252:{ lo:0, hi:null } }, 21) + '</b> 段'));
+  assert.ok(html.includes('去掉后 <b>' + C.count(f.view, { dd252:{ lo:0, hi:null } }, 21) + '</b> 段'));
   assert.match(html, /勾选后 <b>0<\/b> 段/);
   f.click('action', 'csv');
   assert.equal(f.downloads.length, 0);
@@ -203,16 +420,14 @@ test('CSV holds every episode and the condition source; paging reaches the rest 
   // Without VIX this walk keeps more than one page of samples; it also shows a VIX outage leaves the study usable.
   const f = fixture({ seed:4, vixMode:'down' });
   let html = await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   assert.ok(r.episodes.length > 15, 'the fixture needs more than one page');
   f.click('action', 'csv');
   const [name, csv] = f.downloads.at(-1), lines = csv.replace(/^﻿/, '').split('\r\n');
   assert.equal(name, '行情条件后表现-纳斯达克100-' + f.data.asOf + '.csv');
   assert.equal(lines.length, r.episodes.length + 1);
-  assert.match(lines[0], /"条件来源"/);
-  assert.match(lines[0], /"1年相对信号日最低%"/);
-  assert.match(lines[0], /"VIX 收盘"/);
-  assert.ok(lines[1].includes('"按 ' + f.data.asOf + ' 收盘自动选取"'));
+  for (const column of ['条件来源', '参照日', '1年自信号日最大跌幅%', 'VIX 收盘', '自信号日最大跌幅%', '最大跌幅窗口']) assert.ok(lines[0].includes('"' + column + '"'), column);
+  assert.ok(lines[1].includes('"按 ' + f.data.asOf + ' 读数自动选取"'));
   for (const id of fit.added) assert.ok(lines[1].includes(C.byId[id].label), id);
   assert.ok(lines.at(-1).includes('"' + r.episodes.at(-1).date + '"'));
   const row = date => 'data-cs-event="' + date + '"';
@@ -220,18 +435,18 @@ test('CSV holds every episode and the condition source; paging reaches the rest 
   assert.ok(!html.includes(row(r.episodes[15].date)));
   f.click('action', 'next');
   html = await f.settle();
-  assert.match(html, /第 2 \/ 2 页/);
+  assert.match(html, /第 2 \/ \d+ 页/);
   assert.ok(html.includes(row(r.episodes[15].date)));
   f.click('action', 'csv');
   assert.equal(f.downloads.at(-1)[1], csv);
   f.click('action', 'prev');
-  assert.match(await f.settle(), /第 1 \/ 2 页/);
+  assert.match(await f.settle(), /第 1 \/ \d+ 页/);
 });
 
-test('an episode opens its own path, outcomes and readings', async () => {
+test('an episode opens its own path, outcomes, fall and readings', async () => {
   const f = fixture({ seed:4 });
   await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const old = r.episodes.at(-1), latest = r.episodes[0];
   f.click('event', old.date);
   let modal = f.modals.at(-1);
@@ -240,7 +455,8 @@ test('an episode opens its own path, outcomes and readings', async () => {
   assert.match(modal, /已走完 252 个交易日/);
   assert.ok(modal.includes(old.outcomes[252].date));
   assert.match(modal, /实际期末日/);
-  for (const [, title] of C.groups) assert.ok(modal.includes('<h3>' + title + '</h3>'));
+  assert.ok(modal.includes('自信号日最大跌幅 <b>' + pct(old.fall.pct) + '</b>'));
+  for (const [g, title] of C.groups) assert.equal(modal.includes('<h3>' + title + '</h3>'), g !== 'obs', g);
   assert.equal((modal.match(/class="is-active"/g) || []).length, fit.added.length);
   f.click('event', latest.date);
   modal = f.modals.at(-1);
@@ -253,10 +469,9 @@ test('an episode opens its own path, outcomes and readings', async () => {
 test('the chart tooltip follows the keyboard and the pointer, and hides when focus leaves', async () => {
   const f = fixture({ seed:4 });
   await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const spread = new Map(C.spread(f.data, r.episodes.map(e => e.index)).map(x => [x.k, x]));
   const now = new Map(C.path(f.data, f.data.last, C.lookback, 0));
-  const pct = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
   const tip = { hidden:true, style:{}, offsetWidth:200, children:[], replaceChildren(...nodes) { this.children = nodes; }, setAttribute(k) { if (k === 'hidden') this.hidden = true; } };
   const cross = { attrs:{}, setAttribute(k, v) { this.attrs[k] = v; } };
   const svg = { dataset:{ csChart:'main' }, matches:s => s === 'svg[data-cs-chart]', closest:s => s === 'svg[data-cs-chart]' ? svg : null,
@@ -297,9 +512,9 @@ test('wrong source identity and load failures are explicit, and retry reloads', 
   assert.match(html, /缺少 \^NDX 的美元价格指数日线/);
   assert.doesNotMatch(html, /信号前后的走势/);
   wrong.ui.choose('market', 'spx');
-  assert.match(wrong.renders.at(-1), /正在读取标普500历史收盘/);
   html = await wrong.settle();
   assert.match(html, /cs-conditions-title/);
+  assert.ok(html.includes('<b>—</b><small>缺纳斯达克100日线</small>'), 'the other index names what is missing');
   const total = fixture({ dividends:'included' });
   assert.match(await total.settle(), /\^NDX 缺少不含分红的价格指数口径/);
   const failed = fixture({ fail:true });
@@ -349,32 +564,33 @@ test('VIX loads once for both indices, names its exact gaps, and a VIX outage le
 test('each indicator explains itself, and the match explains why it ticked or skipped it', async () => {
   const f = fixture();
   const html = await f.settle();
-  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const pop = id => html.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';
-  for (const m of C.metrics) {
-    assert.match(html, new RegExp('<button type="button" class="cs-info" popovertarget="cs-info-' + m.id + '" aria-label="关于' + m.label + '">i</button>'), m.id);
-    assert.ok(pop(m.id).startsWith('<b>' + m.label + '</b><p>'), m.id);
+  for (const m of C.metrics) if (m.source !== 'obs') {
+    assert.ok(html.includes('<button type="button" class="cs-info" popovertarget="cs-info-' + m.id + '" aria-label="关于' + nameOf(m) + '">i</button>'), m.id);
+    assert.ok(pop(m.id).startsWith('<b>' + nameOf(m) + '</b><p>'), m.id);
   }
   assert.doesNotMatch(html, /<label[^>]*>(?:(?!<\/label>).)*<button/, 'an info button is never nested inside a label');
   const rule = pop('fit');
   assert.ok(rule.includes('依次尝试 ' + C.fitOrder.length + ' 项：距252日高点、近21日、近5日、当日、距200日线、VIX、波动率、近3日、近63日。'));
-  assert.ok(rule.includes('其余 ' + (C.metrics.length - C.fitOrder.length) + ' 项'));
+  assert.ok(rule.includes('其余项目不自动尝试，可手动勾选或填写。'));
   const kept = fit.steps.find(s => s.kept), keptAt = C.fitOrder.indexOf(kept.id) + 1;
-  assert.ok(pop(kept.id).includes('按最新收盘匹配第 ' + keptAt + ' 项：') && pop(kept.id).includes('加入时仍有 ' + kept.episodes + ' 段，已勾选。'), kept.id);
+  assert.ok(pop(kept.id).includes('按参照日匹配第 ' + keptAt + ' 项：') && pop(kept.id).includes('加入时仍有 ' + kept.episodes + ' 段，已勾选。'), kept.id);
   const skipped = fit.steps.find(s => s.band && !s.kept);
   assert.ok(pop(skipped.id).includes('加入时只剩 ' + skipped.episodes + ' 段，少于 10 段，未勾选'), skipped.id);
   const now = r.previews[skipped.id].episodes;
   if (now !== skipped.episodes) assert.ok(pop(skipped.id).includes('按现有条件勾选会剩 ' + now + ' 段'));
-  assert.ok(pop('rsi14').includes('按最新收盘匹配不尝试此项。勾选后按最新读数取 '), 'a reading outside the automatic list says so');
+  assert.ok(pop('rsi14').includes('按参照日匹配不尝试此项。勾选后按参照日读数取 '), 'a reading outside the automatic list says so');
   assert.match(pop('ddMax'), /收盘比 2001 年数据起点以来的最高收盘低多少/);
   assert.match(pop('vix'), /研究纳斯达克100时也用它/);
   assert.match(pop('vix'), /数据：Cboe 官方日收盘，2001-01-02 至 /);
+  assert.match(pop('drops'), /不含信号日/);
 
   f.toggle('rsi14', true);
   const manual = await f.settle();
   const after = id => manual.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';
   assert.match(after('rsi14'), /已勾选 (?:[≥≤] \d+|\d+ 至 \d+)；去掉后 \d+ 段。/);
-  assert.match(after('up'), /勾选后按最新读数取 |最新读数未知/);
+  assert.match(after('up'), /勾选后按参照日读数取 |参照日读数未知/);
 });
 
 test('an info popover opens under its button, inside the window, and upward near the bottom edge', async () => {
@@ -395,4 +611,20 @@ test('an info popover opens under its button, inside the window, and upward near
   f.listeners.beforetoggle({ target:{ ...pop, classList:{ contains:() => false } }, newState:'open' });
   f.listeners.beforetoggle({ target:pop, newState:'closed' });
   assert.deepEqual(style, untouched);
+});
+
+test('old 指数大跌 links open here with the same settings', async () => {
+  const f = fixture();
+  await f.settle();
+  assert.equal(f.ui.legacy('#drop-study'), '#condition-study?obs=2&gap=1&r1=~-5&recov=no');
+  assert.equal(f.ui.legacy('#drop-study?threshold=7&wait=5&group=recovered&recovery=high&trend=below&market=spx'),
+    '#condition-study?market=spx&obs=5&basis=high&gap=1&dropsPct=7&r1=~-7&ma200p=~0&recov=yes');
+  const g = fixture({ hash:f.ui.legacy('#drop-study?threshold=3&repeat=first') });
+  const html = await g.settle();
+  assert.ok(html.includes('<div id="cs-wait">信号后观察期：2 个交易日</div>'));
+  assert.ok(html.includes('不合并 · 每个交易日单独计'));
+  assert.ok(html.includes('data-cs-choice="recov" data-value="no" aria-pressed="true"'));
+  assert.ok(html.includes('近 21 日跌超 <input class="cs-param" type="number" inputmode="decimal" data-cs-param="dropsPct" value="3"'));
+  const expected = C.study(g.frameFor({ wait:2, params:{ dropsPct:3 } }), { conditions:{ r1:{ lo:null, hi:-3 }, drops:{ lo:0, hi:0 }, recov:{ lo:0, hi:0 } }, gap:1 });
+  assert.ok(html.includes('匹配 <b>' + expected.episodes.length + '</b> 段'));
 });

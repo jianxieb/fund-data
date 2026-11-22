@@ -35,10 +35,10 @@ test('returns, extremes and averages use the signal close and earlier closes onl
   near(d.values.worst21[i], Math.min(...daily));
   const logs = closes.slice(i - 20, i + 1).map((c, j) => Math.log(c / closes[i - 20 + j - 1])), m = logs.reduce((a, b) => a + b) / 21;
   near(d.values.vol21[i], Math.sqrt(logs.reduce((s, v) => s + (v - m) ** 2, 0) / 20 * 252) * 100, 1e-9);
-  // Appending later closes must not change any earlier reading.
-  const longer = C.compute(sessions([...closes, 1, 500, 2])).values;
-  for (const metric of C.metrics) for (let j = 0; j < closes.length; j++)
-    assert.ok(Object.is(longer[metric.id][j], d.values[metric.id][j]), metric.id + ' changed at ' + j);
+  // Appending later closes must not change any signal-day reading, adjustable windows included.
+  const before = C.frame(d).values, longer = C.frame(C.compute(sessions([...closes, 1, 500, 2]))).values;
+  for (const metric of C.metrics) if (metric.source !== 'obs') for (let j = 0; j < closes.length; j++)
+    assert.ok(Object.is(longer[metric.id][j], before[metric.id][j]), metric.id + ' changed at ' + j);
 });
 
 test('warm-up lengths are exact and a long outage starts a fresh history', () => {
@@ -113,7 +113,7 @@ test('outcomes, risk and summaries use complete windows; previews keep every oth
   near(e.outcomes[h].drawdown, worst);
   near(e.outcomes[h].low, (Math.min(...path) / path[0] - 1) * 100);
   assert.equal(e.outcomes[h].date, d.dates[i + h]);
-  for (const horizon of C.horizons) {
+  for (const horizon of C.defaultHorizons) {
     const done = r.episodes.filter(x => x.outcomes[horizon].status === 'complete').map(x => x.outcomes[horizon].pct).sort((a, b) => a - b);
     const s = r.summary[horizon];
     assert.equal(s.n, done.length);
@@ -134,10 +134,10 @@ test('outcomes, risk and summaries use complete windows; previews keep every oth
 test('suggested ranges contain the latest value, snap outward to steps and open at historical extremes', () => {
   const closes = wave(700);
   closes.push(closes.at(-1) * .9);
-  const d = C.compute(sessions(closes));
+  const d = C.frame(C.compute(sessions(closes)), { wait:2 });
   for (const m of C.metrics) {
     const band = C.suggest(d, m.id), v = d.values[m.id][d.last];
-    if (!band) continue;
+    if (!band || m.choice) continue;
     assert.ok(C.validRange(m.id, band), m.id);
     assert.ok((band.lo === null || band.lo <= v) && (band.hi === null || band.hi >= v), m.id + ' must contain ' + v);
     for (const side of ['lo', 'hi']) if (band[side] !== null) near(band[side] / m.step, Math.round(band[side] / m.step), 1e-9);
@@ -162,8 +162,8 @@ test('the latest-close fit is greedy, deterministic and keeps enough separate sa
   assert.ok(fit.episodes >= fit.minEpisodes);
   for (const s of fit.skipped) if (s.episodes !== null) assert.ok(s.episodes < fit.minEpisodes);
   const r = C.study(d, { conditions:fit.conditions, gap:21 });
-  assert.equal(r.current.matches, true);
-  assert.equal(r.current.episode, r.episodes[0].date);
+  assert.equal(r.reference.matches, true);
+  assert.equal(r.reference.episode, r.episodes[0].date);
   assert.equal(r.historical, fit.episodes);
   const strict = C.fit(d, { gap:21, minEpisodes:100000 });
   assert.deepEqual(strict.conditions, {});
