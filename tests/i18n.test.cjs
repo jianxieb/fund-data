@@ -130,12 +130,12 @@ test('entries joined by a plus sign translate piece by piece', () => {
   assert.equal(en(I, '收益 ＋ 回撤'), 'Return + Drawdown', 'a full-width plus joins pieces too');
 });
 
-test('sentences strung together with a space translate one by one', () => {
+test('sentences strung together translate one by one', () => {
   const { I } = load();
   I.add('en', { '追加 {0} 元。': 'Add CNY {0}.', '从下月开始。': 'Starts next month.' });
   assert.equal(en(I, '追加 500 元。 从下月开始。'), 'Add CNY 500. Starts next month.');
+  assert.equal(en(I, '追加 500 元。从下月开始。'), 'Add CNY 500. Starts next month.', 'no space is needed after the full stop');
   assert.equal(en(I, '追加 500 元。 未知句子。'), null, 'one unknown sentence leaves the whole text alone');
-  assert.equal(en(I, '追加 500 元。从下月开始。'), null, 'sentences must be set apart by a space');
 });
 
 test('text() follows the active language for output that never reaches the DOM', () => {

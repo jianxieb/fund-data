@@ -239,11 +239,13 @@
       const pieces = key.split(/\s[+＋]\s/), done = pieces.map(p => CJK.test(p) ? translate(p, { lang, depth: (options.depth || 0) + 1, segments }) : p);
       if (done.every(p => p != null) && done.some((p, at) => p !== pieces[at])) result = done.join(' + ');
     }
-    // Sentences a page strings together with a space after the full stop translate one by one, in order.
-    if (result == null && /。\s+\S/.test(key) && (options.depth || 0) < 3) {
-      const parts = key.split(/。\s+/), sentences = parts.map((p, at) => at < parts.length - 1 ? p + '。' : p);
-      const done = sentences.map(p => CJK.test(p) ? translate(p, { lang, depth: (options.depth || 0) + 1, segments: false }) : p);
-      if (done.every(p => p != null) && done.some((p, at) => p !== sentences[at])) result = done.join(' ');
+    // Sentences a page strings together translate one by one, in order; each needs its own entry, full stop included.
+    if (result == null && key.indexOf('。') >= 0 && (options.depth || 0) < 3) {
+      const sentences = (key.match(/[^。]+。?/g) || []).map(p => p.trim()).filter(Boolean);
+      if (sentences.length > 1) {
+        const done = sentences.map(p => CJK.test(p) ? translate(p, { lang, depth: (options.depth || 0) + 1, segments: false }) : p);
+        if (done.every(p => p != null) && done.some((p, at) => p !== sentences[at])) result = done.join(' ');
+      }
     }
     if (result == null && segments) result = bySegments(d, key, options.depth || 0);
     if (d.cache.size > CACHE_LIMIT) d.cache.clear();
