@@ -322,5 +322,13 @@
     '— 最近{0}个完整日历年均实施现金分红（按除息日）：缺已实施现金分红的日历年：{1}': '— Cash dividends in each of the last {0} full calendar years (by ex-dividend date): calendar years with dividends paid are missing: {1}',
     '✓ 本期分红承受能力已逐家公司复核': '✓ Dividend capacity for this period was reviewed company by company',
     '— 近{0}月已付现金股息率≥{1}%：近{2}月股息率{3}%，低于{4}%': '— Cash dividend yield paid over the last {0} months ≥ {1}%: the last {2}-month yield is {3}%, below {4}%',
+    // Stock lists: review coverage status lines
+    '缺对应最新财报的公司入选复核：{0}；现有复核仅覆盖{1}': 'The company-selection review for the matching latest report is missing: {0:date}; the existing review covers only {1:date}',
+    '选股评审覆盖{0}，当前财报为{1}': 'Stock-selection review covers {0:date}; the current report is {1:date}',
+    '分红承受能力复核覆盖{0}，当前财报为{1}': 'Dividend-capacity review covers {0:date}; the current report is {1:date}',
+    '分红承受能力复核覆盖{0}，当前财报为{1}；缺{2}资本充足、资产质量或AFFO覆盖的具名复核；缺同股本口径的正盈利或AFFO派息比率': 'Dividend-capacity review covers {0:date}; the current report is {1:date}; a named review of {2:date} capital adequacy, asset quality or AFFO coverage is missing; a positive earnings or AFFO payout ratio on the same share basis is missing',
+    '分红承受能力复核覆盖{0}，当前财报为{1}；缺已实施现金分红的日历年：{2}': 'Dividend-capacity review covers {0:date}; the current report is {1:date}; calendar years with implemented cash dividends are missing: {2}',
+    '分红承受能力复核覆盖{0}，当前财报为{1}；缺同股本口径的正盈利或AFFO派息比率；缺连续四季不变股本证据；不把跨股本EPS直接相加': 'Dividend-capacity review covers {0:date}; the current report is {1:date}; a positive earnings or AFFO payout ratio on the same share basis is missing; evidence of four consecutive quarters at an unchanged share count is missing; EPS from different share bases is not added together',
+    '缺本期原始财报金额、风险或退出条件': 'Original report amounts, risks or exit conditions for this period are missing',
   };
 });

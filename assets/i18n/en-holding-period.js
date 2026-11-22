@@ -112,5 +112,8 @@
     '期末仍低于初始金额：本次从 {0} 开始，已观察 {1}天，尚未恢复。': 'Still below the initial amount at the end: this run began {0:date}, observed for {1} {1?day:days}, not yet recovered.',
     '浏览器无法校验历史文件，请使用 HTTPS 或本机 localhost 页面': 'The browser cannot verify the history files; use an HTTPS or local localhost page',
     '重新加载': 'Reload',
+    '初始价值{0}，CNY计价': 'Initial value {0}, valued in CNY',
+    '初始价值{0} · CNY': 'Initial value {0} · CNY',
+    '汇率来源 ↗': 'Exchange-rate source ↗',
   };
 });
