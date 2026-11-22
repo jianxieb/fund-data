@@ -80,6 +80,18 @@ test('strings with separators translate word by word, but only when it reads as 
   assert.equal(en(I, '未知，未知'), null);
 });
 
+test('a year count prints as a calendar year or a span, and a sort arrow stays beside its translated label', () => {
+  const { I } = load();
+  I.add('en', { '{0}年': '{0:y}', '收益': 'Return', '近{0}年累计': '{0}-year cumulative', '名称 ↓': 'Name, newest first' });
+  assert.equal(en(I, '2025年'), '2025');
+  assert.equal(en(I, '5年'), '5Y');
+  assert.equal(en(I, '收益 ↓'), 'Return ↓');
+  assert.equal(en(I, '近3年累计 ↑'), '3-year cumulative ↑');
+  assert.equal(en(I, '名称 ↓'), 'Name, newest first', 'an entry for the arrowed text wins');
+  assert.equal(en(I, '未知 ↓'), null, 'an arrow does not make an unknown label translatable');
+  assert.equal(en(I, '收益↓'), null, 'only an arrow set apart from the label counts');
+});
+
 test('text() follows the active language for output that never reaches the DOM', () => {
   const { I } = load();
   I.add('en', { '收益': 'Return' });
@@ -238,4 +250,22 @@ test('the audit lists what is still Chinese, with numbers abstracted', () => {
   assert.equal(gap.kind, 'text');
   assert.ok(items.some(i => i.kind === 'attr:title' && i.key === '提示 {0}'));
   assert.ok(!items.some(i => i.key === '收益'));
+});
+
+test('the audit names a half-translated text by its original Chinese, and also gives what is on screen now', () => {
+  const { I, doc } = load();
+  I.add('en', { '标普{0}': 'S&P {0}' });
+  const line = h(doc, 'p', {}, 'SSO · 标普500 · 每日2倍做多');
+  const tip = h(doc, 'p', { title: '标普500 · 每日2倍做多' }, 'x');
+  doc.body.appendChild(h(doc, 'div', {}, line, tip));
+  I.setLang('en');
+  assert.equal(line.firstChild.nodeValue, 'SSO · S&P 500 · 每日2倍做多');
+  const items = I.audit(doc.body);
+  const text = items.find(i => i.kind === 'text');
+  assert.equal(text.key, 'SSO · 标普{0} · 每日{1}倍做多');
+  assert.equal(text.example, 'SSO · 标普500 · 每日2倍做多');
+  assert.equal(text.current, 'SSO · S&P 500 · 每日2倍做多');
+  const attr = items.find(i => i.kind === 'attr:title');
+  assert.equal(attr.key, '标普{0} · 每日{1}倍做多');
+  assert.equal(attr.current, 'S&P 500 · 每日2倍做多');
 });

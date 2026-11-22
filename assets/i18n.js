@@ -126,6 +126,8 @@
     wan: v => compact(numeric(v) * 1e4),
     yi: v => compact(numeric(v) * 1e8),
     wanyi: v => compact(numeric(v) * 1e12),
+    // A bare 年 count is either a calendar year (2025) or a span (5年): years print as they are, spans as 5Y.
+    y: v => numeric(v) >= 1000 ? String(v) : String(v) + 'Y',
     abs: v => String(v).replace(/^[+\-−]/, ''),
     plain: v => String(v).replace(/^\+/, '')
   };
@@ -145,6 +147,7 @@
   /* ---------- Lookup ---------- */
   const SEPARATORS = { '，': ', ', ',': ', ', '；': '; ', ';': '; ', '：': ': ', ':': ': ', '、': ', ', '。': '. ', '·': ' · ', '・': ' · ', '/': ' / ', '／': ' / ', '|': ' | ', '｜': ' | ', '→': ' → ', '（': ' (', '(': ' (', '）': ')', ')': ')', '—': ' — ' };
   const SEPARATOR = /[，,；;：:、。·・/／|｜→（(）)—]/;
+  const SORT_ARROW = /\s+([↑↓▲▼])$/;
   // Lookup of one normalised string, without a segment fallback. Returns { entry, ctx } or null.
   function match(d, text) {
     const exact = d.exact.get(text);
@@ -212,6 +215,11 @@
     if (d.cache.has(cacheKey)) return d.cache.get(cacheKey);
     const hit = match(d, key);
     let result = hit && !hit.entry.slotted ? fill(hit.entry.parts, hit.ctx) : null;
+    // A sort arrow after a label is a symbol, not a word: translate the label and keep the arrow.
+    if (result == null && SORT_ARROW.test(key)) {
+      const base = translate(key.replace(SORT_ARROW, ''), { lang, depth: (options.depth || 0) + 1, segments });
+      if (base != null) result = base + ' ' + SORT_ARROW.exec(key)[1];
+    }
     if (result == null && segments) result = bySegments(d, key, options.depth || 0);
     if (d.cache.size > CACHE_LIMIT) d.cache.clear();
     d.cache.set(cacheKey, result);
@@ -298,15 +306,15 @@
     }
   }
   // A sentence is written as its text with every inline element as <n>…</n> and every control as <n/>.
-  function serialize(el, slots) {
+  function serialize(el, slots, source) {
     let out = '';
     for (const c of Array.from(el.childNodes)) {
-      if (isText(c)) out += c.nodeValue;
+      if (isText(c)) out += source && originals.text.has(c) ? originals.text.get(c) : c.nodeValue;
       else if (isElement(c)) {
         const n = slots.length;
         slots.push(c);
         if (OPAQUE.has(tag(c))) out += '<' + n + '/>';
-        else out += '<' + n + '>' + serialize(c, slots) + '</' + n + '>';
+        else out += '<' + n + '>' + serialize(c, slots, source) + '</' + n + '>';
       }
     }
     return out;
@@ -491,11 +499,12 @@
     const { document } = env();
     const top = rootNode || (document && document.documentElement);
     const found = new Map();
-    const note = (key, kind, example, unit) => {
-      const item = found.get(kind + '|' + key) || { key, kind, count: 0, example, unit };
+    const note = (key, kind, example, unit, current) => {
+      const item = found.get(kind + '|' + key) || { key, kind, count: 0, example, unit, current };
       item.count++;
       found.set(kind + '|' + key, item);
     };
+    // A half-translated text is reported by its original Chinese: that is the key a dictionary entry needs.
     const walk = node => {
       if (isText(node)) {
         if (!CJK.test(node.nodeValue) || skipped(node.parentNode)) return;
@@ -503,15 +512,19 @@
         let unit = null;
         if (parent && Array.from(parent.childNodes).some(isElement) && Array.from(parent.childNodes).every(c => !isElement(c) || inlineContent(c))) {
           const slots = [];
-          unit = tokenize(norm(serialize(parent, slots))).shape;
+          unit = tokenize(norm(serialize(parent, slots, true))).shape;
         }
-        note(tokenize(norm(node.nodeValue)).shape, 'text', norm(node.nodeValue), unit);
+        const source = originals.text.has(node) ? originals.text.get(node) : node.nodeValue;
+        note(tokenize(norm(source)).shape, 'text', norm(source), unit, norm(node.nodeValue));
         return;
       }
       if (!isElement(node) || skipped(node)) return;
+      const saved = originals.attrs.get(node) || {};
       for (const name of ATTRS) {
-        const value = node.getAttribute(name);
-        if (value && CJK.test(value)) note(tokenize(norm(value)).shape, 'attr:' + name, norm(value), null);
+        const current = node.getAttribute(name);
+        if (!current || !CJK.test(current)) continue;
+        const value = name in saved ? saved[name] : current;
+        note(tokenize(norm(value)).shape, 'attr:' + name, norm(value), null, norm(current));
       }
       Array.from(node.childNodes).forEach(walk);
     };
