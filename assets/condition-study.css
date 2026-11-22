@@ -63,7 +63,7 @@
 .cs-name input{flex:none}
 .cs-name input:disabled+span{color:#8b968e}
 .cs-name small{display:block;color:var(--ds-muted);font-size:11px;line-height:1.3}
-.cs-param{width:64px;min-height:26px;margin:0 2px;padding:2px 6px;border:1px solid #cbd7c5;border-radius:6px;background:#fff;color:#263b32;text-align:right;font:inherit;font-size:13px;cursor:text}
+.cs-param{display:inline-block;vertical-align:baseline;width:64px;min-height:26px;margin:0 2px;padding:2px 6px;border:1px solid #cbd7c5;border-radius:6px;background:#fff;color:#263b32;text-align:right;font:inherit;font-size:13px;cursor:text}
 .cs-param:invalid,.cs-param:user-invalid{border-color:var(--red)}
 .cs-now b{display:block;color:#294534;font-size:14px;font-weight:600}
 .cs-now small{display:block;color:var(--ds-muted);font-size:11px}
