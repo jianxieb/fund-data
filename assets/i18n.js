@@ -252,6 +252,9 @@
 
   /* ---------- DOM walking ---------- */
   const originals = { text: new WeakMap(), attrs: new WeakMap(), units: new WeakMap() };
+  // What this engine last wrote. A different value on screen means the page rewrote the node in place,
+  // so its saved original is stale and must follow the new text instead of being restored over it.
+  const written = { text: new WeakMap(), attrs: new WeakMap() };
   const tag = el => String(el.tagName || '').toUpperCase();
   const isElement = n => n && n.nodeType === 1;
   const isText = n => n && n.nodeType === 3;
@@ -287,10 +290,13 @@
     const value = node.nodeValue;
     if (!CJK.test(value)) return;
     const en = translate(value);
-    if (en == null) return;
+    const rewritten = originals.text.has(node) && written.text.get(node) !== value;
+    if (en == null) { if (rewritten) originals.text.delete(node); return; }
     const lead = /^\s*/.exec(value)[0], trail = /\s*$/.exec(value)[0];
-    if (!originals.text.has(node)) originals.text.set(node, value);
-    node.nodeValue = spaced(node, en, lead, trail);
+    if (!originals.text.has(node) || rewritten) originals.text.set(node, value);
+    const out = spaced(node, en, lead, trail);
+    written.text.set(node, out);
+    node.nodeValue = out;
   }
   function translateAttrs(el) {
     if (!el.getAttribute) return;
@@ -298,10 +304,13 @@
       const value = el.getAttribute(name);
       if (!value || !CJK.test(value)) continue;
       const en = translate(value);
-      if (en == null) continue;
-      let saved = originals.attrs.get(el);
+      let saved = originals.attrs.get(el), last = written.attrs.get(el);
+      const rewritten = !!saved && name in saved && !(last && last[name] === value);
+      if (en == null) { if (rewritten) delete saved[name]; continue; }
       if (!saved) originals.attrs.set(el, saved = {});
-      if (!(name in saved)) saved[name] = value;
+      if (!last) written.attrs.set(el, last = {});
+      if (!(name in saved) || rewritten) saved[name] = value;
+      last[name] = en;
       el.setAttribute(name, en);
     }
   }
@@ -380,7 +389,7 @@
   function restoreTree(rootNode) {
     const walk = node => {
       if (isText(node)) {
-        if (originals.text.has(node)) node.nodeValue = originals.text.get(node);
+        if (originals.text.has(node)) { node.nodeValue = originals.text.get(node); written.text.delete(node); }
         return;
       }
       if (!isElement(node)) return;
@@ -391,7 +400,7 @@
         unit.forEach(c => node.appendChild(c));
       }
       const attrs = originals.attrs.get(node);
-      if (attrs) { for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value); originals.attrs.delete(node); }
+      if (attrs) { for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value); originals.attrs.delete(node); written.attrs.delete(node); }
       Array.from(node.childNodes).forEach(walk);
     };
     walk(rootNode);

@@ -189,6 +189,37 @@ test('parts without a sentence entry are translated one by one, with the spaces 
   assert.equal(html(q), '<p><b>12</b> funds</p>');
 });
 
+test('a value the page rewrites in place is restored as its newest Chinese, never the first one translated', () => {
+  const { I, doc, observer } = load();
+  I.add('en', { '转入买股账户': 'Into the stock account', '换成美元': 'Convert to USD', '第一行': 'First line', '第二行': 'Second line' });
+  const button = h(doc, 'button', { 'aria-label': '转入买股账户' }, '第一行');
+  doc.body.appendChild(button);
+  const text = button.childNodes[0];
+  I.setLang('en');
+  assert.equal(button.getAttribute('aria-label'), 'Into the stock account');
+  // The page changes both in place to another known value.
+  button.setAttribute('aria-label', '换成美元');
+  observer.callback([{ type: 'attributes', target: button, attributeName: 'aria-label' }]);
+  text.nodeValue = '第二行';
+  observer.callback([{ type: 'characterData', target: text }]);
+  assert.equal(button.getAttribute('aria-label'), 'Convert to USD');
+  assert.equal(text.nodeValue, 'Second line');
+  I.setLang('zh');
+  assert.equal(button.getAttribute('aria-label'), '换成美元');
+  assert.equal(text.nodeValue, '第二行');
+  // And to a value no entry covers: it stays as the page wrote it, in both languages.
+  I.setLang('en');
+  button.setAttribute('aria-label', '转入别处');
+  observer.callback([{ type: 'attributes', target: button, attributeName: 'aria-label' }]);
+  text.nodeValue = '第三行';
+  observer.callback([{ type: 'characterData', target: text }]);
+  assert.equal(button.getAttribute('aria-label'), '转入别处');
+  assert.equal(I.audit(doc.body).find(i => i.kind === 'attr:aria-label').key, '转入别处', 'the audit names the text on screen, not an older one');
+  I.setLang('zh');
+  assert.equal(button.getAttribute('aria-label'), '转入别处');
+  assert.equal(text.nodeValue, '第三行');
+});
+
 test('content added after switching is translated through the observer; Chinese mode does nothing', () => {
   const { I, doc, observer } = load();
   I.add('en', { '收益': 'Return', '收益说明': 'Return notes' });
