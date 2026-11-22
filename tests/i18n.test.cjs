@@ -315,3 +315,16 @@ test('the audit names a half-translated text by its original Chinese, and also g
   assert.equal(attr.key, '标普{0} · 每日{1}倍做多');
   assert.equal(attr.current, 'S&P 500 · 每日2倍做多');
 });
+
+test('an element can carry its own English when a short word is ambiguous between pages', () => {
+  const { I, doc } = load();
+  I.add('en', { '个': 'windows' });
+  const plain = h(doc, 'small', {}, '个'), hinted = h(doc, 'small', { 'data-en': 'indices' }, '个');
+  doc.body.appendChild(plain);
+  doc.body.appendChild(hinted);
+  I.setLang('en');
+  assert.equal(plain.childNodes[0].nodeValue, 'windows');
+  assert.equal(hinted.childNodes[0].nodeValue, 'indices');
+  I.setLang('zh');
+  assert.equal(hinted.childNodes[0].nodeValue, '个');
+});

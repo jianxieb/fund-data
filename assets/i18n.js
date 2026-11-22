@@ -301,7 +301,9 @@
   function translateText(node) {
     const value = node.nodeValue;
     if (!CJK.test(value)) return;
-    const en = translate(value);
+    // A short word that means different things on different pages can carry its English: <small data-en="indices">个</small>.
+    const owner = node.parentNode, hint = owner && owner.getAttribute && owner.childNodes.length === 1 ? owner.getAttribute('data-en') : null;
+    const en = hint != null ? hint : translate(value);
     const rewritten = originals.text.has(node) && written.text.get(node) !== value;
     if (en == null) { if (rewritten) originals.text.delete(node); return; }
     const lead = /^\s*/.exec(value)[0], trail = /\s*$/.exec(value)[0];

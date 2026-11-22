@@ -116,8 +116,8 @@
   function head(eyebrow, title, subtitle, actions = '') {
     return '<div class="page-head"><div><div class="eyebrow">' + eyebrow + '</div><h1>' + title + '</h1><p>' + subtitle + '</p></div><div class="page-actions">' + actions + '</div></div>';
   }
-  function stat(label, value, unit, foot, tag = '') {
-    return '<div class="stat"><div class="stat-top"><span>' + label + '</span>' + tag + '</div><div class="stat-value num">' + value + (unit ? '<small>' + unit + '</small>' : '') + '</div><div class="stat-foot">' + foot + '</div></div>';
+  function stat(label, value, unit, foot, tag = '', unitEn = '') {
+    return '<div class="stat"><div class="stat-top"><span>' + label + '</span>' + tag + '</div><div class="stat-value num">' + value + (unit ? '<small' + (unitEn ? ' data-en="' + unitEn + '"' : '') + '>' + unit + '</small>' : '') + '</div><div class="stat-foot">' + foot + '</div></div>';
   }
   function card(title, sub, body, right = '', foot = '') {
     return '<section class="card"><div class="card-head"><div><h2>' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + right + '</div>' + body + (foot ? '<div class="panel-foot">' + foot + '</div>' : '') + '</section>';
@@ -916,7 +916,7 @@
       ['Investor.gov', 'https://www.investor.gov/introduction-investing/getting-started/asset-allocation', '资产配置、分散与再平衡方法']
     ];
     return head('DATA STATUS', '数据状态与来源', '查看各数据集的日期、覆盖范围和待补证据。', action('导出质量报告', 'export-quality', 'btn')) +
-      '<div class="stats-grid">' + stat('公开国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '指数源独立于基金产品') + stat('研究产品', funds.length, '只', '按基金代码去重') + stat('长期主动权益', funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', defaults)).length, '只', '默认权益筛选条件') + stat('待核验类别', q.summary.unverified || 0, '项', '逐项说明见下方') + '</div>' +
+      '<div class="stats-grid">' + stat('公开国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '指数源独立于基金产品', '', 'indices') + stat('研究产品', funds.length, '只', '按基金代码去重') + stat('长期主动权益', funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', defaults)).length, '只', '默认权益筛选条件') + stat('待核验类别', q.summary.unverified || 0, '项', '逐项说明见下方') + '</div>' +
       '<div class="dataset-grid" id="quality-status" tabindex="-1" role="region" aria-label="各数据集的更新状态">' + (q.datasets || []).map(d => '<article class="dataset-card"><header><h3>' + esc(datasetLabel(d)) + '</h3>' + badge(datasetStatus(d), ['checked', 'available'].includes(d.status) ? 'green' : 'warn') + '</header><p>数据日期 ' + esc(datasetDates(d)) + (d.records != null ? ' · ' + d.records + '条' : '') + '</p>' + (coverage(d) ? '<p class="dataset-coverage">' + coverage(d) + '</p>' : '') + (d.issues && d.issues.length ? '<ul>' + d.issues.map(i => '<li>' + esc(i.message) + '</li>').join('') + '</ul>' : '') + runNote(d) + '</article>').join('') +
       (window.BUY_LOCATION_DATA ? '<article class="dataset-card"><header><h3>投资渠道</h3>' + badge('固定研究快照', 'warn') + '</header><p>行情截至 ' + esc(window.BUY_LOCATION_DATA.asOf) + ' · ' + window.BUY_LOCATION_DATA.products.length + '只产品</p><p>同日价格、净值及汇率经脚本构建；券商费用可调整，个人税使用已披露的协定与抵免基准，税后结果是模拟值。</p><a class="text-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">查看来源与计算边界 ↗</a></article>' : '') + '</div>' +
       '<div class="section-head"><h2>计算口径</h2></div><div class="quality-principles">' + [
