@@ -60,7 +60,8 @@
   const esc = M.escapeHtml;
   const cache = new Map(), highCache = new Map(), frames = new Map(), results = new Map(), fits = new Map(), charts = new Map();
   // `idle`: ticked rows that follow the reference date but have no reading there, so they are not applied.
-  let H, st, data, ref, result, fitted, idle = [], shown = null, signature = '', page = 1, vixLoad = null;
+  // `lastMerge`: the merge window to return to after counting each day separately.
+  let H, st, data, ref, result, fitted, idle = [], shown = null, signature = '', page = 1, vixLoad = null, lastMerge = 21;
 
   const fixed = (v, digits = 2) => v.toLocaleString('zh-CN', { minimumFractionDigits:digits, maximumFractionDigits:digits });
   const pct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
@@ -259,8 +260,15 @@
       H.menu('cs-wait', '信号后观察期', waitOptions(), String(st.wait)) +
       (st.wait ? H.menu('cs-basis', '收复判定', Object.entries(basisNames), st.basis) : '') +
       H.menu('cs-era', '历史范围', Object.entries(eraNames), st.era) +
-      H.menu('cs-gap', '相邻样本至少相隔', C.gaps.map(g => [String(g), g === 1 ? '不合并 · 每个交易日单独计' : g + ' 个交易日 · ' + gapTerms[g]]), String(st.gap)) +
       horizonPicker() + '</div>';
+  }
+  // Beside the match count: count every matching close, or keep only the first close of each run inside the merge window.
+  function spacing() {
+    const merge = st.gap > 1;
+    const option = (gap, text, on) => '<button type="button" class="' + (on ? 'active' : '') + '" data-cs-gap="' + gap + '" aria-pressed="' + on + '">' + text + '</button>';
+    return '<div class="cs-spacing"><span id="cs-gap-label">相近满足日</span><div class="segmented" role="group" aria-labelledby="cs-gap-label">' +
+      option(1, '每天单独计', !merge) + option(merge ? st.gap : lastMerge, '合并为一段', merge) + '</div>' +
+      (merge ? H.menu('cs-gap', '合并范围', C.gaps.filter(g => g > 1).map(g => [String(g), g + ' 个交易日内 · ' + gapTerms[g]]), String(st.gap)) : '') + '</div>';
   }
   function highNote() {
     if (!st.wait || st.basis !== 'high') return '';
@@ -423,7 +431,7 @@
       '<span class="cs-count">' + count + '</span></div>';
   }
   function conditionPanel() {
-    const date = data.dates[ref], n = Object.keys(result.conditions).length;
+    const date = data.dates[ref], n = Object.keys(result.conditions).length, merged = n ? result.matchingDays - result.episodes.length : 0;
     const legend = (g, title) => g === 'obs' ? '观察期 · 信号后 ' + st.wait + ' 个交易日' + (st.basis === 'high' ? ' · 按盘中最高价判定收复' : '') : title;
     return '<section class="cs-conditions" aria-labelledby="cs-conditions-title"><div class="cs-conditions-head">' +
       '<div class="cs-conditions-title"><h2 id="cs-conditions-title">条件</h2><p>' + fitNote() + '</p></div>' +
@@ -431,7 +439,8 @@
       (st.manual ? '按参照日匹配' : '✓ 已按参照日匹配') + '</button>' + fitInfo() + '</span>' +
       (n ? '<button type="button" class="text-link" data-cs-action="clear">清除全部条件</button>' : '') + '</div>' +
       '<div class="cs-conditions-status"><p class="cs-match" role="status">匹配 <b>' + result.episodes.length + '</b> 段 · ' +
-      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (st.gap > 1 ? '<small>距信号日不足 ' + st.gap + ' 个交易日的满足日并入同一段</small>' : '') + '</p>' + referenceStatus() +
+      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (merged ? '<small>其中 ' + merged.toLocaleString('zh-CN') + ' 天并入所在段</small>' : '') + '</p>' +
+      spacing() + referenceStatus() +
       '<p class="cs-key" aria-hidden="true"><span class="cs-key-now"></span>参照日读数<span class="cs-key-band"></span>条件范围<span class="cs-key-iqr"></span>历史中间 50%</p></div></div>' +
       '<div class="cs-groups">' + C.groups.filter(([g]) => g !== 'obs' || st.wait).map(([g, title]) => '<fieldset class="cs-group cs-group-' + g + '"><legend>' + legend(g, title) +
         '</legend><div class="cs-row cs-row-head" aria-hidden="true"><span>指标</span><span>' + date + (g === 'obs' ? ' 起' : '') + '</span><span>历史分布</span><span>' +
@@ -562,8 +571,12 @@
         '<td class="cs-risk-cell">' + signed(s.drawdown.median) + '</td><td>' + signed(s.drawdown.min) + '</td><td class="cs-base-cell">' + pct(b.drawdown.median) + '</td>' +
         '<td class="cs-risk-cell">' + signed(s.low.median) + '</td><td>' + signed(s.low.min) + '</td></tr>';
     }).join('');
-    const few = result.summary[longest].n;
-    const spacing = st.gap === 1 ? '每个满足条件的交易日单独计，相邻样本的后续区间大量重叠' : '相邻样本至少相隔 ' + result.gap + ' 个交易日，后续区间仍可能重叠，样本数不等于独立行情的次数';
+    const few = result.summary[longest].n, merged = result.matchingDays - n;
+    // Merged closes add no results; below the merge window their own paths differ most from the first close's.
+    const shorter = result.horizons.filter(h => h < result.gap), span = shorter.length > 1 ? terms[shorter[0]] + '至' + terms[shorter.at(-1)] : terms[shorter[0]];
+    const counting = st.gap === 1 ? '每个满足日单独计；相近日期的较长期限结果大量重叠，样本数不等于独立行情的次数' :
+      (merged ? '每段只从首个满足日起算，另 ' + merged.toLocaleString('zh-CN') + ' 个满足日不计入' + (shorter.length ? '，' + span + '的结果尤其受影响' : '') :
+        '相近满足日按 ' + result.gap + ' 个交易日内合并') + '；后续区间仍可能重叠';
     return '<section class="ds-panel" aria-labelledby="cs-summary-title"><div class="ds-panel-head"><div><h2 id="cs-summary-title">满足条件之后，指数涨跌多少？</h2>' +
       '<p>' + (st.wait ? '从信号后第 ' + st.wait + ' 个交易日（观察期末）收盘起算' : '从信号日收盘起算') + ' · 美元价格指数累计涨跌，不含分红</p></div><span class="ds-coverage">' +
       result.first + ' — ' + result.asOf + '</span></div>' +
@@ -572,10 +585,12 @@
       '<th colspan="3" scope="colgroup" class="cs-risk-cell">期间最大回撤</th><th colspan="2" scope="colgroup" class="cs-risk-cell">自' + anchorName() + '最大跌幅</th></tr>' +
       '<tr><th>中位数</th><th>平均数</th><th>上涨占比</th><th class="cs-base-cell">中位数</th><th class="cs-base-cell">上涨占比</th>' +
       '<th class="cs-risk-cell">中位数</th><th>最深</th><th class="cs-base-cell">全部交易日</th><th class="cs-risk-cell">中位数</th><th>最深</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      '<div class="ds-foot">' + spacing + (st.era !== 'all' ? '；已排除 2000—2002 年的信号' : '') +
+      '<div class="ds-foot">' + counting + (st.era !== 'all' ? '；已排除 2000—2002 年的信号' : '') +
       (few > 0 && few < 5 ? '；' + terms[longest] + '期只有 ' + few + ' 段完整结果，可逐段查看' : '') + '。</div></section>';
   }
   const pages = () => Math.max(1, Math.ceil(result.episodes.length / pageSize));
+  // A later date in the same year drops its year.
+  const sameYear = (from, date) => date.slice(0, 4) === from.slice(0, 4) ? date.slice(5) : date;
   function fallCell(f) {
     const where = f.pct === 0 ? '未再跌破' : '第 ' + f.days + ' 日 · ' + f.date;
     return signed(f.pct) + '<small>' + where + (f.status === 'pending' ? ' · 至今' : f.status === 'gap' ? ' · 断档前' : '') + '</small>';
@@ -598,6 +613,7 @@
         '<th scope="col" class="cs-fall">自信号日最大跌幅<small>' + (st.wait ? '观察期及' : '') + terms[longest] + '内</small></th>' +
         result.horizons.map(h => '<th scope="col">' + terms[h] + '后</th>').join('') + '</tr></thead><tbody>' +
         rows.slice((page - 1) * pageSize, page * pageSize).map(e => '<tr><th scope="row"><button type="button" class="text-link" data-cs-event="' + e.date + '" aria-label="查看 ' + e.date + ' 前后走势">' + e.date + '</button>' +
+          (e.merged.length ? '<small title="并入的满足日：' + e.merged.join('、') + '">并入 ' + e.merged.length + ' 天 · 至 ' + sameYear(e.date, e.merged.at(-1)) + '</small>' : '') +
           (result.reference.episode === e.date ? '<small class="cs-tag">含' + (ref === data.last ? '最新收盘' : '参照日') + '</small>' : '') + '</th><td>' + fixed(e.close) + '</td>' +
           (st.wait ? '<td>' + observationCell(e.observation) + '</td><td>' + e.observation.anchorDate + '</td>' : '') +
           ids.map(id => '<td>' + value(C.byId[id], e.values[id]) + '</td>').join('') + '<td class="cs-fall">' + fallCell(e.fall) + '</td>' +
@@ -632,22 +648,25 @@
     const f = e.fall, fall = '自信号日最大跌幅 <b>' + pct(f.pct) + '</b>（' + (f.pct === 0 ? '其后收盘未再低于信号日' : f.date + ' 收盘，第 ' + f.days + ' 个交易日') +
       '；统计至 ' + f.through + (f.status === 'complete' ? '' : f.status === 'pending' ? '，窗口尚未走完' : '，其后行情断档') + '）';
     H.openModal(H.modalTitle(e.date + ' · ' + markets[st.market][0], '信号日收盘 ' + fixed(e.close) + ' 点 · 美元价格指数，不含分红') + '<div class="cs-detail">' + episodeChart(e) +
-      '<p class="cs-detail-fall">' + fall + '</p>' + (st.wait ? timeline(e) : '') +
+      '<p class="cs-detail-fall">' + fall + '</p>' +
+      (e.merged.length ? '<p class="cs-detail-fall">并入本段的 ' + e.merged.length + ' 个满足日：' +
+        (e.merged.length > 12 ? e.merged.slice(0, 10).join('、') + ' 等' : e.merged.join('、')) + '，不另计后续涨跌。</p>' : '') + (st.wait ? timeline(e) : '') +
       '<div class="ds-scroll"><table class="cs-detail-table"><thead><tr><th>后续期限</th><th>实际期末日</th><th>期末收盘</th><th>累计涨跌</th><th>期间最大回撤</th><th>自' + anchorName() + '最大跌幅</th></tr></thead><tbody>' +
       rows + '</tbody></table></div><div class="cs-detail-groups">' + groups + '</div></div>');
   }
   function exportCsv() {
     const conditions = Object.entries(result.conditions).map(([id, range]) => label(C.byId[id]) + ' ' + rangeText(C.byId[id], range)).join('；') || '不限';
     const metrics = C.metrics.filter(m => m.source !== 'obs');
-    const header = ['指数', '口径', '行情截至', '参照日', '条件来源', '条件', '相邻样本至少相隔交易日', '观察期交易日', '收复判定', '历史范围', '信号日', '信号收盘',
+    const header = ['指数', '口径', '行情截至', '参照日', '条件来源', '条件', '相近满足日', '观察期交易日', '收复判定', '历史范围', '信号日', '信号收盘', '并入的满足日',
       ...metrics.map(m => label(m) + (m.unit ? '（' + m.unit + '）' : '')),
       ...(st.wait ? ['观察状态', '前一日', '前一日收盘', '观察期内收复前一日收盘', '首次收复日', '观察期内跌破信号日收盘', '期末收回比例%', '观察期涨跌%', '起算日', '起算收盘'] : []),
       '自信号日最大跌幅%', '最大跌幅日', '距信号日交易日数', '最大跌幅统计至', '最大跌幅窗口',
       ...result.horizons.flatMap(h => [terms[h] + '状态', terms[h] + '实际期末日', terms[h] + '期末收盘', terms[h] + '累计涨跌%', terms[h] + '期间最大回撤%', terms[h] + '自' + anchorName() + '最大跌幅%'])];
     const rows = result.episodes.map(e => {
       const o = e.observation, f = e.fall;
-      return [markets[st.market][1], '美元价格指数，不含分红', result.asOf, data.dates[ref], st.manual ? '自选' : '按 ' + fitted.date + ' 读数自动选取', conditions, result.gap,
-        st.wait, st.wait ? basisNames[st.basis] : '', eraNames[st.era], e.date, e.close, ...metrics.map(m => e.values[m.id]),
+      return [markets[st.market][1], '美元价格指数，不含分红', result.asOf, data.dates[ref], st.manual ? '自选' : '按 ' + fitted.date + ' 读数自动选取', conditions,
+        result.gap === 1 ? '每天单独计' : '合并 ' + result.gap + ' 个交易日内', st.wait, st.wait ? basisNames[st.basis] : '', eraNames[st.era], e.date, e.close, e.merged.join(' '),
+        ...metrics.map(m => e.values[m.id]),
         ...(st.wait ? [o.status === 'complete' ? '已完成' : o.status, o.priorDate, o.prior, o.recovered === null ? '未知' : o.recovered ? '是' : '否', o.recoveryDate, o.broke ? '是' : '否',
           o.rebound, o.move, o.anchorDate, o.anchorClose] : []),
         f.pct, f.date, f.days, f.through, f.status === 'complete' ? '完整' : f.status === 'pending' ? '未走完' : '行情断档',
@@ -659,7 +678,7 @@
     return '<details class="ds-method"><summary>条件、样本与收益口径</summary>' +
       '<p>信号日读数只用当天及以前的收盘：涨跌与 N 个交易日前的收盘比较；回撤取含当天的 N 个收盘中的最高点；均线含当天；波动率为 21 个日对数收益的样本标准差年化；RSI 为 14 日 Wilder 平滑；「信号前一日」各项截至前一交易日。范围两端都包含在内，留空表示不限。</p>' +
       '<p>设置观察期后，信号日之后的 N 个交易日用于判断是否收复前一日收盘、是否跌破信号日收盘等；观察期走完才计入样本，后续收益从观察期末收盘起算。按盘中最高价判定时，观察期内每天都须有已收盘的最高价。</p>' +
-      '<p>一段从首个满足全部条件的交易日开始，其后若干交易日内再次满足的日期并入同一段；选择「不合并」时每个交易日单独计。按参照日匹配时，依次尝试' + esc(fitList()) + '；每项取参照日读数附近的范围，读数处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对。</p>' +
+      '<p>选「合并为一段」时，一段从首个满足全部条件的交易日开始，合并范围内再次满足的日期并入同一段，不另计后续涨跌；选「每天单独计」时每个满足日各算一段。按参照日匹配时，依次尝试' + esc(fitList()) + '；每项取参照日读数附近的范围，读数处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对。</p>' +
       '<p>结果描述历史样本，不代表下一次的概率；样本少时，范围稍变就可能明显改变结果。</p>' +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(markets[st.market][1]) + '/history/" target="_blank" rel="noopener noreferrer">指数历史收盘 ↗</a> · ' +
       '<a href="https://github.com/jianxieb/fund-data/blob/main/docs/condition-study-method.md" target="_blank" rel="noopener noreferrer">完整方法与核对记录 ↗</a></p></details>';
@@ -667,6 +686,7 @@
 
   function view(helpers) {
     H = helpers; st = readState();
+    if (st.gap > 1) lastMerge = st.gap;
     const title = H.head('MARKET CONDITION STUDY', '行情条件后表现', '自填条件或按任一交易日的行情读数筛选历史交易日，查看之后几天至两年的涨跌与回撤。');
     const other = peerOf(st.market);
     if (!cache.has(st.market)) load(st.market);
@@ -799,6 +819,8 @@
     }
     const pick = target.closest?.('[data-cs-choice]');
     if (pick && result) { pickChoice(pick.dataset.csChoice, pick.dataset.value); return; }
+    const spacingButton = target.closest?.('[data-cs-gap]');
+    if (spacingButton && result) { choose('gap', spacingButton.dataset.csGap); return; }
     const button = target.closest?.('[data-cs-action]');
     if (!button || button.disabled) return;
     switch (button.dataset.csAction) {

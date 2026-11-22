@@ -546,8 +546,13 @@
     const view = framed(data), at = refOf(view, ref), list = checkHorizons(requested);
     checkStudy(gap, era);
     const entries = ordered(view, conditions), matches = mask(view, entries, era), indices = space(matches, gap), longest = list[list.length - 1];
-    const episodes = indices.map(i => ({ index:i, date:view.dates[i], close:view.closes[i], values:snapshot(view, i), observation:observation(view, i),
-      outcomes:Object.fromEntries(list.map(h => [h, outcome(view, i, h)])), fall:fall(view, i, i + view.wait + longest) }));
+    // `merged`: later matching closes inside the sample's spacing. They belong to it and add no results of their own.
+    const episodes = indices.map(i => {
+      const merged = [];
+      for (let j = i + 1; j < Math.min(view.n, i + gap); j++) if (matches[j]) merged.push(view.dates[j]);
+      return { index:i, date:view.dates[i], close:view.closes[i], merged, values:snapshot(view, i), observation:observation(view, i),
+        outcomes:Object.fromEntries(list.map(h => [h, outcome(view, i, h)])), fall:fall(view, i, i + view.wait + longest) };
+    });
     const summary = Object.fromEntries(list.map(h => {
       const all = episodes.map(e => e.outcomes[h]), done = all.filter(o => o.status === 'complete');
       return [h, { ...summarize(done.map(o => o.pct)), pending:all.filter(o => o.status === 'pending').length,

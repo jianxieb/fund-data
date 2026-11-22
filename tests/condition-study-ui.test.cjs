@@ -79,6 +79,7 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
   const click = (kind, value) => kind === 'event' ? press('[data-cs-event]', { dataset:{ csEvent:value } }) : press('[data-cs-action]', { dataset:{ csAction:value }, disabled:false });
   const chip = (h, disabled = false) => press('[data-cs-horizon]', { dataset:{ csHorizon:String(h) }, disabled });
   const choice = (id, value) => press('[data-cs-choice]', { dataset:{ csChoice:id, value } });
+  const spacing = gap => press('[data-cs-gap]', { dataset:{ csGap:String(gap) } });
   function toggle(id, checked) { listeners.change({ target:{ dataset:{ csToggle:id }, checked } }); }
   // Typed values apply on the next timer tick, after focus has moved on.
   async function enter(id, side, value) {
@@ -112,7 +113,7 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
   // Both index files are the same walk here, so the other index's move equals the index's own.
   const frameFor = (options = {}) => C.frame(data, { peer:series, ...options });
   return { ui, H, series, vix, highs, data, view:frameFor(), frameFor, first, location, listeners, downloads, modals, renders, state, nodes,
-    click, chip, choice, toggle, enter, param, setDate, submitWait, settle };
+    click, chip, choice, spacing, toggle, enter, param, setDate, submitWait, settle };
 }
 const checked = (html, id) => new RegExp('id="cs-' + id + '-on"[^>]*\\schecked').test(html);
 const inputValue = (html, id, side) => html.match(new RegExp('id="cs-' + id + '-' + side + '"[^>]*value="([^"]*)"'))?.[1];
@@ -140,7 +141,10 @@ test('with no conditions in the address, the page matches the latest close and s
     assert.ok(rowOf(html, id).includes('>随参照日</small>'), id);
   }
   assert.ok(html.includes('<span>范围（含边界）</span><span>改选后匹配</span>'));
-  assert.ok(html.includes('个交易日满足条件<small>距信号日不足 21 个交易日的满足日并入同一段</small>'));
+  assert.ok(r.matchingDays > r.episodes.length, 'the fixture must merge some matching days');
+  assert.ok(html.includes('个交易日满足条件<small>其中 ' + (r.matchingDays - r.episodes.length) + ' 天并入所在段</small>'));
+  assert.ok(html.includes('data-cs-gap="1" aria-pressed="false">每天单独计</button><button type="button" class="active" data-cs-gap="21" aria-pressed="true">合并为一段'));
+  assert.ok(html.includes('合并范围：21 个交易日内 · 约1个月'));
   assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
   assert.ok(html.includes(f.data.asOf + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
   assert.match(html, /含最新收盘/);
@@ -446,7 +450,7 @@ test('clearing leaves an honest empty state, and the match button restores the f
   const f = fixture({ hash:'#condition-study?market=spx&gap=63&r1=~-1' });
   let html = await f.settle();
   assert.match(html, /标普500/);
-  assert.match(html, /63 个交易日 · 约3个月/);
+  assert.match(html, /合并范围：63 个交易日内 · 约3个月/);
   assert.match(html, /data-cs-action="fit" aria-pressed="false"/);
   assert.equal(inputValue(html, 'r1', 'hi'), '-1');
   f.click('action', 'clear');
@@ -466,14 +470,18 @@ test('clearing leaves an honest empty state, and the match button restores the f
   assert.ok(html.includes('选取 ' + fit.added.length + ' 项'));
   assert.ok(html.includes('匹配 <b>' + C.study(f.view, { conditions:fit.conditions, gap:5 }).episodes.length + '</b> 段'));
   f.ui.choose('gap', '1');
-  assert.match(await f.settle(), /不合并 · 每个交易日单独计/);
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?market=spx&gap=1');
+  // Counting each day separately hides the merge window and offers the last one back.
+  assert.ok(html.includes('data-cs-gap="1" aria-pressed="true">每天单独计</button><button type="button" class="" data-cs-gap="5" aria-pressed="false">合并为一段'));
+  assert.doesNotMatch(html, /id="cs-gap"/);
 });
 
 test('unknown address values fall back to the defaults instead of half-applying', async () => {
   const f = fixture({ hash:'#condition-study?market=foo&gap=7&r1=abc&dd252=30~10&since252=2.5~&obs=300&h=7&date=2001-13-01&rNDays=0&recov=yes' });
   const html = await f.settle();
   assert.match(html, /纳斯达克100/);
-  assert.match(html, /21 个交易日 · 约1个月/);
+  assert.match(html, /合并范围：21 个交易日内 · 约1个月/);
   assert.match(html, /data-cs-action="fit" aria-pressed="true"/);
   assert.match(html, /信号后观察期：不设/);
   assert.match(html, /<small>最新收盘<\/small>/);
@@ -520,6 +528,40 @@ test('CSV holds every episode and the condition source; paging reaches the rest 
   assert.equal(f.downloads.at(-1)[1], csv);
   f.click('action', 'prev');
   assert.match(await f.settle(), /第 1 \/ \d+ 页/);
+});
+
+test('merged days show under their segment, in the detail and the CSV; counting each day separately lists them all', async () => {
+  const f = fixture({ hash:'#condition-study?h=1,2,5,21&r1=~-2' });
+  let html = await f.settle();
+  const r = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21, horizons:[1, 2, 5, 21] }), merged = r.matchingDays - r.episodes.length;
+  const e = r.episodes.slice(0, 15).find(x => x.merged.length);
+  assert.ok(e, 'the first page needs a segment with merged days');
+  assert.ok(html.includes('<small>其中 ' + merged.toLocaleString('zh-CN') + ' 天并入所在段</small>'));
+  const last = e.merged.at(-1), until = last.slice(0, 4) === e.date.slice(0, 4) ? last.slice(5) : last;
+  assert.ok(html.includes('<small title="并入的满足日：' + e.merged.join('、') + '">并入 ' + e.merged.length + ' 天 · 至 ' + until + '</small>'));
+  assert.ok(html.includes('每段只从首个满足日起算，另 ' + merged.toLocaleString('zh-CN') + ' 个满足日不计入，1日至1周的结果尤其受影响；后续区间仍可能重叠'));
+  f.click('event', e.date);
+  assert.ok(f.modals.at(-1).includes('并入本段的 ' + e.merged.length + ' 个满足日：'));
+  f.click('action', 'csv');
+  const lines = f.downloads.at(-1)[1].replace(/^﻿/, '').split('\r\n');
+  assert.ok(lines[0].includes('"相近满足日"') && lines[0].includes('"信号收盘","并入的满足日"'));
+  assert.ok(lines.find(line => line.includes('"' + e.date + '"')).includes('"合并 21 个交易日内"'));
+  assert.ok(lines.some(line => line.includes('"' + e.date + '"') && line.includes('"' + e.merged.join(' ') + '"')));
+  // Horizons at or beyond the merge window drop the short-horizon warning.
+  for (const h of [1, 2, 5]) f.chip(h);
+  html = await f.settle();
+  assert.ok(html.includes('另 ' + merged.toLocaleString('zh-CN') + ' 个满足日不计入；后续区间仍可能重叠'));
+  for (const h of [1, 2, 5]) f.chip(h);
+  f.spacing(1);
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?gap=1&h=1,2,5,21&r1=~-2');
+  assert.ok(html.includes('匹配 <b>' + r.matchingDays + '</b> 段'));
+  assert.doesNotMatch(html, /天并入所在段|并入 \d+ 天 · 至/);
+  assert.ok(html.includes('每个满足日单独计；相近日期的较长期限结果大量重叠'));
+  const days = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:1, horizons:[1, 2, 5, 21] });
+  assert.equal(days.summary[1].n + days.summary[1].pending + days.summary[1].gap, r.matchingDays, 'every matching day has a 1-day result or a status');
+  f.spacing(21);
+  assert.equal(f.location.hash, '#condition-study?h=1,2,5,21&r1=~-2');
 });
 
 test('an episode opens its own path, outcomes, fall and readings', async () => {
@@ -701,7 +743,7 @@ test('old 指数大跌 links open here with the same settings', async () => {
   const g = fixture({ hash:f.ui.legacy('#drop-study?threshold=3&repeat=first') });
   const html = await g.settle();
   assert.ok(html.includes('<div id="cs-wait">信号后观察期：2 个交易日</div>'));
-  assert.ok(html.includes('不合并 · 每个交易日单独计'));
+  assert.ok(html.includes('data-cs-gap="1" aria-pressed="true">每天单独计'));
   assert.ok(html.includes('data-cs-choice="recov" data-value="no" aria-pressed="true"'));
   assert.ok(html.includes('近 21 日跌超 <input class="cs-param" type="number" inputmode="decimal" data-cs-param="dropsPct" value="3"'));
   const expected = C.study(g.frameFor({ wait:2, params:{ dropsPct:3 } }), { conditions:{ r1:{ lo:null, hi:-3 }, drops:{ lo:0, hi:0 }, recov:{ lo:0, hi:0 } }, gap:1 });

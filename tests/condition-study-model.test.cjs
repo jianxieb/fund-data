@@ -92,6 +92,18 @@ test('conditions include both bounds, need a known value, and samples keep the c
   assert.equal(r.matchingDays, 20, 'exactly −1% equals the inclusive bound despite decimal residue');
   assert.deepEqual(r.episodes.map(e => e.index).reverse(), [10, 15, 20, 25]);
   assert.deepEqual(C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:21 }).episodes.map(e => e.index).reverse(), [10]);
+  // Each sample lists the later matching closes inside its spacing; with the signal days they are every matching close.
+  const merged = Object.fromEntries(r.episodes.map(e => [e.index, e.merged]));
+  assert.deepEqual(merged[10], d.dates.slice(11, 15));
+  assert.deepEqual(merged[25], d.dates.slice(26, 30));
+  assert.equal(r.episodes.reduce((sum, e) => sum + 1 + e.merged.length, 0), r.matchingDays);
+  assert.deepEqual(C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:21 }).episodes[0].merged, d.dates.slice(11, 30));
+  const separate = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:1 });
+  assert.equal(separate.episodes.length, 20);
+  assert.ok(separate.episodes.every(e => e.merged.length === 0));
+  const flat = C.study(d, { conditions:{ r1:{ lo:0, hi:null } }, gap:21 });
+  assert.deepEqual(flat.episodes.map(e => [e.index, e.merged.length]).reverse(), [[1, 8], [30, 20], [51, 8]], 'the last sample stops at the latest close');
+  assert.equal(flat.matchingDays, 39);
   assert.equal(C.study(d, { conditions:{ r1:{ lo:-1, hi:-1 } }, gap:5 }).matchingDays, 20);
   assert.equal(C.study(d, { conditions:{ r1:{ lo:null, hi:-1.01 } }, gap:5 }).matchingDays, 0);
   // r21 is unknown before day 21: an active condition excludes those days, an inactive one keeps them.

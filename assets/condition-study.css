@@ -39,6 +39,13 @@
 .cs-match{margin:0;color:var(--ds-muted);font-size:12px;white-space:nowrap}
 .cs-match b{color:#294534;font-size:16px}
 .cs-match small{margin-left:10px;font-size:11px}
+.cs-spacing{display:flex;align-items:center;gap:8px;color:var(--ds-muted);font-size:12px}
+.cs-spacing .segmented button{padding:5px 12px;font-size:12px}
+.cs-spacing .event-menu-field>span{display:none}
+.cs-spacing .event-study-menu{width:auto;font-size:12px}
+.cs-spacing .event-study-menu>summary{min-height:30px;padding:4px 9px;white-space:nowrap}
+.cs-spacing .event-study-menu .select-menu-list{width:max-content;min-width:100%}
+.cs-spacing .event-study-menu .select-menu-option{font-size:12px;white-space:nowrap}
 .cs-now-status{margin:0;padding:4px 11px;border-radius:999px;background:#fbede7;color:#8c3f33;font-size:12px}
 .cs-now-status.is-match{background:#e6efe0;color:#2d4c37}
 .cs-now-status.is-wait{background:#fbf1dc;color:#755414}
