@@ -120,9 +120,21 @@
     if (n.length === 2) return pad(n[0]) + '-' + pad(n[1]);
     return String(token);
   }
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  // Dates inside a sentence: 6月19日 -> Jun 19, 2015年8月 -> Aug 2015, 2015-08-24 -> Aug 24, 2015. Anything else is left to isoDate.
+  function longDate(token) {
+    const n = String(token).match(/\d+/g) || [];
+    const short = i => MONTHS[Number(i) - 1] && MONTHS[Number(i) - 1].slice(0, 3);
+    if (n.length >= 3 && short(n[1])) return short(n[1]) + ' ' + Number(n[2]) + ', ' + n[0];
+    if (n.length === 2 && String(token).includes('年') && short(n[1])) return short(n[1]) + ' ' + n[0];
+    if (n.length === 2 && short(n[0])) return short(n[0]) + ' ' + Number(n[1]);
+    return isoDate(token);
+  }
   const MODIFIERS = {
     pad2: v => String(v).padStart(2, '0'),
     date: isoDate,
+    long: longDate,
+    mon: v => MONTHS[numeric(v) - 1] || String(v),
     wan: v => compact(numeric(v) * 1e4),
     yi: v => compact(numeric(v) * 1e8),
     wanyi: v => compact(numeric(v) * 1e12),

@@ -60,6 +60,21 @@ test('entries match exactly, by number shape, and by wildcard with the captured 
   assert.equal(I.text('研究总览'), '研究总览', 'Chinese stays while the page is Chinese');
 });
 
+test('prose date modifiers print month names', () => {
+  const { I } = load();
+  I.add('en', {
+    '取{0}会议': 'At the {0:long} meeting', '自{0}起': 'Since {0:long}', '在{0}月': 'In {0:mon}',
+    '截至{0}': 'As of {0:long}', '早于{0}': 'Before {0:date}'
+  });
+  assert.equal(en(I, '取6月19日会议'), 'At the Jun 19 meeting');
+  assert.equal(en(I, '自2015年8月起'), 'Since Aug 2015');
+  assert.equal(en(I, '截至2026年10月7日'), 'As of Oct 7, 2026');
+  assert.equal(en(I, '截至2008-09-15'), 'As of Sep 15, 2008');
+  assert.equal(en(I, '在6月'), 'In June');
+  assert.equal(en(I, '早于6月19日'), 'Before 06-19');
+  assert.equal(en(I, '取13月5日会议'), 'At the 13-05 meeting', 'an impossible month falls back to the numeric form');
+});
+
 test('the most specific wildcard wins and slot entries are ignored by plain text lookup', () => {
   const { I } = load();
   I.add('en', { '{*}基金': 'Fund {*0}', '债券{*}基金': 'Bond fund {*0}', '共 <0>{0}</0> 只': 'Total <0>{0}</0>' });
