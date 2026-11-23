@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T02:16:56+00:00",
-  "asOf": "2026-11-22",
+  "checkedAt": "2026-11-23T02:47:42+00:00",
+  "asOf": "2026-11-23",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -551,10 +551,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-20",
-        "2026-11-20"
+        "2026-11-23",
+        "2026-11-23"
       ],
       "records": 71,
       "issues": [],
