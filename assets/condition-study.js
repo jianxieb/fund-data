@@ -443,7 +443,7 @@
     // Without a reference date every range is typed, so typed ones carry no tag.
     const mode = !on ? '' : draft ? '<small class="cs-mode">填写范围后生效</small>' : resting ? '<small class="cs-mode">参照日无读数，暂不生效</small>' : following(m.id) ?
       '<small class="cs-mode" title="范围按参照日读数自动取，换参照日会跟着调整；改动数字后改为手动填写">随参照日</small>' : ref === null ? '' :
-      '<small class="cs-mode" title="手动填写的范围，换参照日也不变；取消勾选再勾选可改回随参照日">手动填写</small>';
+      '<small class="cs-mode" title="手动填写的范围；换参照日后按新参照日的读数重新取">手动填写</small>';
     return '<div class="cs-row' + (range ? ' is-active' : resting || draft ? ' is-idle' : '') + '">' +
       '<div class="cs-name"><label><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '" aria-label="' + esc(name) + '"' + (on ? ' checked' : '') +
       (on || data.stats[m.id]?.n ? '' : ' disabled') + '><span>' + nameHtml(m) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
@@ -773,8 +773,8 @@
     next.follow = next.follow.filter(x => x !== id);
     return next;
   }
-  // Ticking takes the range from the reference date's reading; it moves with that date until a number is typed.
-  // With no reading to take (no reference date, or none on that day), the row waits for a typed range instead.
+  // Ticking takes the range from the reference date's reading and moves with that date; a typed number holds until the
+  // date changes. With no reading to take (no reference date, or none on that day), the row waits for a typed range.
   function toggle(id, on) {
     if (on && !(ref !== null && C.suggest(data, id, { ref }))) {
       drafts.add(id);
@@ -792,8 +792,8 @@
     if (!C.byId[id] || !['lo', 'hi'].includes(side)) return;
     // Text a number field cannot parse reads as empty; keep it on screen instead of treating it as "no limit".
     if (input.validity?.badInput) { input.reportValidity?.(); return; }
-    // A typed number fixes the whole range as shown, so it no longer follows the reference date. The other end of a
-    // range taken from the reference date was never typed, so it gives way when the new number crosses it.
+    // A typed number fixes the whole range as shown until the reference date changes. The other end of a range taken
+    // from the reference date was never typed, so it gives way when the new number crosses it.
     const entered = raw === '' ? null : Number(raw), other = side === 'lo' ? 'hi' : 'lo';
     let range = { lo:null, hi:null, ...result.conditions[id], [side]:entered };
     if (following(id) && C.rangeIssue(id, range) === 'order') range = { ...range, [other]:null };
@@ -815,7 +815,22 @@
   function editDate(input) {
     if (!input.value) { dropDate(); return; }
     const at = C.sessionOn(data, input.value) ?? 0;
-    write({ ...readState(), date:at === data.last ? 'latest' : data.dates[at] });
+    moveDate(at === data.last ? 'latest' : data.dates[at]);
+  }
+  // A new reference date takes every chosen range again from that day's readings, typed ones and rows waiting for
+  // numbers included, so the ranges always fit the date shown. A row the day gives no range for keeps what it has;
+  // yes/no choices are not readings and stay as chosen. The automatic match reads the new date by itself.
+  function moveDate(date) {
+    const state = readState(), at = date === 'latest' ? data.last : C.sessionOn(data, date) ?? 0;
+    const takes = id => !C.byId[id].choice && !!C.suggest(data, id, { ref:at }), ready = at === ref ? [] : [...drafts].filter(takes);
+    if (at === ref || (!state.manual && !ready.length)) { write({ ...state, date }); return; }
+    const next = picked();
+    for (const id of [...Object.keys(next.conditions).filter(takes), ...ready]) {
+      delete next.conditions[id];
+      drafts.delete(id);
+      if (!next.follow.includes(id)) next.follow.push(id);
+    }
+    write({ ...state, ...next, date, manual:true });
   }
   // Without a reference date, ranges that followed it keep the numbers on screen; a row with nothing to keep is dropped.
   function dropDate() {
@@ -869,7 +884,7 @@
       // The automatic match reads the reference date, the latest close when none is set.
       case 'fit': drafts.clear(); write({ ...readState(), date:readState().date || 'latest', manual:false, conditions:{}, follow:[] }); break;
       case 'clear': drafts.clear(); write({ ...readState(), manual:true, conditions:{}, follow:[] }); break;
-      case 'latest': write({ ...readState(), date:'latest' }); break;
+      case 'latest': moveDate('latest'); break;
       case 'no-date': if (result) dropDate(); break;
       case 'retry': cache.delete(readState().market); results.clear(); fits.clear(); frames.clear(); H.render(); break;
       case 'retry-high': highCache.delete(readState().market); H.render(); break;

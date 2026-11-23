@@ -391,7 +391,7 @@
     '在上方任一指标填写范围后显示匹配的历史样本。': 'Enter a range for any indicator above to show the matching historical samples.',
     '填写范围后生效': 'Applies once a range is entered',
     '手动填写': 'Entered by hand',
-    '手动填写的范围，换参照日也不变；取消勾选再勾选可改回随参照日': 'A range entered by hand stays when the reference day changes; untick and tick again to follow the reference day',
+    '手动填写的范围；换参照日后按新参照日的读数重新取': 'A range entered by hand; changing the reference day takes it again from the new day\'s reading',
     '参照日无读数，暂不生效': 'No reading on the reference day; not applied yet',
     '自选 {0} 项条件；{*} 参照日无读数，暂不生效': '{0} custom {0?condition:conditions}; {*0}: no reading on the reference day, not applied yet',
     '已勾选，范围随参照日；参照日读数未知，暂不生效。': 'Ticked, range follows the reference day; the reference day\'s reading is unknown, so it is not applied yet.',

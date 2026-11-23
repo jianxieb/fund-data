@@ -175,15 +175,27 @@ test('without a reference date a ticked row waits for numbers; a date can be set
   assert.equal(f.location.hash, '#condition-study?vix=30~');
   assert.ok(rowOf(html, 'vix').includes('<div class="cs-row is-active">') && !rowOf(html, 'vix').includes('cs-mode'));
 
-  // A date shows its readings and keeps the typed conditions; it does not match anything by itself.
+  // A date shows its readings and takes the typed range again from its own reading; it adds no condition by itself.
   f.click('action', 'latest');
   html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?date=latest&vix=30~');
-  assert.ok(html.includes('自选 1 项条件') && html.includes('<span class="cs-now">') && rowOf(html, 'vix').includes('>手动填写</small>'));
+  assert.equal(f.location.hash, '#condition-study?date=latest&vix=ref');
+  const vixBand = C.suggest(f.view, 'vix');
+  assert.ok(html.includes('自选 1 项条件') && html.includes('<span class="cs-now">') && rowOf(html, 'vix').includes('>随参照日</small>'));
+  assert.deepEqual([inputValue(html, 'vix', 'lo'), inputValue(html, 'vix', 'hi')], [String(vixBand.lo ?? ''), String(vixBand.hi ?? '')]);
+  assert.ok(html.includes(f.data.asOf + ' 收盘满足全部 1 项条件'));
   const blank = fixture(), day = blank.data.dates[blank.data.n - 400];
   await blank.settle();
   await blank.setDate(day);
   assert.equal(blank.location.hash, '#condition-study?date=' + day + '&mode=manual');
+  // A row left waiting for numbers takes its range as soon as a date is set.
+  const d = fixture();
+  await d.settle();
+  d.toggle('r5', true);
+  await d.settle();
+  d.click('action', 'latest');
+  html = await d.settle();
+  assert.equal(d.location.hash, '#condition-study?date=latest&r5=ref');
+  assert.ok(rowOf(html, 'r5').includes('>随参照日</small>') && !rowOf(html, 'r5').includes('填写范围后生效'));
 
   // The match reads the date; clearing the date keeps the matched ranges as typed numbers.
   f.click('action', 'fit');
@@ -337,12 +349,15 @@ test('a chosen reference date re-reads every row and the match, and returns to t
   const typed = fixture({ hash:'#condition-study?date=' + weekend });
   assert.ok((await typed.settle()).includes(weekend + ' 无收盘，用 ' + friday));
 
-  // Ranges typed by hand stay put when the date moves; only the readings change.
+  // A number typed by hand holds on its own date and is taken again from the next date chosen.
   await f.enter('r1', 'hi', '-2');
   const manual = f.location.hash;
   assert.match(manual, /date=[^&]+&.*\br1=[^&]*~-2(&|$)/);
-  await f.setDate(f.data.asOf);
-  assert.equal(f.location.hash, manual.replace(/date=[^&]+/, 'date=latest'));
+  await f.setDate(weekend);
+  assert.equal(f.location.hash, manual, 'a day that resolves to the same session is not a new date');
+  html = await f.setDate(f.data.asOf);
+  assert.equal(f.location.hash, manual.replace(/date=[^&]+/, 'date=latest').replace(/\br1=[^&]*/, 'r1=ref'));
+  assert.ok(rowOf(html, 'r1').includes('>随参照日</small>'));
   f.click('action', 'fit');
   await f.settle();
   await f.setDate(date);
@@ -352,7 +367,7 @@ test('a chosen reference date re-reads every row and the match, and returns to t
   assert.match(html, /<small>最新收盘<\/small>/);
 });
 
-test('ticked ranges follow the reference date, typed numbers stay, and a row without a reading waits', async () => {
+test('a new reference date takes every chosen range again, typed ones included; a row without a reading waits or keeps its numbers', async () => {
   const f = fixture({ hash:'#condition-study?date=latest' });
   await f.settle();
   const at = f.data.n - 400, date = f.data.dates[at];
@@ -371,29 +386,48 @@ test('ticked ranges follow the reference date, typed numbers stay, and a row wit
   const query = ids.map(id => id + '=' + (id === 'r1' ? '~-2' : 'ref')).join('&');
   assert.equal(f.location.hash, '#condition-study?date=latest&' + query);
 
+  // The typed range is taken again too, so every range fits the new date and the date meets them all.
   let html = await f.setDate(date);
-  assert.equal(f.location.hash, '#condition-study?date=' + date + '&' + query);
-  const conditions = { [a]:C.suggest(f.view, a, { ref:at }), [b]:C.suggest(f.view, b, { ref:at }), r1:{ lo:null, hi:-2 } };
-  for (const id of [a, b]) {
+  const following = ids.map(id => id + '=ref').join('&');
+  assert.equal(f.location.hash, '#condition-study?date=' + date + '&' + following);
+  const conditions = Object.fromEntries(ids.map(id => [id, C.suggest(f.view, id, { ref:at })]));
+  for (const id of ids) {
     assert.deepEqual([inputValue(html, id, 'lo'), inputValue(html, id, 'hi')], [String(conditions[id].lo ?? ''), String(conditions[id].hi ?? '')], id);
     assert.ok(rowOf(html, id).includes('>随参照日</small>'), id);
   }
-  assert.equal(inputValue(html, 'r1', 'hi'), '-2');
-  assert.ok(rowOf(html, 'r1').includes('>手动填写</small>'));
   const r = C.study(f.view, { conditions, gap:21, ref:at });
   assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
-  // Ranges taken from the date always hold there, so only the typed one can fail.
-  assert.deepEqual(r.reference.failing.filter(id => id !== 'r1'), []);
-  assert.ok(html.includes(r.reference.matches ? date + ' 收盘满足全部 3 项条件' : date + ' 收盘不满足：当日涨跌'));
+  assert.equal(r.reference.matches, true);
+  assert.ok(html.includes(date + ' 收盘满足全部 3 项条件'));
 
-  // Typing into a following row fixes it with the range shown, the other bound included.
+  // Typing into a following row fixes it with the range shown, the other bound included, until the date changes again.
   const band = conditions[a], side = band.hi === null ? 'lo' : 'hi', moved = side === 'lo' ? band.lo - 1 : band.hi + 1;
   await f.enter(a, side, String(moved));
   assert.ok(f.location.hash.includes(a + '=' + C.formatRange({ ...band, [side]:moved })));
+  assert.ok(rowOf(await f.settle(), a).includes('>手动填写</small>'));
   html = await f.setDate(f.data.asOf);
-  assert.equal(inputValue(html, a, side), String(moved));
-  assert.ok(rowOf(html, a).includes('>手动填写</small>'));
-  assert.deepEqual([inputValue(html, b, 'lo'), inputValue(html, b, 'hi')].join(), [C.suggest(f.view, b).lo ?? '', C.suggest(f.view, b).hi ?? ''].join());
+  assert.equal(f.location.hash, '#condition-study?date=latest&' + following);
+  for (const id of ids) {
+    assert.deepEqual([inputValue(html, id, 'lo'), inputValue(html, id, 'hi')].join(), [C.suggest(f.view, id).lo ?? '', C.suggest(f.view, id).hi ?? ''].join(), id);
+    assert.ok(rowOf(html, id).includes('>随参照日</small>'), id);
+  }
+
+  // A day without a VIX close gives no VIX range, so the typed VIX numbers stay; a yes/no choice is not a reading and stays too.
+  const k = fixture({ hash:'#condition-study?obs=2&r1=~-2&vix=30~&recov=no' }), gap = 40, gapDay = k.data.dates[gap];
+  await k.settle();
+  assert.equal(C.suggest(k.view, 'vix', { ref:gap }), null);
+  html = await k.setDate(gapDay);
+  assert.equal(k.location.hash, '#condition-study?date=' + gapDay + '&obs=2&r1=ref&vix=30~&recov=no');
+  assert.ok(rowOf(html, 'vix').includes('>手动填写</small>') && inputValue(html, 'vix', 'lo') === '30');
+  assert.ok(rowOf(html, 'r1').includes('>随参照日</small>'));
+  // In the automatic match, a row left waiting on that day takes its range from the next date.
+  const m = fixture({ hash:'#condition-study?date=' + gapDay });
+  await m.settle();
+  m.toggle('vix', true);
+  assert.ok(rowOf(await m.settle(), 'vix').includes('填写范围后生效'));
+  html = await m.setDate(m.data.dates[gap + 1]);
+  assert.match(m.location.hash, new RegExp('^#condition-study\\?date=' + m.data.dates[gap + 1] + '&(.+&)?vix=ref(&|$)'));
+  assert.ok(rowOf(html, 'vix').includes('>随参照日</small>'));
 
   // With an observation still running at the latest close, a followed observation reading has nothing to follow yet.
   const g = fixture({ hash:'#condition-study?obs=2&r1=~-2&rebound=ref' });
@@ -403,14 +437,15 @@ test('ticked ranges follow the reference date, typed numbers stay, and a row wit
   assert.ok(html.includes('自选 1 项条件；收回比例 参照日无读数，暂不生效'));
   assert.ok(checked(html, 'rebound') && rowOf(html, 'rebound').includes('参照日无读数，暂不生效'));
   assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21 }).episodes.length + '</b> 段'));
-  // On a day with a finished period and a down signal day, the same row applies.
+  // On a day with a finished period and a down signal day, the same row applies, beside a one-day range taken from that day.
   let day = v.last;
   while (day > 0 && !C.suggest(v, 'rebound', { ref:day })) day--;
   html = await g.setDate(v.dates[day]);
-  const rebound = C.suggest(v, 'rebound', { ref:day });
+  const rebound = C.suggest(v, 'rebound', { ref:day }), r1 = C.suggest(v, 'r1', { ref:day });
+  assert.equal(g.location.hash, '#condition-study?date=' + v.dates[day] + '&obs=2&r1=ref&rebound=ref');
   assert.ok(html.includes('自选 2 项条件'));
   assert.equal(inputValue(html, 'rebound', 'lo'), String(rebound.lo ?? ''));
-  assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, rebound }, gap:21, ref:day }).episodes.length + '</b> 段'));
+  assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1, rebound }, gap:21, ref:day }).episodes.length + '</b> 段'));
 });
 
 test('a latest close that has just matched is not a sample: counts, records, chart and CSV leave it out and say so', async () => {
