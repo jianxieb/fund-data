@@ -60,9 +60,13 @@
   const pageSize = 15, maxLines = 80, minMedian = 2, minBand = 3;
   const esc = M.escapeHtml;
   const cache = new Map(), highCache = new Map(), frames = new Map(), results = new Map(), fits = new Map(), charts = new Map();
+  // `ref`: the reference close, or null when no reference date is set.
   // `idle`: ticked rows that follow the reference date but have no reading there, so they are not applied.
+  // `drafts`: rows ticked with no reading to take a range from; they wait for a typed number and stay out of the address.
   // `lastMerge`: the merge window to return to after counting each day separately.
-  let H, st, data, ref, result, fitted, idle = [], shown = null, signature = '', page = 1, vixLoad = null, lastMerge = 21;
+  // `written`: the address the page itself last wrote; any other address starts without drafts.
+  let H, st, data, ref, result, fitted, idle = [], shown = null, signature = '', page = 1, vixLoad = null, lastMerge = 21, written = null;
+  const drafts = new Set();
 
   const fixed = (v, digits = 2) => v.toLocaleString('zh-CN', { minimumFractionDigits:digits, maximumFractionDigits:digits });
   const pct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
@@ -102,7 +106,6 @@
     const q = new URLSearchParams(query);
     const num = k => q.has(k) ? Number(q.get(k)) : NaN;
     const wait = C.validWait(num('obs')) ? num('obs') : defaults.wait;
-    const date = M.validDate(q.get('date')) ? q.get('date') : null;
     const picked = (q.get('h') || '').split(',').map(Number).filter(h => C.horizonChoices.includes(h));
     const params = Object.fromEntries(Object.entries(C.params).map(([k, spec]) => [k, C.validParam(k, num(k)) ? num(k) : spec.fallback]));
     // A typed range stays as written; `id=ref` takes the range from the reference date's reading and follows that date.
@@ -113,11 +116,15 @@
       const range = m.choice ? (text === 'yes' ? { lo:1, hi:1 } : text === 'no' ? { lo:0, hi:0 } : null) : C.parseRange(text);
       if (range && C.validRange(m.id, range)) conditions[m.id] = range;
     }
+    // The reference date is optional: none, `latest` (moves with each new close) or a calendar day. A row that follows it
+    // needs one, and links from before it was optional meant the latest close.
+    const raw = q.get('date'), date = raw === 'latest' || M.validDate(raw) ? raw : follow.length ? 'latest' : null;
     return { market:Object.hasOwn(markets, q.get('market')) ? q.get('market') : defaults.market,
       gap:C.validGap(num('gap')) ? num('gap') : defaults.gap, wait, basis:q.get('basis') === 'high' ? 'high' : 'close',
       era:C.validEra(q.get('era')) ? q.get('era') : defaults.era, date,
       horizons:picked.length ? C.horizonChoices.filter(h => picked.includes(h)) : [...defaults.horizons], params, conditions, follow,
-      manual:Object.keys(conditions).length > 0 || follow.length > 0 || q.get('mode') === 'manual' };
+      // The automatic match needs a reference date and nothing chosen by hand.
+      manual:!date || Object.keys(conditions).length > 0 || follow.length > 0 || q.get('mode') === 'manual' };
   }
   // Built by hand so the ranges stay readable in the address bar (no %7E for "~").
   function address(next) {
@@ -135,12 +142,14 @@
       const ids = C.metrics.filter(m => (next.conditions[m.id] || follow.includes(m.id)) && (m.source !== 'obs' || next.wait)).map(m => m.id);
       for (const id of ids) parts.push(id + '=' + (follow.includes(id) ? 'ref' :
         C.byId[id].choice ? (next.conditions[id].lo === 1 ? 'yes' : 'no') : C.formatRange(next.conditions[id])));
-      if (!ids.length) parts.push('mode=manual');
+      // With a reference date and no condition, this keeps the automatic match from starting.
+      if (!ids.length && next.date) parts.push('mode=manual');
     }
     return route + (parts.length ? '?' + parts.join('&') : '');
   }
   function write(next) {
-    history.replaceState(null, '', address(next));
+    written = address(next);
+    history.replaceState(null, '', written);
     H.render();
   }
   // Links to the former 指数大跌 page open the same study here.
@@ -240,12 +249,15 @@
     const list = [...new Set([...C.waits, ...(st.wait ? [st.wait] : [])])].sort((a, b) => a - b);
     return [['0', '不设'], ...list.map(w => [String(w), w + ' 个交易日' + (waitTerms[w] ? ' · ' + waitTerms[w] : '')]), ['custom', '自定义…']];
   }
+  // Optional: an empty field studies the conditions alone, without any date's readings.
   function refField() {
-    const latest = ref === data.last;
+    const latest = text => '<button type="button" class="text-link" data-cs-action="latest">' + text + '</button>';
+    if (ref === null) return '<div class="event-menu-field cs-ref"><label for="cs-ref">参照日</label><div class="cs-ref-box">' +
+      '<input id="cs-ref" type="date" min="' + data.first + '" max="' + data.asOf + '" value="">' + latest('用最新收盘') + '</div></div>';
     return '<div class="event-menu-field cs-ref"><label for="cs-ref">参照日</label><div class="cs-ref-box">' +
       '<input id="cs-ref" type="date" min="' + data.first + '" max="' + data.asOf + '" value="' + data.dates[ref] + '">' +
-      (latest ? '<small>最新收盘</small>' : '<button type="button" class="text-link" data-cs-action="latest">回到最新</button>') + '</div>' +
-      (st.date && st.date !== data.dates[ref] ? '<small class="cs-ref-note">' + st.date + ' 无收盘，用 ' + data.dates[ref] + '</small>' : '') + '</div>';
+      (ref === data.last ? '<small>最新收盘</small>' : latest('回到最新')) + '<button type="button" class="text-link" data-cs-action="no-date">清除</button></div>' +
+      (st.date !== 'latest' && st.date !== data.dates[ref] ? '<small class="cs-ref-note">' + st.date + ' 无收盘，用 ' + data.dates[ref] + '</small>' : '') + '</div>';
   }
   function horizonPicker() {
     return '<div class="event-menu-field cs-horizons"><span id="cs-h-label">后续期限</span><div class="cs-chips" role="group" aria-labelledby="cs-h-label">' +
@@ -289,6 +301,10 @@
   function referenceStatus() {
     const r = result.reference, n = Object.keys(result.conditions).length;
     if (!n) return '';
+    const o = result.observing;
+    const observing = o?.count && !(r && o.count === 1 && o.latest === r.date) ?
+      '<p class="cs-observing">另有 ' + o.count + ' 个交易日满足信号日条件、仍在观察期内（最近 ' + o.latest + '）</p>' : '';
+    if (!r) return observing;
     const badge = (cls, text) => '<p class="cs-now-status' + cls + '">' + text + '</p>';
     // While its observation period is still running, the reference close can only fail its own signal-day readings.
     const open = r.observation && r.observation.status !== 'complete', signalFails = r.failing.filter(id => C.byId[id].source !== 'obs');
@@ -298,8 +314,7 @@
     else if (open && !signalFails.length) text = badge(' is-wait', r.date + ' 收盘满足信号日条件，' + observationText(r.observation));
     else text = badge('', r.date + ' 收盘不满足：' + (open ? signalFails : r.failing).map(id => esc(label(C.byId[id]))).join('、') +
       (open ? '；' + observationText(r.observation) : ''));
-    const o = result.observing;
-    return text + (o?.count && !(o.count === 1 && o.latest === r.date) ? '<p class="cs-observing">另有 ' + o.count + ' 个交易日满足信号日条件、仍在观察期内（最近 ' + o.latest + '）</p>' : '');
+    return text + observing;
   }
   const dateList = list => list.length > 3 ? list.slice(0, 2).join('、') + ' 等 ' + list.length + ' 个交易日' : list.join('、');
   const observationText = o => o.status === 'pending' ? '观察期还差 ' + o.waitLeft + ' 个交易日' : o.status === 'gap' ? '观察期内行情断档' :
@@ -348,8 +363,9 @@
     if (st.manual) {
       if (m.choice) return range ? '已选 ' + rangeText(m, range) + '；改为不限后匹配 ' + preview.without + ' 段。' : '';
       if (idle.includes(m.id)) return '已勾选，范围随参照日；参照日读数未知，暂不生效。';
-      return range ? '已勾选 ' + esc(rangeText(m, range)) + (following(m.id) ? '，范围随参照日' : '，手动填写') + '；取消勾选后匹配 ' + preview.episodes + ' 段。' :
-        offer || '参照日读数未知，无法按参照日取范围。';
+      // Without a reference date every range is typed, so only a date-following one is called out.
+      return range ? '已勾选 ' + esc(rangeText(m, range)) + (following(m.id) ? '，范围随参照日' : ref === null ? '' : '，手动填写') + '；取消勾选后匹配 ' + preview.episodes + ' 段。' :
+        offer || (ref === null ? '' : '参照日读数未知，无法按参照日取范围。');
     }
     const k = C.fitOrder.indexOf(m.id), step = fitted.steps[k];
     if (k < 0) return '按参照日匹配不尝试此项。' + offer;
@@ -374,9 +390,11 @@
     const fit = fitLine(m);
     return info(m.id, '关于' + label(m), label(m), [esc(first), esc(read), ...sourceLines(m), ...(fit ? ['<span class="cs-info-fit">' + fit + '</span>'] : [])]);
   }
+  // What a row without any history lacks; the reading column says it when there is a reference date.
+  const historyGap = m => m.source === 'vix' && !data.vix ? '缺 VIX 日线' : m.source === 'peer' && !data.peer ? peerGap() : '缺历史';
   function strip(m, v, range) {
     const s = data.stats[m.id];
-    if (!s || s.n < 2) return '<span class="cs-strip"></span>';
+    if (!s || s.n < 2) return '<span class="cs-strip">' + (ref === null ? '<small class="cs-gap">' + historyGap(m) + '</small>' : '') + '</span>';
     let lo = C.quantile(s.sorted, .01), hi = C.quantile(s.sorted, .99);
     if (Number.isFinite(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
     if (!(hi > lo)) hi = lo + 1;
@@ -402,51 +420,55 @@
     if (m.id === 'ddN') return '距近 ' + field + ' 日最高收盘';
     return '近 21 日跌超 ' + field + '% 的天数';
   }
+  // The reference date's reading and where it sits in history; the column is left out without a reference date.
+  const nowCell = (m, v, p) => ref === null ? '' : '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, p) + '</small></span>';
   function choiceRow(m) {
-    const range = result.conditions[m.id], p = result.previews[m.id], picked = range ? (range.lo === 1 ? 'yes' : 'no') : 'any', v = result.reference.values[m.id];
+    const range = result.conditions[m.id], p = result.previews[m.id], picked = range ? (range.lo === 1 ? 'yes' : 'no') : 'any', v = result.reference?.values[m.id];
     const option = (key, text, n) => '<button type="button" class="cs-choice-option' + (picked === key ? ' active' : '') + '" data-cs-choice="' + m.id + '" data-value="' + key +
       '" aria-pressed="' + (picked === key) + '">' + text + (n == null ? '' : '<small>' + n + ' 段</small>') + '</button>';
     return '<div class="cs-row cs-row-choice' + (range ? ' is-active' : '') + '">' +
-      '<div class="cs-name"><span class="cs-name-text">' + esc(label(m)) + '</span>' + rowInfo(m) + '</div>' +
-      '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, null) + '</small></span>' +
+      '<div class="cs-name"><span class="cs-name-text">' + esc(label(m)) + '</span>' + rowInfo(m) + '</div>' + nowCell(m, v, null) +
       '<span class="cs-range cs-choice" role="group" aria-label="' + esc(label(m)) + '">' + option('any', '不限') + option('yes', choices[m.id].yes, p?.yes) +
       option('no', choices[m.id].no, p?.no) + '</span><span class="cs-count">' + (p?.without != null ? '<small>改为不限后</small><b>' + p.without + '</b> 段' : '') + '</span></div>';
   }
   function row(m) {
     if (m.choice) return choiceRow(m);
-    const range = result.conditions[m.id], resting = idle.includes(m.id), on = !!range || resting, v = result.reference.values[m.id], p = C.percentile(data, m.id, v);
+    const range = result.conditions[m.id], resting = idle.includes(m.id), draft = !range && !resting && drafts.has(m.id), on = !!range || resting || draft;
+    const v = result.reference?.values[m.id] ?? null, p = C.percentile(data, m.id, v);
     const preview = result.previews[m.id], name = label(m), unit = m.unit;
     const input = side => '<input id="cs-' + m.id + '-' + side + '" type="number" inputmode="decimal" step="any" data-cs-metric="' + m.id +
       '" data-cs-bound="' + side + '" value="' + (range?.[side] ?? '') + '" placeholder="不限" aria-label="' + esc(name + (side === 'lo' ? ' 下限' : ' 上限') + (unit ? '（' + unit + '）' : '')) + '">';
     // What ticking or unticking this row would leave, in the same unit as the match count above.
     const count = !preview ? '' : '<small>' + (preview.kind === 'without' ? '取消勾选后' : '勾选后') + '</small><b>' + preview.episodes.toLocaleString('zh-CN') + '</b> 段';
-    const mode = !on ? '' : resting ? '<small class="cs-mode">参照日无读数，暂不生效</small>' : following(m.id) ?
-      '<small class="cs-mode" title="范围按参照日读数自动取，换参照日会跟着调整；改动数字后改为手动填写">随参照日</small>' :
+    // Without a reference date every range is typed, so typed ones carry no tag.
+    const mode = !on ? '' : draft ? '<small class="cs-mode">填写范围后生效</small>' : resting ? '<small class="cs-mode">参照日无读数，暂不生效</small>' : following(m.id) ?
+      '<small class="cs-mode" title="范围按参照日读数自动取，换参照日会跟着调整；改动数字后改为手动填写">随参照日</small>' : ref === null ? '' :
       '<small class="cs-mode" title="手动填写的范围，换参照日也不变；取消勾选再勾选可改回随参照日">手动填写</small>';
-    return '<div class="cs-row' + (range ? ' is-active' : resting ? ' is-idle' : '') + '">' +
+    return '<div class="cs-row' + (range ? ' is-active' : resting || draft ? ' is-idle' : '') + '">' +
       '<div class="cs-name"><label><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '" aria-label="' + esc(name) + '"' + (on ? ' checked' : '') +
-      (preview || on ? '' : ' disabled') + '><span>' + nameHtml(m) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
-      '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, p) + '</small></span>' +
-      strip(m, v, range) +
+      (on || data.stats[m.id]?.n ? '' : ' disabled') + '><span>' + nameHtml(m) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
+      nowCell(m, v, p) + strip(m, v, range) +
       '<span class="cs-range">' + input('lo') + '<span>至</span>' + input('hi') + '<span class="cs-unit">' + esc(unit) + '</span>' + mode + '</span>' +
       '<span class="cs-count">' + count + '</span></div>';
   }
   function conditionPanel() {
-    const date = data.dates[ref], n = Object.keys(result.conditions).length, merged = n ? result.matchingDays - result.episodes.length : 0;
+    const date = ref === null ? null : data.dates[ref], n = Object.keys(result.conditions).length, merged = n ? result.matchingDays - result.episodes.length : 0;
     const legend = (g, title) => g === 'obs' ? '观察期 · 信号后 ' + st.wait + ' 个交易日' + (st.basis === 'high' ? ' · 按盘中最高价判定收复' : '') : title;
-    return '<section class="cs-conditions" aria-labelledby="cs-conditions-title"><div class="cs-conditions-head">' +
+    return '<section class="cs-conditions' + (date ? '' : ' cs-no-ref') + '" aria-labelledby="cs-conditions-title"><div class="cs-conditions-head">' +
       '<div class="cs-conditions-title"><h2 id="cs-conditions-title">条件</h2><p>' + fitNote() + '</p></div>' +
       '<div class="cs-conditions-actions"><span class="cs-fit"><button type="button" class="btn sm" data-cs-action="fit" aria-pressed="' + !st.manual + '">' +
       (st.manual ? '按参照日匹配' : '✓ 已按参照日匹配') + '</button>' + fitInfo() + '</span>' +
       (n ? '<button type="button" class="text-link" data-cs-action="clear">清除全部条件</button>' : '') + '</div>' +
-      '<div class="cs-conditions-status"><p class="cs-match" role="status">匹配 <b>' + result.episodes.length + '</b> 段 · ' +
+      // With no condition every close would match, so there is no count to show yet.
+      '<div class="cs-conditions-status">' + (n ? '<p class="cs-match" role="status">匹配 <b>' + result.episodes.length + '</b> 段 · ' +
       result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (merged ? '<small>其中 ' + merged.toLocaleString('zh-CN') + ' 天并入所在段</small>' : '') +
-      (n && result.uncounted.length ? '<small title="未计入的信号日：' + result.uncounted.map(e => e.date).join('、') + '">另有 ' + result.uncounted.length + ' 段后续不足 ' +
-        C.mature + ' 个交易日，未计入</small>' : '') + '</p>' +
+      (result.uncounted.length ? '<small title="未计入的信号日：' + result.uncounted.map(e => e.date).join('、') + '">另有 ' + result.uncounted.length + ' 段后续不足 ' +
+        C.mature + ' 个交易日，未计入</small>' : '') + '</p>' : '') +
       spacing() + referenceStatus() +
-      '<p class="cs-key" aria-hidden="true"><span class="cs-key-now"></span>参照日读数<span class="cs-key-band"></span>条件范围<span class="cs-key-iqr"></span>历史中间 50%</p></div></div>' +
+      '<p class="cs-key" aria-hidden="true">' + (date ? '<span class="cs-key-now"></span>参照日读数' : '') +
+      '<span class="cs-key-band"></span>条件范围<span class="cs-key-iqr"></span>历史中间 50%</p></div></div>' +
       '<div class="cs-groups">' + C.groups.filter(([g]) => g !== 'obs' || st.wait).map(([g, title]) => '<fieldset class="cs-group cs-group-' + g + '"><legend>' + legend(g, title) +
-        '</legend><div class="cs-row cs-row-head" aria-hidden="true"><span>指标</span><span>' + date + (g === 'obs' ? ' 起' : '') + '</span><span>历史分布</span><span>' +
+        '</legend><div class="cs-row cs-row-head" aria-hidden="true"><span>指标</span>' + (date ? '<span>' + date + (g === 'obs' ? ' 起' : '') + '</span>' : '') + '<span>历史分布</span><span>' +
         (g === 'obs' ? '范围' : '范围（含边界）') + '</span><span>改选后匹配</span></div>' + C.metrics.filter(m => m.group === g).map(row).join('') + '</fieldset>').join('') +
       '</div></section>';
   }
@@ -505,17 +527,18 @@
   const waitMark = () => st.wait ? [{ k:st.wait, text:'观察期末' }] : [];
   function mainChart() {
     const indices = result.episodes.map(e => e.index), rows = result.spread || (result.spread = C.spread(data, indices));
-    const now = refPath(), many = indices.length > maxLines;
+    // The blue reference path is drawn only when a reference date is set.
+    const now = ref === null ? [] : refPath(), many = indices.length > maxLines;
     const median = rows.filter(r => r.n >= minMedian).map(r => [r.k, r.median]);
     const end = median.at(-1), unfinished = indices.length > 0 && rows.find(r => r.k === C.chartAfter)?.n !== indices.length;
     const start = now.find(p => p[0] === -C.lookback) || now[0], tail = now.at(-1);
-    const lines = [...(median.length > 1 ? [{ label:'中位数', cls:'cs-line-median', points:median }] : []), { label:refName(), cls:'cs-line-now', points:now }];
-    const labels = [{ text:refName(), k:start[0], v:start[1], dy:-10 }, ...(end ? [{ text:'中位数 ' + pct(end[1] - 100), k:end[0], v:end[1] }] : []),
-      ...(ref < data.last && tail[0] > 0 ? [{ text:pct(tail[1] - 100), k:tail[0], v:tail[1], anchor:tail[0] > 230 ? 'end' : 'start', dy:-10 }] : [])];
-    const legend = '<div class="cs-legend">' + key('cs-key-line-now', refLegend(now)) +
+    const lines = [...(median.length > 1 ? [{ label:'中位数', cls:'cs-line-median', points:median }] : []), ...(now.length ? [{ label:refName(), cls:'cs-line-now', points:now }] : [])];
+    const labels = [...(now.length ? [{ text:refName(), k:start[0], v:start[1], dy:-10 }] : []), ...(end ? [{ text:'中位数 ' + pct(end[1] - 100), k:end[0], v:end[1] }] : []),
+      ...(now.length && ref < data.last && tail[0] > 0 ? [{ text:pct(tail[1] - 100), k:tail[0], v:tail[1], anchor:tail[0] > 230 ? 'end' : 'start', dy:-10 }] : [])];
+    const legend = '<div class="cs-legend">' + (now.length ? key('cs-key-line-now', refLegend(now)) : '') +
       (median.length > 1 ? key('cs-key-line-median', '历史中位数') : '') + (indices.length >= minBand ? key('cs-key-area', '中间 50% 区间') : '') +
       (many ? '' : key('cs-key-line-episode', '各段实际走势')) + '</div>';
-    const caption = '每段以信号日收盘为 100，' + (ref === data.last ? '最新路径以 ' + data.asOf : '参照日路径以 ' + data.dates[ref]) + ' 收盘为 100。' +
+    const caption = '每段以信号日收盘为 100' + (!now.length ? '。' : '，' + (ref === data.last ? '最新路径以 ' + data.asOf : '参照日路径以 ' + data.dates[ref]) + ' 收盘为 100。') +
       (unfinished ? '较新的样本尚未走完，右侧只计已发生部分。' : '') + (many ? '共 ' + indices.length + ' 段，只画中位数与区间。' : '');
     return '<section class="ds-panel cs-chart-panel"><div class="ds-panel-head"><div><h2>信号前后的走势</h2><p>前 ' + C.lookback + ' 个交易日至后 ' + C.chartAfter +
       ' 个交易日 · ' + indices.length + ' 段匹配样本</p></div></div>' +
@@ -523,9 +546,9 @@
         labels, caption, legend, marks:waitMark() }) + '</section>';
   }
   function episodeChart(e) {
-    const own = C.path(data, e.index), lines = [{ label:e.date, cls:'cs-line-median', points:own }];
-    if (e.index !== ref) lines.push({ label:refName(), cls:'cs-line-now', points:refPath() });
-    const legend = '<div class="cs-legend">' + key('cs-key-line-median', e.date + ' 前后') + (e.index !== ref ? key('cs-key-line-now', refLegend(refPath())) : '') + '</div>';
+    const own = C.path(data, e.index), lines = [{ label:e.date, cls:'cs-line-median', points:own }], compare = ref !== null && e.index !== ref;
+    if (compare) lines.push({ label:refName(), cls:'cs-line-now', points:refPath() });
+    const legend = '<div class="cs-legend">' + key('cs-key-line-median', e.date + ' 前后') + (compare ? key('cs-key-line-now', refLegend(refPath())) : '') + '</div>';
     return frame('event', { lines, labels:[{ text:pct(own.at(-1)[1] - 100), k:own.at(-1)[0], v:own.at(-1)[1] }], legend, marks:waitMark(),
       caption:e.date + ' 收盘为 100；' + (own.at(-1)[0] < C.chartAfter ? '已观察 ' + own.at(-1)[0] + ' / ' + C.chartAfter + ' 个交易日。' : '已走完 ' + C.chartAfter + ' 个交易日。') });
   }
@@ -615,7 +638,7 @@
         result.horizons.map(h => '<th scope="col">' + terms[h] + '后</th>').join('') + '</tr></thead><tbody>' +
         rows.slice((page - 1) * pageSize, page * pageSize).map(e => '<tr><th scope="row"><button type="button" class="text-link" data-cs-event="' + e.date + '" aria-label="查看 ' + e.date + ' 前后走势">' + e.date + '</button>' +
           (e.merged.length ? '<small title="并入的满足日：' + e.merged.join('、') + '">并入 ' + e.merged.length + ' 天 · 至 ' + sameYear(e.date, e.merged.at(-1)) + '</small>' : '') +
-          (result.reference.episode === e.date ? '<small class="cs-tag">含' + (ref === data.last ? '最新收盘' : '参照日') + '</small>' : '') + '</th><td>' + fixed(e.close) + '</td>' +
+          (result.reference?.episode === e.date ? '<small class="cs-tag">含' + (ref === data.last ? '最新收盘' : '参照日') + '</small>' : '') + '</th><td>' + fixed(e.close) + '</td>' +
           (st.wait ? '<td>' + observationCell(e.observation) + '</td><td>' + e.observation.anchorDate + '</td>' : '') +
           ids.map(id => '<td>' + value(C.byId[id], e.values[id]) + '</td>').join('') + '<td class="cs-fall">' + fallCell(e.fall) + '</td>' +
           result.horizons.map(h => '<td>' + cell(e.outcomes[h]) + '</td>').join('') + '</tr>').join('') +
@@ -625,7 +648,8 @@
           '没有同时满足全部条件的交易日。') + '可去掉或放宽一项：每行右侧显示去掉它之后的段数。</p>') + '</section>';
   }
   function emptyState() {
-    return '<section class="ds-panel cs-empty" role="status"><h2>尚未选择条件</h2><p>勾选或填写上方任一指标后显示匹配的历史样本。</p></section>';
+    return '<section class="ds-panel cs-empty" role="status"><h2>尚未选择条件</h2><p>' +
+      (ref === null ? '在上方任一指标填写范围后显示匹配的历史样本。' : '勾选或填写上方任一指标后显示匹配的历史样本。') + '</p></section>';
   }
   function timeline(e) {
     const o = e.observation, high = st.basis === 'high';
@@ -666,7 +690,7 @@
       ...result.horizons.flatMap(h => [terms[h] + '状态', terms[h] + '实际期末日', terms[h] + '期末收盘', terms[h] + '累计涨跌%', terms[h] + '期间最大回撤%', terms[h] + '自' + anchorName() + '最大跌幅%'])];
     const rows = result.episodes.map(e => {
       const o = e.observation, f = e.fall;
-      return [markets[st.market][1], '美元价格指数，不含分红', result.asOf, data.dates[ref], st.manual ? '自选' : '按 ' + fitted.date + ' 读数自动选取', conditions,
+      return [markets[st.market][1], '美元价格指数，不含分红', result.asOf, ref === null ? '' : data.dates[ref], st.manual ? '自选' : '按 ' + fitted.date + ' 读数自动选取', conditions,
         result.gap === 1 ? '每天单独计' : '合并 ' + result.gap + ' 个交易日内', st.wait, st.wait ? basisNames[st.basis] : '', eraNames[st.era], e.date, e.close, e.merged.join(' '),
         ...metrics.map(m => e.values[m.id]),
         ...(st.wait ? [o.status === 'complete' ? '已完成' : o.status, o.priorDate, o.prior, o.recovered === null ? '未知' : o.recovered ? '是' : '否', o.recoveryDate, o.broke ? '是' : '否',
@@ -689,6 +713,8 @@
   function view(helpers) {
     H = helpers; st = readState();
     if (st.gap > 1) lastMerge = st.gap;
+    if (written !== null && location.hash !== written) drafts.clear();
+    written = location.hash;
     const title = H.head('MARKET CONDITION STUDY', '行情条件后表现', '自填条件或按任一交易日的行情读数筛选历史交易日，查看之后几天至两年的涨跌与回撤。');
     const other = peerOf(st.market);
     if (!cache.has(st.market)) load(st.market);
@@ -702,7 +728,7 @@
     const frameKey = [st.market, slot.data.asOf, Object.values(st.params).join(','), st.wait, st.wait ? st.basis : '', peer?.data ? 'peer' : '', highSlot?.series ? 'highs' : ''].join('|');
     if (!frames.has(frameKey)) frames.set(frameKey, C.frame(slot.data, { params:st.params, wait:st.wait, basis:st.basis, peer:peer?.data ? peer.series : null, highs:highSlot?.series || null }));
     data = frames.get(frameKey);
-    ref = st.date ? C.sessionOn(data, st.date) ?? 0 : data.last;
+    ref = !st.date ? null : st.date === 'latest' ? data.last : C.sessionOn(data, st.date) ?? 0;
     if (needHighs && !highSlot.series && !highSlot.error) return title + toolbar() + '<div class="ds-panel ds-loading" role="status">正在读取已收盘交易日的历史最高价…</div>';
     fitted = st.manual ? null : fitFor(frameKey);
     idle = [];
@@ -748,12 +774,17 @@
     return next;
   }
   // Ticking takes the range from the reference date's reading; it moves with that date until a number is typed.
+  // With no reading to take (no reference date, or none on that day), the row waits for a typed range instead.
   function toggle(id, on) {
-    const next = without(picked(), id);
-    if (on) {
-      if (!C.suggest(data, id, { ref })) { H.render(); return; }
-      next.follow.push(id);
+    if (on && !(ref !== null && C.suggest(data, id, { ref }))) {
+      drafts.add(id);
+      H.render();
+      document.querySelector('#cs-' + id + '-lo')?.focus();
+      return;
     }
+    drafts.delete(id);
+    const next = without(picked(), id);
+    if (on) next.follow.push(id);
     write({ ...st, manual:true, ...next });
   }
   function edit(input) {
@@ -761,14 +792,17 @@
     if (!C.byId[id] || !['lo', 'hi'].includes(side)) return;
     // Text a number field cannot parse reads as empty; keep it on screen instead of treating it as "no limit".
     if (input.validity?.badInput) { input.reportValidity?.(); return; }
-    // A typed number fixes the whole range as shown, so it no longer follows the reference date.
-    const entered = raw === '' ? null : Number(raw), range = { lo:null, hi:null, ...result.conditions[id], [side]:entered };
+    // A typed number fixes the whole range as shown, so it no longer follows the reference date. The other end of a
+    // range taken from the reference date was never typed, so it gives way when the new number crosses it.
+    const entered = raw === '' ? null : Number(raw), other = side === 'lo' ? 'hi' : 'lo';
+    let range = { lo:null, hi:null, ...result.conditions[id], [side]:entered };
+    if (following(id) && C.rangeIssue(id, range) === 'order') range = { ...range, [other]:null };
     const next = without(picked(), id), issue = C.rangeIssue(id, range);
     if (issue && issue !== 'empty') {
       input.setCustomValidity(issues[issue] || '无法使用这个范围'); input.reportValidity?.();
       return;
     }
-    if (!issue) next.conditions[id] = range;
+    if (!issue) { next.conditions[id] = range; drafts.delete(id); }
     write({ ...st, manual:true, ...next });
   }
   function editParam(input) {
@@ -779,9 +813,15 @@
     write({ ...st, params:{ ...st.params, [k]:v } });
   }
   function editDate(input) {
-    if (!input.value) { write({ ...readState(), date:null }); return; }
+    if (!input.value) { dropDate(); return; }
     const at = C.sessionOn(data, input.value) ?? 0;
-    write({ ...readState(), date:at === data.last ? null : data.dates[at] });
+    write({ ...readState(), date:at === data.last ? 'latest' : data.dates[at] });
+  }
+  // Without a reference date, ranges that followed it keep the numbers on screen; a row with nothing to keep is dropped.
+  function dropDate() {
+    const next = picked();
+    for (const id of next.follow) if (result.conditions[id]) next.conditions[id] = { ...result.conditions[id] };
+    write({ ...readState(), ...next, follow:[], date:null, manual:true });
   }
   function pickChoice(id, answer) {
     const next = without(picked(), id);
@@ -826,9 +866,11 @@
     const button = target.closest?.('[data-cs-action]');
     if (!button || button.disabled) return;
     switch (button.dataset.csAction) {
-      case 'fit': write({ ...readState(), manual:false, conditions:{}, follow:[] }); break;
-      case 'clear': write({ ...readState(), manual:true, conditions:{}, follow:[] }); break;
-      case 'latest': write({ ...readState(), date:null }); break;
+      // The automatic match reads the reference date, the latest close when none is set.
+      case 'fit': drafts.clear(); write({ ...readState(), date:readState().date || 'latest', manual:false, conditions:{}, follow:[] }); break;
+      case 'clear': drafts.clear(); write({ ...readState(), manual:true, conditions:{}, follow:[] }); break;
+      case 'latest': write({ ...readState(), date:'latest' }); break;
+      case 'no-date': if (result) dropDate(); break;
       case 'retry': cache.delete(readState().market); results.clear(); fits.clear(); frames.clear(); H.render(); break;
       case 'retry-high': highCache.delete(readState().market); H.render(); break;
       case 'csv': if (result?.episodes.length) exportCsv(); break;

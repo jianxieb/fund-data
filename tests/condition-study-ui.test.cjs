@@ -124,13 +124,111 @@ function rowOf(html, id) {
 }
 const nameOf = m => ({ rN:'近 10 日涨跌', ddN:'距近 63 日最高收盘', drops:'近 21 日跌超 5% 的天数', peer1:'标普500当日涨跌' })[m.id] || m.label;
 
-test('with no conditions in the address, the page matches the latest close and says what it left out', async () => {
+test('the page starts with no reference date or condition, and one or two typed ranges are a complete study', async () => {
   const f = fixture();
+  let html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study');
+  assert.ok(html.includes('<input id="cs-ref" type="date" min="' + f.data.first + '" max="' + f.data.asOf + '" value="">' +
+    '<button type="button" class="text-link" data-cs-action="latest">用最新收盘</button>'));
+  assert.match(html, /data-cs-action="fit" aria-pressed="false">按参照日匹配/);
+  assert.ok(html.includes('未选择条件') && html.includes('<section class="cs-conditions cs-no-ref"'));
+  assert.doesNotMatch(html, /class="cs-now|class="cs-match"|class="cs-key-now"|信号前后的走势/, 'no reading column, no count, no chart');
+  assert.ok(html.includes('<span>指标</span><span>历史分布</span>'));
+  assert.ok(html.includes('在上方任一指标填写范围后显示匹配的历史样本。'));
+  for (const m of C.metrics) if (!m.choice) assert.equal(checked(html, m.id), false, m.id);
+
+  // One condition: a one-day fall of at least 2%.
+  await f.enter('r1', 'hi', '-2');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?r1=~-2');
+  const one = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21, ref:null });
+  assert.ok(html.includes('自选 1 项条件') && html.includes('匹配 <b>' + one.episodes.length + '</b> 段'));
+  assert.doesNotMatch(html, /cs-now-status|>手动填写<|>随参照日<|含最新收盘|含参照日|cs-line-now|最近 63 个交易日/);
+  assert.ok(html.includes('<figcaption>每段以信号日收盘为 100。'));
+  assert.ok(rowOf(html, 'r1').includes('<small>取消勾选后</small>'));
+  assert.doesNotMatch(rowOf(html, 'vix'), /勾选后/, 'no reading to take a range from, so no preview');
+  f.click('action', 'csv');
+  const row = f.downloads.at(-1)[1].replace(/^﻿/, '').split('\r\n')[1];
+  assert.ok(row.startsWith('"^NDX","美元价格指数，不含分红","' + f.data.asOf + '","","自选","当日涨跌 ≤ −2%"'), 'no reference date in the export');
+
+  // Two conditions: add VIX at 25 or above.
+  await f.enter('vix', 'lo', '25');
+  assert.equal(f.location.hash, '#condition-study?r1=~-2&vix=25~');
+  html = await f.settle();
+  const two = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-2 }, vix:{ lo:25, hi:null } }, gap:21, ref:null });
+  assert.ok(two.episodes.length > 0 && two.episodes.length < one.episodes.length);
+  assert.ok(html.includes('自选 2 项条件') && html.includes('匹配 <b>' + two.episodes.length + '</b> 段'));
+});
+
+test('without a reference date a ticked row waits for numbers; a date can be set, matched and cleared again', async () => {
+  const f = fixture();
+  await f.settle();
+  f.toggle('vix', true);
+  let html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study', 'nothing to apply until a number is typed');
+  assert.ok(checked(html, 'vix') && rowOf(html, 'vix').includes('<div class="cs-row is-idle">') && rowOf(html, 'vix').includes('<small class="cs-mode">填写范围后生效</small>'));
+  f.toggle('vix', false);
+  assert.equal(checked(await f.settle(), 'vix'), false);
+  f.toggle('vix', true);
+  await f.enter('vix', 'lo', '30');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?vix=30~');
+  assert.ok(rowOf(html, 'vix').includes('<div class="cs-row is-active">') && !rowOf(html, 'vix').includes('cs-mode'));
+
+  // A date shows its readings and keeps the typed conditions; it does not match anything by itself.
+  f.click('action', 'latest');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?date=latest&vix=30~');
+  assert.ok(html.includes('自选 1 项条件') && html.includes('<span class="cs-now">') && rowOf(html, 'vix').includes('>手动填写</small>'));
+  const blank = fixture(), day = blank.data.dates[blank.data.n - 400];
+  await blank.settle();
+  await blank.setDate(day);
+  assert.equal(blank.location.hash, '#condition-study?date=' + day + '&mode=manual');
+
+  // The match reads the date; clearing the date keeps the matched ranges as typed numbers.
+  f.click('action', 'fit');
+  await f.settle();
+  assert.equal(f.location.hash, '#condition-study?date=latest');
+  const fit = C.fit(f.view, { gap:21 });
+  f.click('action', 'no-date');
+  html = await f.settle();
+  assert.equal(f.location.hash, '#condition-study?' + C.metrics.filter(m => fit.added.includes(m.id)).map(m => m.id + '=' + C.formatRange(fit.conditions[m.id])).join('&'));
+  assert.ok(html.includes('匹配 <b>' + C.study(f.view, { conditions:fit.conditions, gap:21, ref:null }).episodes.length + '</b> 段'));
+  assert.ok(html.includes('value=""><button type="button" class="text-link" data-cs-action="latest">用最新收盘</button>'));
+  // Emptying the field does the same; a following row with no reading has nothing to keep and is dropped.
+  const g = fixture({ hash:'#condition-study?obs=2&r1=~-2&rebound=ref' });
+  await g.settle();
+  await g.setDate('');
+  assert.equal(g.location.hash, '#condition-study?obs=2&r1=~-2');
+
+  // A number typed past the other end of a range taken from the date replaces that end instead of being refused.
+  const h = fixture({ hash:'#condition-study?date=latest&mode=manual' });
+  await h.settle();
+  h.toggle('r1', true);
+  await h.settle();
+  const band = C.suggest(h.view, 'r1'), side = band.hi !== null ? 'lo' : 'hi', past = side === 'lo' ? band.hi + 5 : band.lo - 5;
+  const input = await h.enter('r1', side, String(past));
+  assert.equal(input.error, '');
+  assert.equal(h.location.hash, '#condition-study?date=latest&r1=' + C.formatRange(side === 'lo' ? { lo:past, hi:null } : { lo:null, hi:past }));
+
+  // A row left waiting stays through the page's own changes, but not on another address.
+  const w = fixture();
+  await w.settle();
+  w.toggle('vix', true);
+  await w.settle();
+  await w.enter('r1', 'hi', '-2');
+  assert.ok(checked(await w.settle(), 'vix'), 'typing in another row keeps it waiting');
+  w.location.hash = '#condition-study?r1=~-5';
+  assert.equal(checked(await w.settle(), 'vix'), false);
+});
+
+test('with a reference date and no conditions, the page matches that close and says what it left out', async () => {
+  const f = fixture({ hash:'#condition-study?date=latest' });
   assert.match(f.first, /正在读取纳斯达克100历史收盘/);
   const html = await f.settle();
   const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   assert.ok(fit.added.length >= 1 && fit.skipped.length >= 1, 'the fixture must exercise both kept and dropped conditions');
-  assert.equal(f.location.hash, '#condition-study');
+  assert.equal(f.location.hash, '#condition-study?date=latest');
   assert.match(html, /data-cs-action="fit" aria-pressed="true">✓ 已按参照日匹配/);
   const skipped = fit.steps.filter(s => s.band && !s.kept).map(s => short[s.id]);
   assert.ok(html.includes('已按 ' + f.data.asOf + ' 的读数选取 ' + fit.added.length + ' 项，保留至少 10 段历史；' + skipped.join('、') + ' 加入后不足 10 段，未勾选。改任一数字即转为自选。'));
@@ -149,7 +247,8 @@ test('with no conditions in the address, the page matches the latest close and s
   assert.ok(html.includes(f.data.asOf + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
   assert.match(html, /含最新收盘/);
   for (const [g, title] of C.groups) assert.equal(html.includes('<legend>' + title + '</legend>'), g !== 'obs', g);
-  assert.ok(html.includes('<input id="cs-ref" type="date" min="' + f.data.first + '" max="' + f.data.asOf + '" value="' + f.data.asOf + '"><small>最新收盘</small>'));
+  assert.ok(html.includes('<input id="cs-ref" type="date" min="' + f.data.first + '" max="' + f.data.asOf + '" value="' + f.data.asOf + '"><small>最新收盘</small>' +
+    '<button type="button" class="text-link" data-cs-action="no-date">清除</button>'));
   for (const [h, term] of [[1, '1日'], [4, '4日'], [5, '1周'], [252, '1年'], [504, '2年']])
     assert.match(html, new RegExp('data-cs-horizon="' + h + '" aria-pressed="' + C.defaultHorizons.includes(h) + '" title="' + h + ' 个交易日">' + term + '<'), term);
   for (const label of ['1周', '1个月', '3个月', '1年', '全部交易日', '期间最大回撤', '自信号日最大跌幅']) assert.ok(html.includes(label), label);
@@ -160,14 +259,14 @@ test('with no conditions in the address, the page matches the latest close and s
 });
 
 test('ticking or editing a condition switches to manual and keeps readable ranges in the address', async () => {
-  const f = fixture();
+  const f = fixture({ hash:'#condition-study?date=latest' });
   await f.settle();
   const fit = C.fit(f.view, { gap:21 }), extra = C.metrics.find(m => !m.choice && !fit.added.includes(m.id) && C.suggest(f.view, m.id)).id;
   f.toggle(extra, true);
   let html = await f.settle();
   // Ranges taken from the reference date keep following it, so the address names the rows, not their numbers.
   const ticked = [...fit.added, extra];
-  assert.equal(f.location.hash, '#condition-study?' + C.metrics.filter(m => ticked.includes(m.id)).map(m => m.id + '=ref').join('&'));
+  assert.equal(f.location.hash, '#condition-study?date=latest&' + C.metrics.filter(m => ticked.includes(m.id)).map(m => m.id + '=ref').join('&'));
   assert.match(html, /data-cs-action="fit" aria-pressed="false">按参照日匹配/);
   assert.ok(html.includes('自选 ' + ticked.length + ' 项条件'));
   assert.ok(checked(html, extra));
@@ -213,14 +312,15 @@ test('ticking or editing a condition switches to manual and keeps readable range
 });
 
 test('a chosen reference date re-reads every row and the match, and returns to the latest close on request', async () => {
-  const f = fixture();
+  const f = fixture({ hash:'#condition-study?date=latest' });
   await f.settle();
   const at = f.data.n - 400, date = f.data.dates[at];
   let html = await f.setDate(date);
   assert.equal(f.location.hash, '#condition-study?date=' + date);
   const fit = C.fit(f.view, { gap:21, ref:at }), r = C.study(f.view, { conditions:fit.conditions, gap:21, ref:at });
   assert.ok(html.includes('已按 ' + date + ' 的读数选取 ' + fit.added.length + ' 项'));
-  assert.ok(html.includes('value="' + date + '"><button type="button" class="text-link" data-cs-action="latest">回到最新</button>'));
+  assert.ok(html.includes('value="' + date + '"><button type="button" class="text-link" data-cs-action="latest">回到最新</button>' +
+    '<button type="button" class="text-link" data-cs-action="no-date">清除</button>'));
   assert.ok(html.includes('<span>指标</span><span>' + date + '</span>'), 'the readings column is headed by the reference date');
   assert.ok(html.includes(date + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
   assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
@@ -242,18 +342,18 @@ test('a chosen reference date re-reads every row and the match, and returns to t
   const manual = f.location.hash;
   assert.match(manual, /date=[^&]+&.*\br1=[^&]*~-2(&|$)/);
   await f.setDate(f.data.asOf);
-  assert.equal(f.location.hash, manual.replace(/date=[^&]+&/, ''));
+  assert.equal(f.location.hash, manual.replace(/date=[^&]+/, 'date=latest'));
   f.click('action', 'fit');
   await f.settle();
   await f.setDate(date);
   f.click('action', 'latest');
   html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study');
+  assert.equal(f.location.hash, '#condition-study?date=latest');
   assert.match(html, /<small>最新收盘<\/small>/);
 });
 
 test('ticked ranges follow the reference date, typed numbers stay, and a row without a reading waits', async () => {
-  const f = fixture();
+  const f = fixture({ hash:'#condition-study?date=latest' });
   await f.settle();
   const at = f.data.n - 400, date = f.data.dates[at];
   const moves = id => C.suggest(f.view, id) && C.suggest(f.view, id, { ref:at }) &&
@@ -269,7 +369,7 @@ test('ticked ranges follow the reference date, typed numbers stay, and a row wit
   await f.enter('r1', 'hi', '-2');
   const ids = C.metrics.filter(m => [a, b, 'r1'].includes(m.id)).map(m => m.id);
   const query = ids.map(id => id + '=' + (id === 'r1' ? '~-2' : 'ref')).join('&');
-  assert.equal(f.location.hash, '#condition-study?' + query);
+  assert.equal(f.location.hash, '#condition-study?date=latest&' + query);
 
   let html = await f.setDate(date);
   assert.equal(f.location.hash, '#condition-study?date=' + date + '&' + query);
@@ -320,7 +420,7 @@ test('a latest close that has just matched is not a sample: counts, records, cha
     for (const i of at) for (let j = i; j < closes.length; j++) closes[j] = Number((closes[j] * .88).toFixed(2));
     return sessions(closes);
   };
-  const f = fixture({ hash:'#condition-study?gap=1&r1=~-8', series:crash([1000, 2000, 2600]) });
+  const f = fixture({ hash:'#condition-study?date=latest&gap=1&r1=~-8', series:crash([1000, 2000, 2600]) });
   let html = await f.settle();
   const latest = f.data.asOf, r = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-8 } }, gap:1 });
   assert.deepEqual(r.episodes.map(e => e.index), [2000, 1000]);
@@ -397,7 +497,7 @@ test('an observation period adds the recovery rows, moves where results start an
 test('a reference close still inside its observation period says how many sessions remain', async () => {
   const closes = walk(2599, 2);
   closes.push(Number((closes.at(-1) * .93).toFixed(2)));
-  const f = fixture({ hash:'#condition-study?obs=5&r1=~-5', series:sessions(closes) });
+  const f = fixture({ hash:'#condition-study?date=latest&obs=5&r1=~-5', series:sessions(closes) });
   const html = await f.settle();
   assert.ok(html.includes(f.data.asOf + ' 收盘满足信号日条件，观察期还差 5 个交易日'));
   assert.match(html, /cs-now-status is-wait/);
@@ -475,10 +575,10 @@ test('look-back numbers typed into a row name re-read that row and keep its rang
   assert.equal(input.error, '请输入 0.01–99.99，最多两位小数');
   assert.equal(f.location.hash, '#condition-study?rNDays=20&rN=~-3');
   // While the match is automatic, a new look-back keeps it automatic.
-  const g = fixture();
+  const g = fixture({ hash:'#condition-study?date=latest' });
   await g.settle();
   await g.param('ddNDays', '126');
-  assert.equal(g.location.hash, '#condition-study?ddNDays=126');
+  assert.equal(g.location.hash, '#condition-study?date=latest&ddNDays=126');
   assert.match(await g.settle(), /✓ 已按参照日匹配[\s\S]*距近 <input class="cs-param"[^>]*value="126"/);
 });
 
@@ -491,23 +591,24 @@ test('clearing leaves an honest empty state, and the match button restores the f
   assert.equal(inputValue(html, 'r1', 'hi'), '-1');
   f.click('action', 'clear');
   html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?market=spx&gap=63&mode=manual');
+  assert.equal(f.location.hash, '#condition-study?market=spx&gap=63');
   assert.match(html, /尚未选择条件/);
-  assert.doesNotMatch(html, /信号前后的走势|data-cs-action="clear"/);
+  assert.doesNotMatch(html, /信号前后的走势|data-cs-action="clear"|class="cs-match"/, 'with no condition there is no count to show');
   f.ui.choose('gap', '5');
   f.ui.choose('gap', '7');
   f.ui.choose('market', 'nope');
-  assert.equal(f.location.hash, '#condition-study?market=spx&gap=5&mode=manual');
+  assert.equal(f.location.hash, '#condition-study?market=spx&gap=5');
+  // Without a reference date the match reads the latest close.
   f.click('action', 'fit');
   html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?market=spx&gap=5');
+  assert.equal(f.location.hash, '#condition-study?market=spx&date=latest&gap=5');
   assert.match(html, /✓ 已按参照日匹配/);
   const fit = C.fit(f.view, { gap:5 });
   assert.ok(html.includes('选取 ' + fit.added.length + ' 项'));
   assert.ok(html.includes('匹配 <b>' + C.study(f.view, { conditions:fit.conditions, gap:5 }).episodes.length + '</b> 段'));
   f.ui.choose('gap', '1');
   html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?market=spx&gap=1');
+  assert.equal(f.location.hash, '#condition-study?market=spx&date=latest&gap=1');
   // Counting each day separately hides the merge window and offers the last one back.
   assert.ok(html.includes('data-cs-gap="1" aria-pressed="true">每天单独计</button><button type="button" class="" data-cs-gap="5" aria-pressed="false">合并为一段'));
   assert.doesNotMatch(html, /id="cs-gap"/);
@@ -518,15 +619,16 @@ test('unknown address values fall back to the defaults instead of half-applying'
   const html = await f.settle();
   assert.match(html, /纳斯达克100/);
   assert.match(html, /合并范围：21 个交易日内 · 约1个月/);
-  assert.match(html, /data-cs-action="fit" aria-pressed="true"/);
+  assert.match(html, /data-cs-action="fit" aria-pressed="false"/);
   assert.match(html, /信号后观察期：不设/);
-  assert.match(html, /<small>最新收盘<\/small>/);
+  assert.match(html, /value=""><button type="button" class="text-link" data-cs-action="latest">用最新收盘<\/button>/);
+  assert.match(html, /尚未选择条件/);
   assert.ok(html.includes('data-cs-param="rNDays" value="10"'));
   assert.doesNotMatch(html, /data-cs-choice/, 'observation rows need an observation period');
 });
 
 test('when nothing matches, each row shows what removing it would leave and export is off', async () => {
-  const f = fixture({ hash:'#condition-study?r1=50~&dd252=0~' });
+  const f = fixture({ hash:'#condition-study?date=latest&r1=50~&dd252=0~' });
   const html = await f.settle();
   assert.match(html, /匹配 <b>0<\/b> 段/);
   assert.match(html, /没有同时满足全部条件的交易日/);
@@ -541,7 +643,7 @@ test('when nothing matches, each row shows what removing it would leave and expo
 
 test('CSV holds every episode and the condition source; paging reaches the rest of the table', async () => {
   // Without VIX this walk keeps more than one page of samples; it also shows a VIX outage leaves the study usable.
-  const f = fixture({ seed:4, vixMode:'down' });
+  const f = fixture({ seed:4, vixMode:'down', hash:'#condition-study?date=latest' });
   let html = await f.settle();
   const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   assert.ok(r.episodes.length > 15, 'the fixture needs more than one page');
@@ -601,7 +703,7 @@ test('merged days show under their segment, in the detail and the CSV; counting 
 });
 
 test('an episode opens its own path, outcomes, fall and readings', async () => {
-  const f = fixture({ seed:4 });
+  const f = fixture({ seed:4, hash:'#condition-study?date=latest' });
   await f.settle();
   const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const old = r.episodes.at(-1), latest = r.episodes[0];
@@ -624,7 +726,7 @@ test('an episode opens its own path, outcomes, fall and readings', async () => {
 });
 
 test('the chart tooltip follows the keyboard and the pointer, and hides when focus leaves', async () => {
-  const f = fixture({ seed:4 });
+  const f = fixture({ seed:4, hash:'#condition-study?date=latest' });
   await f.settle();
   const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const spread = new Map(C.spread(f.data, r.episodes.map(e => e.index)).map(x => [x.k, x]));
@@ -664,7 +766,7 @@ test('the chart tooltip follows the keyboard and the pointer, and hides when foc
 });
 
 test('wrong source identity and load failures are explicit, and retry reloads', async () => {
-  const wrong = fixture({ badIdentity:true });
+  const wrong = fixture({ badIdentity:true, hash:'#condition-study?date=latest' });
   let html = await wrong.settle();
   assert.match(html, /缺少 \^NDX 的美元价格指数日线/);
   assert.doesNotMatch(html, /信号前后的走势/);
@@ -685,7 +787,7 @@ test('wrong source identity and load failures are explicit, and retry reloads', 
 });
 
 test('VIX loads once for both indices, names its exact gaps, and a VIX outage leaves the index study intact', async () => {
-  const f = fixture();
+  const f = fixture({ hash:'#condition-study?date=latest' });
   let html = await f.settle();
   const now = id => html.match(new RegExp('id="cs-' + id + '-on"[\\s\\S]*?<span class="cs-now"><b>([^<]*)</b><small>([^<]*)</small>'))?.slice(1);
   assert.ok(f.data.vix && f.data.vix.missing.length === 1, 'the fixture has one session without a Cboe close');
@@ -696,18 +798,26 @@ test('VIX loads once for both indices, names its exact gaps, and a VIX outage le
   await f.settle();
   assert.equal(f.state.fetches.filter(url => url.startsWith('data/condition-study/catalog.json')).length, 1, 'both indices share one VIX download');
 
-  const lagging = fixture({ vix:vixFor(sessions(walk(2600, 2))).slice(0, -1) });
+  const lagging = fixture({ vix:vixFor(sessions(walk(2600, 2))).slice(0, -1), hash:'#condition-study?date=latest' });
   html = await lagging.settle();
   const asOf = lagging.data.asOf;
   const lagNow = id => html.match(new RegExp('id="cs-' + id + '-on"[\\s\\S]*?<span class="cs-now"><b>([^<]*)</b><small>([^<]*)</small>'))?.slice(1);
   assert.deepEqual(lagNow('vix'), ['—', '缺 ' + asOf + ' VIX'], 'a VIX file that stops a day early names the missing date');
   assert.deepEqual(lagNow('vix5'), ['—', '缺 ' + asOf + ' VIX']);
-  assert.match(html, /id="cs-vix-on"[^>]*disabled/);
+  // VIX still has history, so the row can be ticked; with no reading to take a range from it waits for typed numbers.
+  assert.doesNotMatch(html, /id="cs-vix-on"[^>]*disabled/);
+  lagging.toggle('vix', true);
+  html = await lagging.settle();
+  assert.equal(lagging.location.hash, '#condition-study?date=latest');
+  assert.ok(checked(html, 'vix') && rowOf(html, 'vix').includes('<small class="cs-mode">填写范围后生效</small>'));
 
-  const down = fixture({ vixMode:'down' });
+  const down = fixture({ vixMode:'down', hash:'#condition-study?date=latest' });
   html = await down.settle();
   assert.match(html, /缺 VIX 日线：VIX 目录加载失败（503）/);
-  assert.match(html, /id="cs-vix-on"[^>]*disabled/);
+  assert.match(html, /id="cs-vix-on"[^>]*disabled/, 'no VIX history at all, nothing to tick');
+  // Without a reference date there is no reading column, so the row itself names the gap.
+  const plain = fixture({ vixMode:'down' });
+  assert.ok(rowOf(await plain.settle(), 'vix').includes('<small class="cs-gap">缺 VIX 日线</small>'));
   assert.match(html, /cs-conditions-title/);
   assert.ok(!html.includes('ds-loading'), 'the index study still renders');
 
@@ -719,7 +829,7 @@ test('VIX loads once for both indices, names its exact gaps, and a VIX outage le
 });
 
 test('each indicator explains itself, and the match explains why it ticked or skipped it', async () => {
-  const f = fixture();
+  const f = fixture({ hash:'#condition-study?date=latest' });
   const html = await f.settle();
   const fit = C.fit(f.view, { gap:21 }), r = C.study(f.view, { conditions:fit.conditions, gap:21 });
   const pop = id => html.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';

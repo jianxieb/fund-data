@@ -207,6 +207,13 @@ test('a reference date moves the readings, the automatic match and the reference
   assert.ok(r.reference.episode <= v.dates[at] && r.episodes.some(e => e.date === r.reference.episode));
   assert.equal(r.reference.values.dd252, v.values.dd252[at]);
   for (const bad of [-1, 1.5, 3000]) assert.throws(() => C.study(v, { conditions:{}, ref:bad }), /参照日/);
+  // Without a reference date the samples are the same; there is no reference status and no reading to preview a tick with.
+  const plain = C.study(v, { conditions:fit.conditions, gap:21, ref:null });
+  assert.equal(plain.reference, null);
+  assert.deepEqual(plain.episodes.map(e => e.date), r.episodes.map(e => e.date));
+  assert.deepEqual(plain.summary, r.summary);
+  for (const m of C.metrics) if (!m.choice && m.source !== 'obs' && !fit.conditions[m.id]) assert.equal(plain.previews[m.id], null, m.id);
+  for (const id of fit.added) assert.deepEqual(plain.previews[id], r.previews[id], id);
   assert.equal(C.sessionOn(v, v.dates[at]), at);
   const saturday = new Date(v.dates[at] + 'T00:00:00Z');
   while (saturday.getUTCDay() !== 6) saturday.setUTCDate(saturday.getUTCDate() + 1);

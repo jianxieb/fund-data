@@ -543,8 +543,9 @@
     return out;
   }
 
+  // `ref` is the reference close, the latest one when left out; `ref:null` studies the conditions without one.
   function study(data, { conditions = {}, gap = 21, era = 'all', horizons:requested = defaultHorizons, ref, width = fitDefaults.width } = {}) {
-    const view = framed(data), at = refOf(view, ref), list = checkHorizons(requested);
+    const view = framed(data), at = ref === null ? null : refOf(view, ref), list = checkHorizons(requested);
     checkStudy(gap, era);
     const entries = ordered(view, conditions), matches = mask(view, entries, era), indices = space(matches, gap), longest = list[list.length - 1];
     // `merged`: later matching closes inside the sample's spacing. They belong to it and add no results of their own.
@@ -562,7 +563,7 @@
         gap:all.filter(o => o.status === 'gap').length, drawdown:summarize(done.map(o => o.drawdown)), low:summarize(done.map(o => o.low)) }];
     }));
     // Each preview keeps every other condition: drop an active one, add an inactive one at its suggested
-    // range around the reference close, or for a yes/no reading, count both answers.
+    // range around the reference close (none without one), or for a yes/no reading, count both answers.
     const previews = {};
     for (const m of metrics) {
       const rest = Object.fromEntries(entries.filter(([id]) => id !== m.id)), active = Object.hasOwn(conditions, m.id);
@@ -571,16 +572,19 @@
         no:count(view, { ...rest, [m.id]:{ lo:0, hi:0 } }, gap, era), without:active ? count(view, rest, gap, era) : null };
       else if (active) previews[m.id] = { kind:'without', episodes:count(view, rest, gap, era) };
       else {
-        const band = suggest(view, m.id, { ref:at, width });
+        const band = at === null ? null : suggest(view, m.id, { ref:at, width });
         previews[m.id] = band ? { kind:'with', range:band, episodes:count(view, { ...conditions, [m.id]:band }, gap, era) } : null;
       }
     }
-    const failing = entries.filter(([id, range]) => !inRange(view.values[id][at], range)).map(([id]) => id);
-    const containing = [...indices].reverse().find(i => i <= at);
-    const reference = { index:at, date:view.dates[at], close:view.closes[at], values:snapshot(view, at), observation:observation(view, at),
-      excluded:excluded(era, view.dates[at]), matches:entries.length > 0 && matches[at] === 1, failing,
-      // The reference close may be absorbed into a sample that started earlier.
-      episode:matches[at] && containing !== undefined && at < containing + gap ? view.dates[containing] : null };
+    let reference = null;
+    if (at !== null) {
+      const failing = entries.filter(([id, range]) => !inRange(view.values[id][at], range)).map(([id]) => id);
+      const containing = [...indices].reverse().find(i => i <= at);
+      reference = { index:at, date:view.dates[at], close:view.closes[at], values:snapshot(view, at), observation:observation(view, at),
+        excluded:excluded(era, view.dates[at]), matches:entries.length > 0 && matches[at] === 1, failing,
+        // The reference close may be absorbed into a sample that started earlier.
+        episode:matches[at] && containing !== undefined && at < containing + gap ? view.dates[containing] : null };
+    }
     // Closes that already meet every signal-day condition but are still inside their observation period.
     let observing = null;
     const signalEntries = entries.filter(([id]) => byId[id].source !== 'obs');
