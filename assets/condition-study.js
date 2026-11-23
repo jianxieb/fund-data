@@ -56,7 +56,8 @@
   const status = { complete:'已到期', pending:'未到期', gap:'行情断档', missingHigh:'缺最高价' };
   const issues = { number:'请输入数字', size:'数值过大', integer:'请输入整数', decimals:'最多两位小数', order:'下限不能高于上限' };
   const paramIssues = { rNDays:'请输入 1–2520 的整数', ddNDays:'请输入 2–2520 的整数', dropsPct:'请输入 0.01–99.99，最多两位小数' };
-  const pageSize = 15, maxLines = 80, minBand = 3;
+  // A point on the main chart needs two samples with data for the median and three for the middle-50% band.
+  const pageSize = 15, maxLines = 80, minMedian = 2, minBand = 3;
   const esc = M.escapeHtml;
   const cache = new Map(), highCache = new Map(), frames = new Map(), results = new Map(), fits = new Map(), charts = new Map();
   // `idle`: ticked rows that follow the reference date but have no reading there, so they are not applied.
@@ -439,7 +440,9 @@
       (st.manual ? '按参照日匹配' : '✓ 已按参照日匹配') + '</button>' + fitInfo() + '</span>' +
       (n ? '<button type="button" class="text-link" data-cs-action="clear">清除全部条件</button>' : '') + '</div>' +
       '<div class="cs-conditions-status"><p class="cs-match" role="status">匹配 <b>' + result.episodes.length + '</b> 段 · ' +
-      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (merged ? '<small>其中 ' + merged.toLocaleString('zh-CN') + ' 天并入所在段</small>' : '') + '</p>' +
+      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (merged ? '<small>其中 ' + merged.toLocaleString('zh-CN') + ' 天并入所在段</small>' : '') +
+      (n && result.uncounted.length ? '<small title="未计入的信号日：' + result.uncounted.map(e => e.date).join('、') + '">另有 ' + result.uncounted.length + ' 段后续不足 ' +
+        C.mature + ' 个交易日，未计入</small>' : '') + '</p>' +
       spacing() + referenceStatus() +
       '<p class="cs-key" aria-hidden="true"><span class="cs-key-now"></span>参照日读数<span class="cs-key-band"></span>条件范围<span class="cs-key-iqr"></span>历史中间 50%</p></div></div>' +
       '<div class="cs-groups">' + C.groups.filter(([g]) => g !== 'obs' || st.wait).map(([g, title]) => '<fieldset class="cs-group cs-group-' + g + '"><legend>' + legend(g, title) +
@@ -457,13 +460,14 @@
     return ticks;
   }
   const line = points => points.map(([x, y], i) => (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1)).join('');
-  function frame(id, { lines, thin = [], band = null, labels = [], caption, legend, marks = [] }) {
+  function frame(id, { lines, thin = [], spread = [], labels = [], caption, legend, marks = [] }) {
     const width = 1200, height = 380, left = 58, right = 1080, top = 22, bottom = 330, x0 = -C.lookback, x1 = C.chartAfter;
+    const band = spread.filter(r => r.n >= minBand);
     // With a band, its 10–90% envelope sets the scale and outlying single paths are clipped.
     let lo = 100, hi = 100;
     const take = v => { if (v < lo) lo = v; if (v > hi) hi = v; };
     for (const l of lines) for (const p of l.points) take(p[1]);
-    if (band) { for (const r of band) if (r.n >= minBand) { take(r.p10); take(r.p90); } }
+    if (band.length) for (const r of band) { take(r.p10); take(r.p90); }
     else for (const t of thin) for (const p of t.points) take(p[1]);
     const pad = Math.max(1, (hi - lo) * .06); lo -= pad; hi += pad;
     const sx = k => left + (k - x0) / (x1 - x0) * (right - left), sy = v => bottom - (v - lo) / (hi - lo) * (bottom - top);
@@ -473,11 +477,10 @@
       '<text class="cs-axis" x="' + (left - 10) + '" y="' + (sy(v) + 4).toFixed(1) + '" text-anchor="end">' + v + '</text>').join('');
     const xticks = [-63, -21, 0, 21, 63, 126, 252].map(k => '<text class="cs-axis" x="' + sx(k).toFixed(1) + '" y="' + (bottom + 22) + '" text-anchor="middle">' +
       (k === 0 ? '信号日' : (k > 0 ? '+' : '−') + Math.abs(k)) + '</text>').join('');
-    const usable = band ? band.filter(r => r.n >= minBand) : [];
-    const area = usable.length > 1 ? '<path class="cs-band" d="' + line(map(usable.map(r => [r.k, r.q75]))) + 'L' +
-      line(map(usable.slice().reverse().map(r => [r.k, r.q25]))).slice(1) + 'Z"/>' : '';
+    const area = band.length > 1 ? '<path class="cs-band" d="' + line(map(band.map(r => [r.k, r.q75]))) + 'L' +
+      line(map(band.slice().reverse().map(r => [r.k, r.q25]))).slice(1) + 'Z"/>' : '';
     charts.set(id, { width, x0, x1, sx, left, right,
-      band:new Map(usable.map(r => [r.k, r])),
+      band:new Map(band.map(r => [r.k, r])), counts:new Map(spread.map(r => [r.k, r.n])),
       lines:lines.map(l => ({ label:l.label, cls:l.cls, values:new Map(l.points) })) });
     return '<figure class="cs-chart">' + (legend || '') + '<div class="cs-chart-box"><svg data-cs-chart="' + id + '" viewBox="0 0 ' + width + ' ' + height + '" role="img" tabindex="0" aria-label="' + esc(caption) + '">' +
       '<title>' + esc(caption) + '</title><defs><clipPath id="' + clip + '"><rect x="' + left + '" y="' + top + '" width="' + (right - left) + '" height="' + (bottom - top) + '"/></clipPath></defs>' +
@@ -503,20 +506,20 @@
   function mainChart() {
     const indices = result.episodes.map(e => e.index), rows = result.spread || (result.spread = C.spread(data, indices));
     const now = refPath(), many = indices.length > maxLines;
-    const median = rows.filter(r => r.n >= minBand).map(r => [r.k, r.median]);
-    const end = median.at(-1), forward = rows.filter(r => r.k > 0 && r.n >= minBand);
+    const median = rows.filter(r => r.n >= minMedian).map(r => [r.k, r.median]);
+    const end = median.at(-1), unfinished = indices.length > 0 && rows.find(r => r.k === C.chartAfter)?.n !== indices.length;
     const start = now.find(p => p[0] === -C.lookback) || now[0], tail = now.at(-1);
     const lines = [...(median.length > 1 ? [{ label:'中位数', cls:'cs-line-median', points:median }] : []), { label:refName(), cls:'cs-line-now', points:now }];
     const labels = [{ text:refName(), k:start[0], v:start[1], dy:-10 }, ...(end ? [{ text:'中位数 ' + pct(end[1] - 100), k:end[0], v:end[1] }] : []),
       ...(ref < data.last && tail[0] > 0 ? [{ text:pct(tail[1] - 100), k:tail[0], v:tail[1], anchor:tail[0] > 230 ? 'end' : 'start', dy:-10 }] : [])];
     const legend = '<div class="cs-legend">' + key('cs-key-line-now', refLegend(now)) +
-      (median.length > 1 ? key('cs-key-line-median', '历史中位数') + key('cs-key-area', '中间 50% 区间') : '') +
+      (median.length > 1 ? key('cs-key-line-median', '历史中位数') : '') + (indices.length >= minBand ? key('cs-key-area', '中间 50% 区间') : '') +
       (many ? '' : key('cs-key-line-episode', '各段实际走势')) + '</div>';
     const caption = '每段以信号日收盘为 100，' + (ref === data.last ? '最新路径以 ' + data.asOf : '参照日路径以 ' + data.dates[ref]) + ' 收盘为 100。' +
-      (forward.length && forward.at(-1).n < indices.length ? '较新的样本尚未走完，右侧只计已发生部分。' : '') + (many ? '共 ' + indices.length + ' 段，只画中位数与区间。' : '');
+      (unfinished ? '较新的样本尚未走完，右侧只计已发生部分。' : '') + (many ? '共 ' + indices.length + ' 段，只画中位数与区间。' : '');
     return '<section class="ds-panel cs-chart-panel"><div class="ds-panel-head"><div><h2>信号前后的走势</h2><p>前 ' + C.lookback + ' 个交易日至后 ' + C.chartAfter +
       ' 个交易日 · ' + indices.length + ' 段匹配样本</p></div></div>' +
-      frame('main', { lines, thin:many ? [] : result.episodes.map(e => ({ label:e.date, points:C.path(data, e.index) })), band:indices.length >= minBand ? rows : null,
+      frame('main', { lines, thin:many ? [] : result.episodes.map(e => ({ label:e.date, points:C.path(data, e.index) })), spread:rows,
         labels, caption, legend, marks:waitMark() }) + '</section>';
   }
   function episodeChart(e) {
@@ -537,12 +540,10 @@
     if (!model || !tip || !cross) return;
     k = Math.max(model.x0, Math.min(model.x1, Math.round(k)));
     model.focus = k;
-    const x = model.sx(k), band = model.band.get(k), rows = [];
+    const x = model.sx(k), band = model.band.get(k), count = model.counts.get(k), rows = [];
     for (const l of model.lines) if (l.values.has(k)) rows.push(tipRow(l.cls.replace('cs-line', 'cs-key-line'), l.label, pct(l.values.get(k) - 100)));
-    if (band) {
-      rows.push(tipRow('cs-key-area', '中间 50%', pct(band.q25 - 100) + ' 至 ' + pct(band.q75 - 100)));
-      rows.push(tipRow('', '有数据的样本', band.n + ' 段'));
-    }
+    if (band) rows.push(tipRow('cs-key-area', '中间 50%', pct(band.q25 - 100) + ' 至 ' + pct(band.q75 - 100)));
+    if (count) rows.push(tipRow('', '有数据的样本', count + ' 段'));
     const title = document.createElement('p');
     title.textContent = k === 0 ? '信号日' : k < 0 ? '信号前 ' + -k + ' 个交易日' : '信号后 ' + k + ' 个交易日';
     tip.replaceChildren(title, ...rows);
@@ -620,7 +621,8 @@
           result.horizons.map(h => '<td>' + cell(e.outcomes[h]) + '</td>').join('') + '</tr>').join('') +
         '</tbody></table></div>' + (pages() > 1 ? '<div class="ds-pagination"><span>第 ' + page + ' / ' + pages() + ' 页</span><button type="button" class="btn sm" data-cs-action="prev"' + (page === 1 ? ' disabled' : '') +
         '>上一页</button><button type="button" class="btn sm" data-cs-action="next"' + (page === pages() ? ' disabled' : '') + '>下一页</button></div>' : '') :
-        '<p class="ds-foot">没有同时满足全部条件的交易日。可去掉或放宽一项：每行右侧显示去掉它之后的段数。</p>') + '</section>';
+        '<p class="ds-foot">' + (result.uncounted.length ? '只有 ' + result.uncounted.length + ' 段满足全部条件，后续不足 ' + C.mature + ' 个交易日，未计入。' :
+          '没有同时满足全部条件的交易日。') + '可去掉或放宽一项：每行右侧显示去掉它之后的段数。</p>') + '</section>';
   }
   function emptyState() {
     return '<section class="ds-panel cs-empty" role="status"><h2>尚未选择条件</h2><p>勾选或填写上方任一指标后显示匹配的历史样本。</p></section>';

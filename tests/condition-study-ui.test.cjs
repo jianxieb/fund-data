@@ -313,6 +313,42 @@ test('ticked ranges follow the reference date, typed numbers stay, and a row wit
   assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, rebound }, gap:21, ref:day }).episodes.length + '</b> 段'));
 });
 
+test('a latest close that has just matched is not a sample: counts, records, chart and CSV leave it out and say so', async () => {
+  // 12% falls at chosen sessions; the walk itself never falls 8% in a day.
+  const crash = at => {
+    const closes = walk(2601, 2);
+    for (const i of at) for (let j = i; j < closes.length; j++) closes[j] = Number((closes[j] * .88).toFixed(2));
+    return sessions(closes);
+  };
+  const f = fixture({ hash:'#condition-study?gap=1&r1=~-8', series:crash([1000, 2000, 2600]) });
+  let html = await f.settle();
+  const latest = f.data.asOf, r = C.study(f.view, { conditions:{ r1:{ lo:null, hi:-8 } }, gap:1 });
+  assert.deepEqual(r.episodes.map(e => e.index), [2000, 1000]);
+  assert.deepEqual(r.uncounted.map(e => e.date), [latest]);
+  assert.ok(html.includes('匹配 <b>2</b> 段 · 2 个交易日满足条件<small title="未计入的信号日：' + latest + '">另有 1 段后续不足 5 个交易日，未计入</small>'));
+  assert.ok(html.includes(latest + ' 收盘满足全部 1 项条件'));
+  assert.ok(!html.includes('data-cs-event="' + latest + '"') && !html.includes('含最新收盘'));
+  assert.ok(html.includes('每个满足条件的交易日都是信号日 · 2 段'));
+  assert.ok(html.includes(' 个交易日 · 2 段匹配样本'));
+  // Two samples carry the median to the end of the chart; a middle-50% band needs three.
+  const end = C.spread(f.data, [2000, 1000]).find(x => x.k === C.chartAfter);
+  assert.equal(end.n, 2);
+  assert.ok(html.includes('>中位数 ' + pct(end.median - 100) + '</text>'));
+  assert.match(html, /历史中位数/);
+  assert.doesNotMatch(html, /中间 50% 区间|class="cs-band"/);
+  assert.doesNotMatch(html, /较新的样本尚未走完/);
+  f.click('action', 'csv');
+  const lines = f.downloads.at(-1)[1].replace(/^\uFEFF/, '').split('\r\n');
+  assert.equal(lines.length, 3);
+  assert.ok(lines[1].includes('"' + r.episodes[0].date + '"') && lines[2].includes('"' + r.episodes[1].date + '"'));
+
+  // With no earlier match, the empty table says the latest close matched but does not count yet.
+  const only = fixture({ hash:'#condition-study?gap=1&r1=~-8', series:crash([2600]) });
+  html = await only.settle();
+  assert.ok(html.includes('匹配 <b>0</b> 段 · 0 个交易日满足条件<small title="未计入的信号日：' + only.data.asOf + '">另有 1 段后续不足 5 个交易日，未计入</small>'));
+  assert.ok(html.includes('只有 1 段满足全部条件，后续不足 5 个交易日，未计入。可去掉或放宽一项：每行右侧显示去掉它之后的段数。'));
+  assert.ok(html.includes(' 个交易日 · 0 段匹配样本'));
+});
 test('an observation period adds the recovery rows, moves where results start and shows each period', async () => {
   const f = fixture({ hash:'#condition-study?obs=2&r1=~-2' });
   let html = await f.settle();
@@ -332,7 +368,7 @@ test('an observation period adds the recovery rows, moves where results start an
   html = await f.settle();
   assert.equal(f.location.hash, '#condition-study?obs=2&r1=~-2&recov=no');
   const unrecovered = C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, recov:{ lo:0, hi:0 } }, gap:21 }), e = unrecovered.episodes[0];
-  assert.equal(unrecovered.historical, p.no, 'the count on the choice is the sample it leaves');
+  assert.equal(unrecovered.episodes.length, p.no, 'the count on the choice is the sample it leaves');
   assert.ok(html.includes('匹配 <b>' + unrecovered.episodes.length + '</b> 段'));
   assert.ok(html.includes('<small>改为不限后</small><b>' + C.count(v, { r1:{ lo:null, hi:-2 } }, 21) + '</b> 段'));
   assert.ok(html.includes('始终未收复<small>观察期 ' + pct(e.observation.move)));

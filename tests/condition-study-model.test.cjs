@@ -53,7 +53,9 @@ test('warm-up lengths are exact and a long outage starts a fresh history', () =>
   near(split.values.r5[265], (split.closes[265] / split.closes[260] - 1) * 100);
   assert.ok(Number.isNaN(split.values.r21[280]));
   assert.equal(split.outcomes[5].pct.slice(255, 260).every(Number.isNaN), true, 'forward windows never bridge the outage');
-  assert.equal(C.study(split, { conditions:{ r1:{ lo:-100, hi:100 } }, gap:5 }).episodes.find(e => e.index > 254 && e.index < 260).outcomes[5].status, 'gap');
+  const cut = C.study(split, { conditions:{ r1:{ lo:-100, hi:100 } }, gap:5 });
+  assert.equal(cut.uncounted.find(e => e.index > 254 && e.index < 260).outcomes[5].status, 'gap', 'a sample the outage cuts short is not counted');
+  assert.ok(cut.episodes.every(e => e.index < 255 || e.index >= 260));
 });
 
 test('RSI follows Wilder smoothing; streaks reset on flat closes and stay unknown at the start', () => {
@@ -112,6 +114,33 @@ test('conditions include both bounds, need a known value, and samples keep the c
   assert.throws(() => C.study(d, { conditions:{ nope:{ lo:1, hi:null } } }), /未知的行情条件/);
   assert.throws(() => C.study(d, { conditions:{ r1:{ lo:2, hi:1 } } }), /未知的行情条件/);
   assert.throws(() => C.study(d, { conditions:{}, gap:7 }), /样本间隔/);
+});
+
+test('a sample counts once it has five sessions of results; newer matches, the latest close among them, stay out', () => {
+  // Days 30, 40, 48 and the latest close (51) each fall 6%.
+  const drops = [30, 40, 48, 51], closes = [100];
+  for (let i = 1; i < 52; i++) closes.push(closes[i - 1] * (drops.includes(i) ? .94 : 1));
+  const d = C.compute(sessions(closes)), conditions = { r1:{ lo:null, hi:-5 } };
+  const separate = C.study(d, { conditions, gap:1, horizons:[1, 5] });
+  assert.deepEqual(separate.episodes.map(e => e.index), [40, 30]);
+  assert.deepEqual(separate.uncounted.map(e => e.index), [51, 48]);
+  assert.equal(separate.uncounted[1].outcomes[1].status, 'complete');
+  assert.equal(separate.summary[1].n, 2, 'a one-day result from a sample that does not count yet stays out of the summary');
+  assert.equal(separate.matchingDays, 2);
+  assert.equal(separate.reference.matches, true);
+  assert.equal(separate.reference.episode, d.dates[51]);
+  // Merged into a sample that started three sessions earlier, the latest close leaves that sample uncounted too.
+  const merged = C.study(d, { conditions, gap:5 });
+  assert.deepEqual(merged.episodes.map(e => e.index), [40, 30]);
+  assert.deepEqual(merged.uncounted.map(e => [e.index, e.merged]), [[48, [d.dates[51]]]]);
+  assert.equal(merged.matchingDays, 2);
+  assert.equal(merged.reference.episode, d.dates[48]);
+  // Days merged into an older sample count with it; the latest close opens its own sample, which does not.
+  const long = C.study(d, { conditions, gap:21 });
+  assert.deepEqual(long.episodes.map(e => [e.index, e.merged]), [[30, [d.dates[40], d.dates[48]]]]);
+  assert.deepEqual(long.uncounted.map(e => e.index), [51]);
+  assert.equal(long.matchingDays, 3);
+  for (const [gap, r] of [[1, separate], [5, merged], [21, long]]) assert.equal(r.episodes.length, C.count(d, conditions, gap), 'the match count uses the unit of the previews');
 });
 
 test('outcomes, risk and summaries use complete windows; previews keep every other condition', () => {
@@ -175,8 +204,8 @@ test('the latest-close fit is greedy, deterministic and keeps enough separate sa
   for (const s of fit.skipped) if (s.episodes !== null) assert.ok(s.episodes < fit.minEpisodes);
   const r = C.study(d, { conditions:fit.conditions, gap:21 });
   assert.equal(r.reference.matches, true);
-  assert.equal(r.reference.episode, r.episodes[0].date);
-  assert.equal(r.historical, fit.episodes);
+  assert.deepEqual(r.uncounted.map(e => e.date), [r.reference.episode], 'the latest close has no results yet, so its sample is not counted');
+  assert.equal(r.episodes.length, fit.episodes);
   const strict = C.fit(d, { gap:21, minEpisodes:100000 });
   assert.deepEqual(strict.conditions, {});
   assert.throws(() => C.fit(d, { gap:4 }), /样本间隔/);

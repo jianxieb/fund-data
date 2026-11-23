@@ -428,11 +428,12 @@
     for (let i = 0; i < matches.length; i++) if (matches[i] && i >= next) { out.push(i); next = i + gap; }
     return out;
   }
-  // Historical: at least `mature` sessions of results after the anchor, inside the same history.
-  const historical = (view, indices) => indices.filter(i => {
+  // Historical: at least `mature` sessions of results after the anchor, inside the same history. Only these
+  // count as samples; a newer one, such as a latest close that has just matched, has nothing to show yet.
+  const historical = (view, i) => {
     const end = i + view.wait + mature;
     return end <= view.last && view.starts[end] === view.starts[i];
-  }).length;
+  };
   function checkStudy(gap, era) {
     if (!validGap(gap)) throw new Error('未知的样本间隔');
     if (!validEra(era)) throw new Error('未知的历史范围');
@@ -440,7 +441,7 @@
   function count(data, conditions, gap = 21, era = 'all') {
     const view = framed(data);
     checkStudy(gap, era);
-    return historical(view, space(mask(view, ordered(view, conditions), era), gap));
+    return space(mask(view, ordered(view, conditions), era), gap).filter(i => historical(view, i)).length;
   }
   const refOf = (view, ref) => {
     if (ref === undefined || ref === null) return view.last;
@@ -547,12 +548,14 @@
     checkStudy(gap, era);
     const entries = ordered(view, conditions), matches = mask(view, entries, era), indices = space(matches, gap), longest = list[list.length - 1];
     // `merged`: later matching closes inside the sample's spacing. They belong to it and add no results of their own.
-    const episodes = indices.map(i => {
+    const segments = indices.map(i => {
       const merged = [];
       for (let j = i + 1; j < Math.min(view.n, i + gap); j++) if (matches[j]) merged.push(view.dates[j]);
       return { index:i, date:view.dates[i], close:view.closes[i], merged, values:snapshot(view, i), observation:observation(view, i),
         outcomes:Object.fromEntries(list.map(h => [h, outcome(view, i, h)])), fall:fall(view, i, i + view.wait + longest) };
     });
+    // The samples are the historical segments. `uncounted` ones (too new, or cut by an outage) stay out of every count, summary and chart.
+    const episodes = segments.filter(e => historical(view, e.index)), uncounted = segments.filter(e => !historical(view, e.index));
     const summary = Object.fromEntries(list.map(h => {
       const all = episodes.map(e => e.outcomes[h]), done = all.filter(o => o.status === 'complete');
       return [h, { ...summarize(done.map(o => o.pct)), pending:all.filter(o => o.status === 'pending').length,
@@ -586,11 +589,11 @@
       for (let i = 0; i <= view.last; i++) if (view.obs.status[i] === PENDING && !excluded(era, view.dates[i]) &&
           signalEntries.every(([id, range]) => inRange(view.values[id][i], range))) { observing.count++; observing.latest = view.dates[i]; }
     }
+    // Matching closes of the samples: each signal day and the days merged into it.
     let matchingDays = 0;
-    for (const v of matches) matchingDays += v;
+    for (const e of episodes) matchingDays += 1 + e.merged.length;
     return { first:view.first, asOf:view.asOf, gap, era, wait:view.wait, basis:view.basis, horizons:list, conditions:Object.fromEntries(entries),
-      episodes:episodes.reverse(), summary, baseline:baseline(view, era, list), previews, reference, observing, matchingDays,
-      historical:historical(view, indices) };
+      episodes:episodes.reverse(), uncounted:uncounted.reverse(), summary, baseline:baseline(view, era, list), previews, reference, observing, matchingDays };
   }
 
   // Index paths around a signal, set to 100 at its close. Paths stop at an outage or the latest close.

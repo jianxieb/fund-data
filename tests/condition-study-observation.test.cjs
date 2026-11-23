@@ -174,10 +174,10 @@ test('the fall since the signal day covers the observation and the longest selec
   const none = C.study(frameOf([...flat(30), 94, ...flat(10, 95)]), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).episodes[0];
   assert.equal(none.fall.pct, 0);
   assert.equal(none.fall.days, 0);
-  const late = C.study(frameOf([...flat(30), 94, 93]), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).episodes[0];
+  const late = C.study(frameOf([...flat(30), 94, 93]), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).uncounted[0];
   assert.equal(late.fall.status, 'pending');
   assert.equal(late.fall.days, 1);
-  const cut = C.study(frameOf([...flat(30), 94, 93, ...flat(10, 90)], {}, '2001-01-02', { 32:12 }), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).episodes[0];
+  const cut = C.study(frameOf([...flat(30), 94, 93, ...flat(10, 90)], {}, '2001-01-02', { 32:12 }), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).uncounted[0];
   assert.equal(cut.fall.status, 'gap');
   near(cut.fall.pct, (93 / 94 - 1) * 100);
   for (const bad of [[7], [5, 5], []]) assert.throws(() => C.study(v, { conditions:{}, horizons:bad }), /后续期限/);
