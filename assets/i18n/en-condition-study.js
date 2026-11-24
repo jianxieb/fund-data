@@ -423,44 +423,86 @@
     '勾选后按参照日读数取 {0} 至 {1}，匹配 {2} 段。': 'When ticked, the reference reading {0} to {1} is used, matching {2} {2?segment:segments}.',
     // Condition study: best combo for the reference date
     '最佳组合': 'Best combination',
-    '{0} 收盘满足的条件组合中，历史上涨占比最高的一组': 'Of the condition sets the {0} close meets, the one with the highest past share up',
+    '{0} 收盘满足的条件中，扣除偶然性后上涨占比最高的一组': 'Of the conditions the {0} close meets, the set with the highest share up once luck is allowed for',
+    '正在比较 {0} 收盘满足的条件…': 'Comparing the conditions the {0} close meets…',
     '挑选依据': 'Ranked by',
     '{0}日后上涨占比': 'Share up after {0} {0?day:days}',
     '{0}周后上涨占比': 'Share up after {0} {0?week:weeks}',
     '{0}个月后上涨占比': 'Share up after {0} {0?month:months}',
     '半年后上涨占比': 'Share up after half a year',
     '{0}年后上涨占比': 'Share up after {0} {0?year:years}',
-    '限定情形': 'Situation',
-    '低于 {0} 日均线': 'Below the {0}-day average',
-    '高于 {0} 日均线': 'Above the {0}-day average',
-    '当日跌 {0}% 以上': 'Down {0}% or more on the day',
-    '当日涨 {0}% 以上': 'Up {0}% or more on the day',
-    '同时满足这 {0} 项时，涨跌中位数 {1}%，最差 {2}%。': 'When these {0} conditions all hold: median change {1}%, worst {2}%.',
-    '满足这一项时，涨跌中位数 {0}%，最差 {1}%。': 'When this condition holds: median change {0}%, worst {1}%.',
+    // The description under the chips, for each horizon unit.
+    '历史上同时满足这 {0} 项的 {1} 段中，{2} 段在{3}日后上涨；涨跌中位数 {4}%，最差 {5}%。':
+      'Of the {1} past {1?segment:segments} meeting these {0} conditions, {2} rose after {3} {3?day:days}; median change {4}%, worst {5}%.',
+    '历史上同时满足这 {0} 项的 {1} 段中，{2} 段在{3}周后上涨；涨跌中位数 {4}%，最差 {5}%。':
+      'Of the {1} past {1?segment:segments} meeting these {0} conditions, {2} rose after {3} {3?week:weeks}; median change {4}%, worst {5}%.',
+    '历史上同时满足这 {0} 项的 {1} 段中，{2} 段在{3}个月后上涨；涨跌中位数 {4}%，最差 {5}%。':
+      'Of the {1} past {1?segment:segments} meeting these {0} conditions, {2} rose after {3} {3?month:months}; median change {4}%, worst {5}%.',
+    '历史上同时满足这 {0} 项的 {1} 段中，{2} 段在{3}年后上涨；涨跌中位数 {4}%，最差 {5}%。':
+      'Of the {1} past {1?segment:segments} meeting these {0} conditions, {2} rose after {3} {3?year:years}; median change {4}%, worst {5}%.',
+    '历史上同时满足这 {0} 项的 {1} 段中，{2} 段在半年后上涨；涨跌中位数 {3}%，最差 {4}%。':
+      'Of the {1} past {1?segment:segments} meeting these {0} conditions, {2} rose after half a year; median change {3}%, worst {4}%.',
+    '历史上满足这一项的 {0} 段中，{1} 段在{2}日后上涨；涨跌中位数 {3}%，最差 {4}%。':
+      'Of the {0} past {0?segment:segments} meeting this condition, {1} rose after {2} {2?day:days}; median change {3}%, worst {4}%.',
+    '历史上满足这一项的 {0} 段中，{1} 段在{2}周后上涨；涨跌中位数 {3}%，最差 {4}%。':
+      'Of the {0} past {0?segment:segments} meeting this condition, {1} rose after {2} {2?week:weeks}; median change {3}%, worst {4}%.',
+    '历史上满足这一项的 {0} 段中，{1} 段在{2}个月后上涨；涨跌中位数 {3}%，最差 {4}%。':
+      'Of the {0} past {0?segment:segments} meeting this condition, {1} rose after {2} {2?month:months}; median change {3}%, worst {4}%.',
+    '历史上满足这一项的 {0} 段中，{1} 段在{2}年后上涨；涨跌中位数 {3}%，最差 {4}%。':
+      'Of the {0} past {0?segment:segments} meeting this condition, {1} rose after {2} {2?year:years}; median change {3}%, worst {4}%.',
+    '历史上满足这一项的 {0} 段中，{1} 段在半年后上涨；涨跌中位数 {2}%，最差 {3}%。':
+      'Of the {0} past {0?segment:segments} meeting this condition, {1} rose after half a year; median change {2}%, worst {3}%.',
+    '这组条件的上涨占比': 'Share up with these conditions',
     '{0} / {1} 段': '{0} / {1} {1?segment:segments}',
-    '分半检验': 'Split-half check',
-    '两半都未挑出组合': 'Neither half produced a pick',
-    '同期全部交易日 {0}%': 'All trading days, same period {0}%',
-    '挑出的组合在另一半没有已有结果的段': 'The picks have no segments with results in the other half',
+    '后续期间互不重叠的 {0} 段': '{0} {0?segment:segments} whose periods do not overlap',
+    '不设条件的上涨占比': 'Share up with no conditions',
+    '新数据检验 · 通过': 'Check on later data · passed',
+    '新数据检验 · 优势不明显': 'Check on later data · edge unclear',
+    '新数据检验 · 未通过': 'Check on later data · failed',
+    '新数据检验 · 样本不足': 'Check on later data · too few samples',
+    '新数据检验 · 无法检验': 'Check on later data · not possible',
+    '只用 {0} 以前的历史，没有一组有至少 {1} 段已有结果、其中 {2} 段的后续期间互不重叠。':
+      'On the history before {0} alone, no set has at least {1} {1?segment:segments} with results, {2} of them with periods that do not overlap.',
+    '只用 {0} 以前的历史挑选，挑出的组合在之后还没有已有结果的段。': 'Picking on the history before {0} alone gives a set with no segments with results after that date yet.',
+    '只用 {0} 以前的历史挑选，挑出的也是这一组；它在之后的 {1} 段中 {2}% 上涨，同期不设条件 {3}%。':
+      'Picking on the history before {0} alone gives this same set; it rose in {2}% of the {1} {1?segment:segments} after that date, against {3}% with no conditions over the same years.',
+    '只用 {0} 以前的历史挑选，挑出的组合在之后的 {1} 段中 {2}% 上涨，同期不设条件 {3}%。':
+      'Picking on the history before {0} alone gives another set; it rose in {2}% of the {1} {1?segment:segments} after that date, against {3}% with no conditions over the same years.',
+    '高出的部分在误差范围内。': 'The difference is within the margin of error.',
+    '上方的上涨占比多半来自挑选本身。': 'Most of the share up above comes from the picking itself.',
+    '其中后续期间互不重叠的只有 {0} 段，不足以检验。': 'Only {0} of them {0?has a period:have periods} that do not overlap, too few to check.',
+    '{0} 以前挑出的组合': 'Set picked before {0}',
     '用这组条件': 'Use these conditions',
     '✓ 已使用这组条件': '✓ Using these conditions',
-    '从 {0} 个组合中挑出：它在挑选所用的历史里表现最好，分半检验更接近没用过的样本上的表现。': 'Picked from {0} {0?set:sets}: it did best on the history used to pick it; the split-half check is closer to how it does on samples not used.',
+    '比较了 {0} 组条件：{1} 个单项范围、{2} 组两两组合。': 'Compared {0} {0?set:sets} of conditions: {1} single {1?range:ranges} and {2} {2?pair:pairs} of ranges.',
     '{0} 的读数回看不足，无法挑选组合。': 'The {0} readings lack enough history to pick a set.',
-    '覆盖 {0} 读数的范围中，没有一组至少 {1} 段已有结果。': 'No set of ranges covering the {0} readings has at least {1} {1?segment:segments} with results.',
+    '覆盖 {0} 读数的范围中，没有一组有至少 {1} 段已有结果、其中 {2} 段的后续期间互不重叠。':
+      'No set of ranges covering the {0} readings has at least {1} {1?segment:segments} with results, {2} of them with periods that do not overlap.',
     '最佳组合如何挑选': 'How the best combination is picked',
-    '候选范围都覆盖参照日的读数：在读数所在的一侧取历史分布中的若干门槛，另加按参照日匹配会取的范围。': 'Every candidate range covers the reference day\'s reading: thresholds from each reading\'s history on the side where it lies, plus the range reference-day matching would take.',
+    '候选范围都覆盖参照日的读数，门槛跟着读数走：从读数往历史的另一端，每隔一段历史分布取一个门槛（取到指标的步长），组成「≥ 门槛」或「≤ 门槛」；读数两侧各取一个门槛组成区间。':
+      'Every candidate range covers the reference day\'s reading, and its thresholds follow that reading: from the reading toward the far end of the history, a threshold every so often along the distribution (rounded to the reading\'s step) gives "≥ threshold" or "≤ threshold", and one threshold on each side of the reading gives a band.',
     '参与的指标：当日、近{0}日、近{1}日、近{2}日、近{3}日、近{4}日、{5}日最差单日、距{6}日高点、距历史高点、高于{7}日低点、高点后、距{8}日线、距{9}日线、{10}/{11}日线、VIX、VIX {12}日变化、波动率、RSI、连跌、连涨。':
       'Readings searched: same day, last {0} days, last {1} days, last {2} days, last {3} days, last {4} days, worst day in {5} days, distance from the {6}-day high, distance from the all-time high, above the {7}-day low, days since the high, distance from the {8}-day line, distance from the {9}-day line, {10}/{11}-day lines, VIX, VIX {12}-day change, volatility, RSI, down streak, up streak.',
-    '最多组合 {0} 项（限定情形另计），每组至少 {1} 段已有结果；按当前的相近满足日计法、历史范围和观察期计数。': 'Up to {0} conditions, not counting a situation, and at least {1} {1?segment:segments} with results per set; counted with the current spacing of nearby qualifying days, history range and observation period.',
-    '按上涨占比的 {0}% 置信下限排序，样本少的组合排名靠后；多加一项须让这个下限至少提高 {1} 个百分点。': 'Ranked by the lower end of the {0}% confidence interval of the share up, so sets with few samples rank lower; another condition must raise that lower end by at least {1} percentage {1?point:points}.',
-    '分半检验如何计算': 'How the split-half check works',
-    '以 {0} 为界把历史分成前后两半。只用一半的样本按同样规则挑出组合，再统计它在另一半的上涨占比；两个方向合计。': 'The history is split into two halves at {0}. A set is picked by the same rules on one half alone, and its share up is counted on the other half; both directions are added together.',
-    '本次在另一半共统计 {0} 段。两半各自的全部交易日上涨占比不同，同期全部交易日按这些段所在的一半计算、按段数加权，分半检验应与它比较。':
-      'This time {0} {0?segment was:segments were} counted on the other half. The two halves rose at different rates, so the same-period share of all trading days is taken from the half each segment lies in, weighted by the segments; compare the split-half check with it.',
-    '挑出的组合可能与上方不同。分半检验明显低于上方的上涨占比时，上方的结果多半来自挑选本身；与同期全部交易日接近时，组合在没用过的样本上并不更好。':
-      'The sets picked this way may differ from the one above. When the split-half check is clearly below the share up above, most of that result comes from the picking itself; when it is close to the same-period share of all trading days, the set does no better on samples not used.',
-    '设了参照日时，最佳组合在覆盖参照日读数的范围里挑选，最多组合 {0} 项（限定情形另计），每组至少 {1} 段已有结果，按所选期限上涨占比的 {2}% 置信下限排序。分半检验只用一半历史挑选、在另一半统计，用来估计挑选本身带来的偏高。':
-      'With a reference date, the best combination is picked from ranges that cover the reference readings: up to {0} conditions, not counting a situation, at least {1} {1?segment:segments} with results per set, ranked by the lower end of the {2}% confidence interval of the share up at the chosen horizon. The split-half check picks on one half of the history and counts on the other, to estimate how much the picking itself inflates the result.',
+    '每个范围单独算一次，不同指标的范围再两两组合各算一次，全部比较，按当前的相近满足日计法、历史范围和观察期计数。':
+      'Each range is counted alone and every pair of ranges of two different readings is counted too, and all of them are compared, using the current spacing of nearby qualifying days, history range and observation period.',
+    '比较的组合很多，总有一些碰巧涨得多，所以排序比的不是上涨占比本身，而是扣除偶然性后的下限。':
+      'With this many sets compared, some rose often by luck alone, so sets are ranked not by the share up itself but by a lower bound that allows for luck.',
+    '下限按同时比较约 {0} 万组从严计算（z = {1}）；段数少、或各段的后续期间大多重叠，扣得更多，样本量按互不重叠的段数计。':
+      'The bound is set strictly enough for comparing about {0:wan} sets at once (z = {1}); few segments, or segments whose periods mostly overlap, lower it further, as the sample size is the number of segments whose periods do not overlap.',
+    '每组至少要有 {0} 段已有结果，其中互不重叠的至少 {1} 段；两项的组合须比其中较好的一项单独时高出 {2} 个百分点。':
+      'Each set needs at least {0} {0?segment:segments} with results, {1} of them not overlapping; a pair has to rank {2} percentage {2?point:points} above the better of its two ranges alone.',
+    '新数据检验如何计算': 'How the check on later data works',
+    '新数据检验': 'Check on later data',
+    '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史上涨占比偏高。':
+      'The best combination is the best of a great many sets compared on the whole history, so the picking itself pushes its past share up too high.',
+    '检验只用 {0} 以前已走完的历史，按同样规则挑一组，再统计它在 {1} 及以后的上涨占比；这段历史挑选时没有用到。':
+      'The check picks a set by the same rules on the history finished before {0} alone, then counts its share up from {1} on, a part of the history the pick never saw.',
+    '通过：上涨占比的 {0}% 置信下限仍高于同期不设条件。': 'Passed: the lower end of the {0}% confidence interval of its share up is still above the share with no conditions over the same years.',
+    '优势不明显：高于同期不设条件，但在误差范围内。': 'Edge unclear: above the share with no conditions over the same years, but within the margin of error.',
+    '未通过：不高于同期不设条件。': 'Failed: not above the share with no conditions over the same years.',
+    '设了参照日时，最佳组合比较覆盖参照日读数的每个范围及不同指标范围的两两组合，门槛跟着读数取；每组至少 {0} 段已有结果、其中后续期间互不重叠的至少 {1} 段，按所选期限上涨占比扣除偶然性后的下限排序。':
+      'With a reference date, the best combination compares every range covering the reference readings and every pair of ranges of two different readings, with thresholds that follow the readings; each set needs at least {0} {0?segment:segments} with results, {1} of them with periods that do not overlap, and sets are ranked by a lower bound of the share up at the chosen horizon that allows for luck.',
+    '新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。': 'The check on later data picks on the first half of the history alone and counts how its pick did on the second half.',
     // Ranges with a unit, as they appear inside the sentences above.
     '≥ {0} 天': '≥ {0} {0?day:days}',
     '≤ {0} 天': '≤ {0} {0?day:days}',

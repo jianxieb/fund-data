@@ -9,7 +9,7 @@
   const eraNames = { all:'全部历史', exclude_dotcom:'排除 2000—2002 年信号' };
   const basisNames = { close:'收盘', high:'盘中最高价' };
   const choices = { recov:{ yes:'曾收复', no:'始终未收复' }, broke:{ yes:'曾跌破', no:'未跌破' } };
-  const sceneNames = { below200:'低于 200 日均线', above200:'高于 200 日均线', drop:'当日跌 2% 以上', rise:'当日涨 2% 以上' };
+  const verdicts = { pass:'通过', weak:'优势不明显', fail:'未通过', few:'样本不足', none:'无法检验' };
   const peerOf = market => market === 'ndx' ? 'spx' : 'ndx';
   const peerName = () => markets[peerOf(st.market)][0];
   const shortLabels = { r1:'当日', r3:'近3日', r5:'近5日', r21:'近21日', r63:'近63日', r252:'近252日', worst21:'21日最差单日',
@@ -66,8 +66,9 @@
   // `drafts`: rows ticked with no reading to take a range from; they wait for a typed number and stay out of the address.
   // `lastMerge`: the merge window to return to after counting each day separately.
   // `written`: the address the page itself last wrote; any other address starts without drafts.
-  // `best`: the best combo shown for the reference date, or null without one.
-  let H, st, data, ref, result, fitted, best = null, idle = [], shown = null, signature = '', page = 1, vixLoad = null, lastMerge = 21, written = null;
+  // `best`: the best combo shown for the reference date, or null without one or while it is being compared.
+  // `queued`: the settings whose best combo is being compared.
+  let H, st, data, ref, result, fitted, best = null, queued = null, idle = [], shown = null, signature = '', page = 1, vixLoad = null, lastMerge = 21, written = null;
   const drafts = new Set();
 
   const fixed = (v, digits = 2) => v.toLocaleString('zh-CN', { minimumFractionDigits:digits, maximumFractionDigits:digits });
@@ -125,8 +126,8 @@
       gap:C.validGap(num('gap')) ? num('gap') : defaults.gap, wait, basis:q.get('basis') === 'high' ? 'high' : 'close',
       era:C.validEra(q.get('era')) ? q.get('era') : defaults.era, date,
       horizons:picked.length ? C.horizonChoices.filter(h => picked.includes(h)) : [...defaults.horizons], params, conditions, follow,
-      // The best combo's horizon and the situation it is held to; both only shape that card.
-      best:C.horizonChoices.includes(num('best')) ? num('best') : C.bestDefaults.horizon, scene:Object.hasOwn(C.scenes, q.get('scene')) ? q.get('scene') : null,
+      // The best combo's horizon only shapes that card.
+      best:C.horizonChoices.includes(num('best')) ? num('best') : C.bestDefaults.horizon,
       // The automatic match needs a reference date and nothing chosen by hand.
       manual:!date || Object.keys(conditions).length > 0 || follow.length > 0 || q.get('mode') === 'manual' };
   }
@@ -141,7 +142,6 @@
     if (next.gap !== defaults.gap) parts.push('gap=' + next.gap);
     if (next.horizons.join() !== defaults.horizons.join()) parts.push('h=' + next.horizons.join(','));
     if (next.best !== C.bestDefaults.horizon) parts.push('best=' + next.best);
-    if (next.scene) parts.push('scene=' + next.scene);
     for (const [k, spec] of Object.entries(C.params)) if (next.params[k] !== spec.fallback) parts.push(k + '=' + next.params[k]);
     if (next.manual) {
       const follow = next.follow || [];
@@ -250,16 +250,23 @@
     if (!fits.has(id)) fits.set(id, C.fit(data, { gap:st.gap, era:st.era, ref }));
     return fits.get(id);
   }
+  // The comparison takes a few hundred milliseconds, so it runs once the page has drawn and the card fills in after it.
   function bestFor(key) {
-    const run = scene => {
-      const id = [key, st.gap, st.era, ref, st.best, scene].join('|');
-      if (!bests.has(id)) bests.set(id, C.best(data, { ref, horizon:st.best, gap:st.gap, era:st.era, scene }));
-      return bests.get(id);
-    };
-    const found = run(st.scene);
-    // A situation the reference close does not meet stays in the address for the next date that meets it.
-    return found.reason === 'scene' ? run(null) : found;
+    const id = [key, st.gap, st.era, ref, st.best].join('|');
+    if (bests.has(id)) return bests.get(id);
+    if (queued !== id) {
+      queued = id;
+      const view = data, options = { ref, horizon:st.best, gap:st.gap, era:st.era };
+      afterPaint(() => {
+        if (queued !== id) return;
+        queued = null;
+        bests.set(id, C.best(view, options));
+        redraw();
+      });
+    }
+    return null;
   }
+  const afterPaint = run => typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => setTimeout(run, 0)) : setTimeout(run, 0);
 
   function waitOptions() {
     const list = [...new Set([...C.waits, ...(st.wait ? [st.wait] : [])])].sort((a, b) => a - b);
@@ -468,48 +475,61 @@
       '<span class="cs-count">' + count + '</span></div>';
   }
   function bestInfo() {
+    const o = C.bestDefaults;
     return info('best', '最佳组合如何挑选', '最佳组合如何挑选', [
-      '候选范围都覆盖参照日的读数：在读数所在的一侧取历史分布中的若干门槛，另加按参照日匹配会取的范围。参与的指标：' + esc(C.bestIds.map(shortLabel).join('、')) + '。',
-      '最多组合 ' + C.bestDefaults.size + ' 项（限定情形另计），每组至少 ' + C.bestDefaults.minSamples + ' 段已有结果；按当前的相近满足日计法、历史范围和观察期计数。',
-      '按上涨占比的 95% 置信下限排序，样本少的组合排名靠后；多加一项须让这个下限至少提高 ' + C.bestDefaults.gain * 100 + ' 个百分点。']);
+      '候选范围都覆盖参照日的读数，门槛跟着读数走：从读数往历史的另一端，每隔一段历史分布取一个门槛（取到指标的步长），组成「≥ 门槛」或「≤ 门槛」；读数两侧各取一个门槛组成区间。参与的指标：' + esc(C.bestIds.map(shortLabel).join('、')) + '。',
+      '每个范围单独算一次，不同指标的范围再两两组合各算一次，全部比较，按当前的相近满足日计法、历史范围和观察期计数。',
+      '比较的组合很多，总有一些碰巧涨得多，所以排序比的不是上涨占比本身，而是扣除偶然性后的下限。下限按同时比较约 10 万组从严计算（z = ' + o.z +
+        '）；段数少、或各段的后续期间大多重叠，扣得更多，样本量按互不重叠的段数计。每组至少要有 ' + o.minSamples + ' 段已有结果，其中互不重叠的至少 ' + o.minApart +
+        ' 段；两项的组合须比其中较好的一项单独时高出 ' + o.gain * 100 + ' 个百分点。']);
   }
   function checkInfo(b) {
-    return info('best-check', '分半检验如何计算', '分半检验', [
-      '以 ' + b.check.split + ' 为界把历史分成前后两半。只用一半的样本按同样规则挑出组合，再统计它在另一半的上涨占比；两个方向合计。',
-      ...(b.check.n ? ['本次在另一半共统计 ' + b.check.n + ' 段。两半各自的全部交易日上涨占比不同，同期全部交易日按这些段所在的一半计算、按段数加权，分半检验应与它比较。'] : []),
-      '挑出的组合可能与上方不同。分半检验明显低于上方的上涨占比时，上方的结果多半来自挑选本身；与同期全部交易日接近时，组合在没用过的样本上并不更好。']);
+    return info('best-check', '新数据检验如何计算', '新数据检验', [
+      '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史上涨占比偏高。',
+      '检验只用 ' + b.check.split + ' 以前已走完的历史，按同样规则挑一组，再统计它在 ' + b.check.split + ' 及以后的上涨占比；这段历史挑选时没有用到。',
+      '通过：上涨占比的 95% 置信下限仍高于同期不设条件。优势不明显：高于同期不设条件，但在误差范围内。未通过：不高于同期不设条件。']);
   }
   const sameConditions = (a, b) => Object.keys(a).length === Object.keys(b).length &&
     Object.entries(b).every(([id, range]) => a[id] && C.formatRange(a[id]) === C.formatRange(range));
-  // The best combo for the reference date: at most two ranges it meets, plus a chosen situation, whose samples rose most
-  // often after the chosen horizon, beside the share for every close and the check on the half of history not used to pick.
+  const chips = conditions => Object.entries(conditions).map(([id, range]) => '<li><span>' + esc(label(C.byId[id])) + '</span><b>' +
+    esc(rangeText(C.byId[id], range)) + '</b></li>').join('');
+  // The pick on the earlier half of the history, counted on the later half that it never saw.
+  function checkLine(b) {
+    const k = b.check, half = [Math.ceil(b.minSamples / 2), Math.ceil(b.minApart / 2)];
+    const facts = k.verdict === 'none' ? '只用 ' + k.split + ' 以前的历史，没有一组有至少 ' + half[0] + ' 段已有结果、其中 ' + half[1] + ' 段的后续期间互不重叠。' :
+      !k.n ? '只用 ' + k.split + ' 以前的历史挑选，挑出的组合在之后还没有已有结果的段。' :
+      '只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组；它' : '挑出的组合') + '在之后的 ' + k.n + ' 段中 ' + share(k.upPct) +
+        ' 上涨，同期不设条件 ' + share(k.baseline) + '。';
+    const verdict = { weak:'高出的部分在误差范围内。', fail:'上方的上涨占比多半来自挑选本身。',
+      few:k.n ? '其中后续期间互不重叠的只有 ' + k.apart + ' 段，不足以检验。' : '' }[k.verdict] || '';
+    const pick = k.conditions && !k.same ? '<div class="cs-best-pick"><span>' + k.split + ' 以前挑出的组合</span><ul class="cs-best-list">' + chips(k.conditions) + '</ul></div>' : '';
+    return '<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>' + checkInfo(b) + '</p>' +
+      '<p class="cs-best-check-text">' + facts + (verdict ? ' ' + verdict : '') + '</p>' + pick + '</div>';
+  }
+  // The best combo for the reference date: one range it meets or two of different readings, whose samples rose most often
+  // after the chosen horizon, beside the share for every close and the check on the later history the pick never saw.
+  // `b` is null while the comparison is still running.
   function bestPanel(b) {
-    const date = b.date, ids = b.conditions ? Object.keys(b.conditions) : [], s = b.summary;
-    const scenes = [['', '不限'], ...b.scenes.map(k => [k, sceneNames[k]])];
-    const controls = '<div class="cs-best-controls">' + H.menu('cs-best', '挑选依据', C.horizonChoices.map(h => [String(h), terms[h] + '后上涨占比']), String(b.horizon)) +
-      '<div class="cs-best-scenes"><span id="cs-scene-label">限定情形</span><div class="segmented" role="group" aria-labelledby="cs-scene-label">' +
-      scenes.map(([k, text]) => {
-        const on = (b.scene || '') === k;
-        return '<button type="button" class="' + (on ? 'active' : '') + '" data-cs-scene="' + k + '" aria-pressed="' + on + '">' + text + '</button>';
-      }).join('') + '</div></div></div>';
-    const tile = (cls, name, big, small) => '<div class="' + cls + '"><dt>' + name + '</dt><dd><b>' + big + '</b><small>' + small + '</small></dd></div>';
+    const date = data.dates[ref], s = b?.summary, term = terms[st.best], n = b?.conditions ? Object.keys(b.conditions).length : 0;
+    const controls = '<div class="cs-best-controls">' + H.menu('cs-best', '挑选依据', C.horizonChoices.map(h => [String(h), terms[h] + '后上涨占比']), String(st.best)) + '</div>';
+    const tile = (cls, name, big, small) => '<div class="' + cls + '"><dt>' + name + '</dt><dd><b>' + big + '</b>' + small.map(t => '<small>' + t + '</small>').join('') + '</dd></div>';
     let body;
-    if (!b.conditions) body = '<p class="cs-best-empty" role="status">' + (b.reason === 'readings' ? date + ' 的读数回看不足，无法挑选组合。' :
-      '覆盖 ' + date + ' 读数的范围中，没有一组至少 ' + b.minSamples + ' 段已有结果。') + '</p>';
+    if (!b) body = '<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + date + ' 收盘满足的条件…</p>';
+    else if (!b.conditions) body = '<p class="cs-best-empty" role="status">' + (b.reason === 'readings' ? date + ' 的读数回看不足，无法挑选组合。' :
+      '覆盖 ' + date + ' 读数的范围中，没有一组有至少 ' + b.minSamples + ' 段已有结果、其中 ' + b.minApart + ' 段的后续期间互不重叠。') + '</p>';
     else {
       const used = sameConditions(result.conditions, b.conditions);
-      body = '<div class="cs-best-body"><div class="cs-best-main"><ul class="cs-best-list">' + ids.map(id => '<li><span>' + esc(label(C.byId[id])) + '</span><b>' +
-        esc(rangeText(C.byId[id], b.conditions[id])) + '</b></li>').join('') + '</ul>' +
-        '<p class="cs-best-text">' + (ids.length > 1 ? '同时满足这 ' + ids.length + ' 项时' : '满足这一项时') + '，涨跌中位数 ' + pct(s.median) + '，最差 ' + pct(s.min) + '。</p></div>' +
-        '<dl class="cs-best-stats">' + tile('is-pick', '上涨占比', share(s.upPct), b.wins + ' / ' + s.n + ' 段') +
-        tile('is-base', '全部交易日', share(b.baseline.upPct), '中位数 ' + pct(b.baseline.median)) +
-        tile('is-check', '分半检验' + checkInfo(b), b.check.n ? share(b.check.upPct) : '—',
-          b.check.n ? '同期全部交易日 ' + share(b.check.baseline) : b.check.picks ? '挑出的组合在另一半没有已有结果的段' : '两半都未挑出组合') + '</dl></div>' +
+      body = '<div class="cs-best-body"><div class="cs-best-main"><ul class="cs-best-list">' + chips(b.conditions) + '</ul>' +
+        '<p class="cs-best-text">历史上' + (n > 1 ? '同时满足这 ' + n + ' 项' : '满足这一项') + '的 ' + s.n + ' 段中，' + b.wins + ' 段在' + term + '后上涨；涨跌中位数 ' + pct(s.median) +
+        '，最差 ' + pct(s.min) + '。</p></div>' +
+        '<dl class="cs-best-stats">' + tile('is-pick', '这组条件的上涨占比', share(s.upPct), [b.wins + ' / ' + s.n + ' 段', ...(b.apart < s.n ? ['后续期间互不重叠的 ' + b.apart + ' 段'] : [])]) +
+        tile('is-base', '不设条件的上涨占比', share(b.baseline.upPct), ['全部交易日']) + '</dl></div>' + checkLine(b) +
         '<div class="cs-best-foot"><button type="button" class="btn sm" data-cs-action="best" aria-pressed="' + used + '">' + (used ? '✓ 已使用这组条件' : '用这组条件') + '</button>' +
-        '<p class="cs-best-note">从 ' + b.tested.toLocaleString('zh-CN') + ' 个组合中挑出：它在挑选所用的历史里表现最好，分半检验更接近没用过的样本上的表现。</p></div>';
+        '<p class="cs-best-note">比较了 ' + (b.candidates + b.pairs).toLocaleString('zh-CN') + ' 组条件：' + b.candidates.toLocaleString('zh-CN') + ' 个单项范围、' +
+        b.pairs.toLocaleString('zh-CN') + ' 组两两组合。</p></div>';
     }
-    return '<section class="cs-best" aria-labelledby="cs-best-title"><div class="cs-best-title"><h2 id="cs-best-title">最佳组合</h2>' + bestInfo() +
-      '<p>' + date + ' 收盘满足的条件组合中，历史上涨占比最高的一组</p></div>' + controls + body + '</section>';
+    return '<section class="cs-best' + (b ? '' : ' is-pending') + '" aria-labelledby="cs-best-title" aria-busy="' + !b + '"><div class="cs-best-title"><h2 id="cs-best-title">最佳组合</h2>' + bestInfo() +
+      '<p>' + date + ' 收盘满足的条件中，扣除偶然性后上涨占比最高的一组</p></div>' + controls + body + '</section>';
   }
   function conditionPanel() {
     const date = ref === null ? null : data.dates[ref], n = Object.keys(result.conditions).length, merged = n ? result.matchingDays - result.episodes.length : 0;
@@ -765,8 +785,8 @@
       '<p>信号日读数只用当天及以前的收盘：涨跌与 N 个交易日前的收盘比较；回撤取含当天的 N 个收盘中的最高点；均线含当天；波动率为 21 个日对数收益的样本标准差年化；RSI 为 14 日 Wilder 平滑；「信号前一日」各项截至前一交易日。范围两端都包含在内，留空表示不限。</p>' +
       '<p>设置观察期后，信号日之后的 N 个交易日用于判断是否收复前一日收盘、是否跌破信号日收盘等；观察期走完才计入样本，后续收益从观察期末收盘起算。按盘中最高价判定时，观察期内每天都须有已收盘的最高价。</p>' +
       '<p>选「合并为一段」时，一段从首个满足全部条件的交易日开始，合并范围内再次满足的日期并入同一段，不另计后续涨跌；选「每天单独计」时每个满足日各算一段。按参照日匹配时，依次尝试' + esc(fitList()) + '；每项取参照日读数附近的范围，读数处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对。</p>' +
-      '<p>设了参照日时，最佳组合在覆盖参照日读数的范围里挑选，最多组合 ' + C.bestDefaults.size + ' 项（限定情形另计），每组至少 ' + C.bestDefaults.minSamples +
-        ' 段已有结果，按所选期限上涨占比的 95% 置信下限排序。分半检验只用一半历史挑选、在另一半统计，用来估计挑选本身带来的偏高。</p>' +
+      '<p>设了参照日时，最佳组合比较覆盖参照日读数的每个范围及不同指标范围的两两组合，门槛跟着读数取；每组至少 ' + C.bestDefaults.minSamples +
+        ' 段已有结果、其中后续期间互不重叠的至少 ' + C.bestDefaults.minApart + ' 段，按所选期限上涨占比扣除偶然性后的下限排序。新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。</p>' +
       '<p>结果描述历史样本，不代表下一次的概率；样本少时，范围稍变就可能明显改变结果。</p>' +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(markets[st.market][1]) + '/history/" target="_blank" rel="noopener noreferrer">指数历史收盘 ↗</a> · ' +
       '<a href="https://github.com/jianxieb/fund-data/blob/main/docs/condition-study-method.md" target="_blank" rel="noopener noreferrer">完整方法与核对记录 ↗</a></p></details>';
@@ -808,7 +828,7 @@
     result = results.get(sig);
     best = ref === null ? null : bestFor(frameKey);
     charts.clear();
-    return title + toolbar() + highNote() + (best ? bestPanel(best) : '') + conditionPanel() +
+    return title + toolbar() + highNote() + (ref === null ? '' : bestPanel(best)) + conditionPanel() +
       (Object.keys(result.conditions).length ? mainChart() + summaryPanel() + episodesPanel() : emptyState()) + method();
   }
   function choose(k, v) {
@@ -951,8 +971,6 @@
     if (pick && result) { pickChoice(pick.dataset.csChoice, pick.dataset.value); return; }
     const spacingButton = target.closest?.('[data-cs-gap]');
     if (spacingButton && result) { choose('gap', spacingButton.dataset.csGap); return; }
-    const sceneButton = target.closest?.('[data-cs-scene]');
-    if (sceneButton && result) { write({ ...readState(), scene:sceneButton.dataset.csScene || null }); return; }
     const button = target.closest?.('[data-cs-action]');
     if (!button || button.disabled) return;
     switch (button.dataset.csAction) {

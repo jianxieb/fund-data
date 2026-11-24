@@ -936,21 +936,37 @@ test('a reference date shows its best combo; applying it types its ranges and ad
   let html = await f.settle();
   assert.ok(!html.includes('cs-best'), 'no best combo without a reference date');
   f.click('action', 'latest');
+  // The page draws first and says the comparison is running; the card fills in after it.
+  const pending = f.renders.at(-1);
+  assert.ok(pending.includes('<section class="cs-best is-pending" aria-labelledby="cs-best-title" aria-busy="true">'));
+  assert.ok(pending.includes('<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + f.data.asOf + ' 收盘满足的条件…</p>'));
+  assert.ok(pending.includes('<div id="cs-best">挑选依据：1个月后上涨占比</div>') && pending.includes('cs-conditions'), 'the rest of the page is already there');
   html = await f.settle();
+  assert.ok(html.includes('<section class="cs-best" aria-labelledby="cs-best-title" aria-busy="false">'));
   assert.equal(f.location.hash, '#condition-study?date=latest&mode=manual', 'showing the card changes no condition');
-  const b = C.best(f.view, { ref:f.data.last }), ids = Object.keys(b.conditions);
+  const b = C.best(f.view, { ref:f.data.last }), ids = Object.keys(b.conditions), s = b.summary;
   const card = html.slice(html.indexOf('<section class="cs-best"'), html.indexOf('<section class="cs-conditions'));
   assert.ok(card.includes('<h2 id="cs-best-title">最佳组合</h2>'));
-  assert.ok(card.includes('<p>' + f.data.asOf + ' 收盘满足的条件组合中，历史上涨占比最高的一组</p>'));
+  assert.ok(card.includes('<p>' + f.data.asOf + ' 收盘满足的条件中，扣除偶然性后上涨占比最高的一组</p>'));
   assert.ok(card.includes('<div id="cs-best">挑选依据：1个月后上涨占比</div>'));
+  assert.ok(!card.includes('data-cs-scene') && !card.includes('限定情形'), 'no situation to choose');
   for (const id of ids) assert.ok(card.includes('<li><span>' + nameOf(C.byId[id]) + '</span><b>'), id);
-  assert.ok(card.includes('<dt>上涨占比</dt><dd><b>' + b.summary.upPct.toFixed(1) + '%</b><small>' + b.wins + ' / ' + b.summary.n + ' 段</small>'));
-  assert.ok(card.includes('<dt>全部交易日</dt><dd><b>' + b.baseline.upPct.toFixed(1) + '%</b><small>中位数 ' + pct(b.baseline.median) + '</small>'));
-  assert.ok(card.includes(b.check.upPct.toFixed(1) + '%</b><small>同期全部交易日 ' + b.check.baseline.toFixed(1) + '%</small>'));
-  assert.ok(card.includes('本次在另一半共统计 ' + b.check.n + ' 段。'));
-  assert.ok(card.includes('以 ' + b.check.split + ' 为界把历史分成前后两半'));
-  assert.ok(card.includes((ids.length > 1 ? '同时满足这 ' + ids.length + ' 项时' : '满足这一项时') + '，涨跌中位数 ' + pct(b.summary.median) + '，最差 ' + pct(b.summary.min) + '。'));
-  assert.ok(card.includes('从 ' + b.tested.toLocaleString('zh-CN') + ' 个组合中挑出'));
+  assert.ok(card.includes('历史上' + (ids.length > 1 ? '同时满足这 ' + ids.length + ' 项' : '满足这一项') + '的 ' + s.n + ' 段中，' + b.wins + ' 段在1个月后上涨；涨跌中位数 ' +
+    pct(s.median) + '，最差 ' + pct(s.min) + '。'));
+  // Every number says what it is.
+  assert.ok(card.includes('<dt>这组条件的上涨占比</dt><dd><b>' + s.upPct.toFixed(1) + '%</b><small>' + b.wins + ' / ' + s.n + ' 段</small>' +
+    (b.apart < s.n ? '<small>后续期间互不重叠的 ' + b.apart + ' 段</small>' : '') + '</dd>'));
+  assert.ok(card.includes('<dt>不设条件的上涨占比</dt><dd><b>' + b.baseline.upPct.toFixed(1) + '%</b><small>全部交易日</small></dd>'));
+  // The check says in words what it did and what came out.
+  const k = b.check, verdicts = { pass:'通过', weak:'优势不明显', fail:'未通过', few:'样本不足', none:'无法检验' };
+  assert.ok(card.includes('<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>'));
+  assert.ok(k.n > 0, 'the fixture has results after the middle close');
+  assert.ok(card.includes('只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组；它' : '挑出的组合') + '在之后的 ' + k.n + ' 段中 ' + k.upPct.toFixed(1) +
+    '% 上涨，同期不设条件 ' + k.baseline.toFixed(1) + '%。'));
+  assert.equal(card.includes('class="cs-best-pick"'), !k.same, 'the earlier pick is shown only when it differs');
+  assert.ok(card.includes('检验只用 ' + k.split + ' 以前已走完的历史，按同样规则挑一组'));
+  assert.ok(card.includes('比较了 ' + (b.candidates + b.pairs).toLocaleString('zh-CN') + ' 组条件：' + b.candidates.toLocaleString('zh-CN') + ' 个单项范围、' +
+    b.pairs.toLocaleString('zh-CN') + ' 组两两组合。'));
   assert.ok(card.includes('data-cs-action="best" aria-pressed="false">用这组条件</button>'));
 
   f.click('action', 'best');
@@ -960,7 +976,7 @@ test('a reference date shows its best combo; applying it types its ranges and ad
   assert.ok(html.includes('data-cs-action="best" aria-pressed="true">✓ 已使用这组条件</button>'));
   for (const id of ids) assert.ok(checked(html, id) && rowOf(html, id).includes('>手动填写<'), id);
   const month = html.match(/<tr><th scope="row">1个月<small>21 个交易日<\/small><\/th><td>(\d+)(?:<small>[^<]*<\/small>)?<\/td><td><strong><span[^>]*>[^<]*<\/span><\/strong><\/td><td><span[^>]*>[^<]*<\/span><\/td><td>([\d.]+%)<\/td>/);
-  assert.deepEqual([Number(month[1]), month[2]], [b.summary.n, b.summary.upPct.toFixed(1) + '%'], 'the results table shows the same share');
+  assert.deepEqual([Number(month[1]), month[2]], [s.n, s.upPct.toFixed(1) + '%'], 'the results table shows the same share');
 
   // Another horizon picks again without touching the conditions; applying adds that horizon to the results.
   f.ui.choose('best', '2');
@@ -969,45 +985,43 @@ test('a reference date shows its best combo; applying it types its ranges and ad
   assert.ok(html.includes('<div id="cs-best">挑选依据：2日后上涨占比</div>'));
   const two = C.best(f.view, { ref:f.data.last, horizon:2 });
   assert.ok(two.conditions);
+  assert.ok(html.includes(' 段在2日后上涨；'));
   f.click('action', 'best');
   await f.settle();
   assert.equal(f.location.hash, '#condition-study?date=latest&h=2,5,21,63,252&best=2&' + typed(two.conditions));
 });
 
-test('a situation holds the best combo to its range, and waits in the address for a date that meets it', async () => {
+test('a setting changed before the comparison finishes shows only the pick for the new setting', async () => {
   const f = fixture({ hash:'#condition-study?date=latest&mode=manual' });
-  let html = await f.settle();
-  const free = C.best(f.view, { ref:f.data.last }), scene = free.scenes.find(s => s.endsWith('200'));
-  assert.ok(html.includes('<span id="cs-scene-label">限定情形</span>') && html.includes('data-cs-scene="" aria-pressed="true">不限</button>'));
-  for (const s of free.scenes) assert.ok(html.includes('data-cs-scene="' + s + '" aria-pressed="false">'), s);
-  assert.ok(!html.includes('data-cs-scene="' + (scene === 'below200' ? 'above200' : 'below200') + '"'), 'only situations the date meets');
-  f.listeners.click({ target:{ closest:s => s === '[data-cs-scene]' ? { dataset:{ csScene:scene } } : null } });
-  html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?date=latest&scene=' + scene + '&mode=manual');
-  const held = C.best(f.view, { ref:f.data.last, scene });
-  assert.deepEqual(held.conditions.ma200, C.scenes[scene].range);
-  assert.ok(html.includes('data-cs-scene="' + scene + '" aria-pressed="true">' + (scene === 'below200' ? '低于' : '高于') + ' 200 日均线</button>'));
-  assert.ok(html.includes('<li><span>收盘相对 200 日均线</span><b>' + (scene === 'below200' ? '≤' : '≥') + ' 0%</b></li>'));
-  assert.ok(html.includes('<small>' + held.wins + ' / ' + held.summary.n + ' 段</small>'));
-
-  const other = f.data.values.ma200.findLastIndex(v => scene === 'below200' ? v > 1 : v < -1);
-  await f.setDate(f.data.dates[other]);
-  html = await f.settle();
-  assert.ok(f.location.hash.includes('&scene=' + scene), 'the situation stays in the address');
-  assert.ok(html.includes('data-cs-scene="" aria-pressed="true">不限</button>'));
-  assert.ok(html.includes('<small>' + C.best(f.view, { ref:other }).wins + ' / '));
-  f.listeners.click({ target:{ closest:s => s === '[data-cs-scene]' ? { dataset:{ csScene:'' } } : null } });
   await f.settle();
-  assert.ok(!f.location.hash.includes('scene='));
+  f.ui.choose('best', '5');
+  f.ui.choose('best', '63');
+  assert.ok(f.renders.at(-1).includes('正在比较 '), 'still comparing right after the change');
+  const html = await f.settle();
+  const b = C.best(f.view, { ref:f.data.last, horizon:63 });
+  assert.ok(html.includes('<div id="cs-best">挑选依据：3个月后上涨占比</div>'));
+  assert.ok(html.includes('<small>' + b.wins + ' / ' + b.summary.n + ' 段</small>') && html.includes(' 段在3个月后上涨；'));
+  assert.ok(!html.includes('正在比较 '));
+});
+
+test('a situation in an old address is ignored and dropped at the next change', async () => {
+  const f = fixture({ hash:'#condition-study?date=latest&scene=below200&mode=manual' });
+  let html = await f.settle();
+  const b = C.best(f.view, { ref:f.data.last });
+  assert.ok(!html.includes('data-cs-scene'));
+  assert.ok(html.includes('<small>' + b.wins + ' / ' + b.summary.n + ' 段</small>'), 'the same pick as without a situation');
+  f.ui.choose('best', '5');
+  await f.settle();
+  assert.equal(f.location.hash, '#condition-study?date=latest&best=5&mode=manual');
 });
 
 test('the best combo names what is missing when nothing qualifies, and unknown values fall back', async () => {
-  const f = fixture({ hash:'#condition-study?date=latest&gap=252&best=7&scene=crash' });
+  const f = fixture({ hash:'#condition-study?date=latest&gap=252&best=7' });
   const html = await f.settle();
-  assert.ok(html.includes('<p class="cs-best-empty" role="status">覆盖 ' + f.data.asOf + ' 读数的范围中，没有一组至少 20 段已有结果。</p>'));
+  assert.ok(html.includes('<p class="cs-best-empty" role="status">覆盖 ' + f.data.asOf + ' 读数的范围中，没有一组有至少 20 段已有结果、其中 20 段的后续期间互不重叠。</p>'));
   assert.ok(html.includes('<div id="cs-best">挑选依据：1个月后上涨占比</div>'), 'an unknown horizon falls back to one month');
-  assert.ok(!html.includes('data-cs-action="best"'), 'nothing to apply');
+  assert.ok(!html.includes('data-cs-action="best"') && !html.includes('cs-best-check'), 'nothing to apply or check');
   f.click('action', 'best');
   await f.settle();
-  assert.equal(f.location.hash, '#condition-study?date=latest&gap=252&best=7&scene=crash');
+  assert.equal(f.location.hash, '#condition-study?date=latest&gap=252&best=7');
 });

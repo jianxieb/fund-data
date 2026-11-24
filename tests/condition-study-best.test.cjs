@@ -26,126 +26,164 @@ const vix = series.map(([date], i) => [date, Number((14 + 14 * Math.abs(Math.sin
 const data = C.compute(series, { vix }), view = C.frame(data);
 const near = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual - expected) <= tolerance, actual + ' is not ' + expected);
 const inside = (v, { lo, hi }) => Number.isFinite(v) && (lo === null || v >= lo - 1e-9) && (hi === null || v <= hi + 1e-9);
-// Complete results among a study's samples, optionally only those whose signal day passes `keep`.
-function tallyOf(frame, conditions, { ref, h = 21, gap = 21, era = 'all', keep = () => true } = {}) {
-  const s = C.study(frame, { conditions, horizons:[h], ref, gap, era });
-  const done = s.episodes.filter(e => keep(e.index) && e.outcomes[h].status === 'complete');
-  return { n:done.length, wins:done.filter(e => e.outcomes[h].pct > 0).length, study:s };
+const dotcom = date => date >= '2000-01-01' && date <= '2002-12-31';
+
+// Counted close by close with plain arrays, apart from the search's bitsets: the samples a study takes (the first matching
+// close, then the first one `gap` sessions on), those whose result counts, and how many of those remain when each has to
+// start at least `h` sessions after the one before.
+function samplesOf(frame, list, { gap = 21, era = 'all', h = 21, keep = () => true } = {}) {
+  const out = { n:0, wins:0, apart:0 };
+  let next = 0, free = 0;
+  for (let i = 0; i < frame.n; i++) {
+    if ((era === 'exclude_dotcom' && dotcom(frame.dates[i])) || (frame.obs && frame.obs.status[i] !== 1) ||
+        !list.every(([id, range]) => inside(frame.values[id][i], range)) || i < next) continue;
+    next = i + gap;
+    const end = i + frame.wait + 5;
+    if (!(end <= frame.last && frame.starts[end] === frame.starts[i]) || !keep(i)) continue;
+    const p = frame.outcomes[h].pct[i + frame.wait];
+    if (!Number.isFinite(p)) continue;
+    out.n++;
+    if (p > 0) out.wins++;
+    if (i >= free) { out.apart++; free = i + h; }
+  }
+  return out;
+}
+const entries = conditions => Object.entries(conditions);
+// The pick by brute force: every candidate range alone and every pair of two readings, each counted close by close.
+function brute(frame, { ref, horizon:h = 21, gap = 21, era = 'all', keep, minSamples = C.bestDefaults.minSamples, minApart = C.bestDefaults.minApart } = {}) {
+  const { z, gain } = C.bestDefaults, score = t => C.wilsonShare(t.wins / t.n, t.apart, z);
+  const alone = [];
+  for (const c of C.bestCandidates(frame, ref)) {
+    const t = samplesOf(frame, [[c.id, c.range]], { gap, era, h, keep });
+    if (t.n >= minSamples && t.apart >= minApart) alone.push({ list:[c], t, score:score(t) });
+  }
+  const better = (x, y) => !y || x.score > y.score + 1e-12 ||
+    (Math.abs(x.score - y.score) <= 1e-12 && (x.t.n > y.t.n || (x.t.n === y.t.n && x.list.length < y.list.length)));
+  let top = null;
+  for (const x of alone) if (better(x, top)) top = x;
+  for (let i = 0; i < alone.length; i++) for (let j = i + 1; j < alone.length; j++) {
+    const [p, q] = [alone[i], alone[j]];
+    if (p.list[0].id === q.list[0].id) continue;
+    const list = [p.list[0], q.list[0]], t = samplesOf(frame, list.map(c => [c.id, c.range]), { gap, era, h, keep });
+    if (t.n < minSamples || t.apart < minApart) continue;
+    const x = { list, t, score:score(t) };
+    if (x.score >= Math.max(p.score, q.score) + gain - 1e-12 && better(x, top)) top = x;
+  }
+  return top && { conditions:Object.fromEntries(top.list.map(c => [c.id, c.range])), ...top.t };
 }
 
-test('the best combo holds only ranges the reference close meets, and its numbers are those of a study', () => {
-  for (const [frame, options] of [[view, {}], [view, { gap:5, era:'exclude_dotcom', horizon:63 }], [C.frame(data, { wait:2 }), { horizon:5 }]]) {
-    for (const ref of [frame.last, 1500, 900]) {
-      const h = options.horizon || 21, b = C.best(frame, { ref, ...options });
-      assert.ok(b.conditions, 'found a combo at ' + ref);
-      const ids = Object.keys(b.conditions);
-      assert.ok(ids.length >= 1 && ids.length <= C.bestDefaults.size);
-      assert.deepEqual(ids, C.metrics.map(m => m.id).filter(id => ids.includes(id)), 'listed in the page order');
-      for (const id of ids) {
-        assert.ok(C.bestIds.includes(id), id);
-        assert.ok(inside(frame.values[id][ref], b.conditions[id]), id + ' contains the reading at ' + ref);
+test('every range covers the reference reading, with thresholds that follow it on its step and within the caps', () => {
+  for (const ref of [view.last, 1500, 900, 400]) {
+    const list = C.bestCandidates(view, ref);
+    assert.ok(list.length > 100, 'enough ranges at ' + ref);
+    const seen = new Set();
+    for (const { id, range } of list) {
+      const m = C.byId[id], v = view.values[id][ref], s = view.stats[id].sorted, text = id + '=' + C.formatRange(range);
+      assert.ok(C.bestIds.includes(id) && !seen.has(text), text);
+      seen.add(text);
+      assert.ok(C.validRange(id, range) && inside(v, range), text + ' covers ' + v);
+      for (const t of [range.lo, range.hi]) if (t !== null) {
+        assert.ok(t === 0 || Math.abs(t / m.step - Math.round(t / m.step)) < 1e-6, text + ' on the step');
+        assert.ok(!(m.min !== undefined && t <= m.min) && !(m.max !== undefined && t >= m.max), text + ' inside the natural ends');
       }
-      const t = tallyOf(frame, b.conditions, { ref, h, gap:options.gap, era:options.era }), s = t.study.summary[h];
-      assert.ok(b.summary.n >= C.bestDefaults.minSamples);
-      assert.equal(b.summary.n, s.n);
-      assert.equal(b.summary.upPct, s.upPct);
-      assert.equal(b.summary.median, s.median);
-      assert.equal(b.summary.min, s.min);
-      assert.equal(b.wins, t.wins);
-      assert.equal(b.episodes, t.study.episodes.length);
-      assert.deepEqual(b.baseline, t.study.baseline[h]);
-      near(b.score, C.wilson(t.wins, t.n));
-      assert.deepEqual(C.best(frame, { ref, ...options }), b, 'the same inputs give the same combo');
+      // The share of the history a range keeps stays under its cap, so every range leaves something out.
+      const kept = s.filter(x => inside(x, range)).length / s.length;
+      assert.ok(kept <= (range.lo !== null && range.hi !== null ? C.bestReach.bandCover : C.bestReach.sideCover) + 1e-9, text + ' keeps ' + kept);
     }
   }
-});
-
-test('no single candidate scores above the pick, and a second range adds at least the gain to the one it grew from', () => {
-  for (const ref of [view.last, 1500, 900, 2000]) {
-    const b = C.best(view, { ref }), score = conditions => { const t = tallyOf(view, conditions, { ref }); return { n:t.n, score:C.wilson(t.wins, t.n) }; };
-    const singles = C.bestCandidates(view, ref).map(c => score({ [c.id]:c.range })).filter(x => x.n >= C.bestDefaults.minSamples);
-    assert.ok(singles.length > 10, 'enough candidates at ' + ref);
-    assert.ok(singles.every(x => x.score <= b.score + 1e-12), 'no single range beats the pick at ' + ref);
-    const parts = Object.entries(b.conditions);
-    if (parts.length === 2) assert.ok(parts.some(([id, range]) => b.score >= score({ [id]:range }).score + C.bestDefaults.gain - 1e-12));
-  }
-  // The Wilson lower bound ranks a small perfect sample below a large strong one.
-  assert.ok(C.wilson(10, 10) < C.wilson(90, 100));
-  near(C.wilson(10, 10), 1 / (1 + 1.96 ** 2 / 10));
-  assert.equal(C.wilson(0, 0), 0);
-});
-
-test('candidates sit on the reading\'s side of the median at rounded thresholds, plus the band the match takes', () => {
-  const ref = 1500, list = C.bestCandidates(view, ref);
-  assert.ok(list.some(c => c.range.lo === null) && list.some(c => c.range.hi === null) && list.some(c => c.range.lo !== null && c.range.hi !== null));
-  for (const { id, range } of list) {
-    const m = C.byId[id], v = view.values[id][ref], median = C.quantile(view.stats[id].sorted, .5);
-    assert.ok(inside(v, range) && C.validRange(id, range), id + ' ' + C.formatRange(range));
-    if (range.lo !== null && range.hi !== null) assert.deepEqual(range, C.suggest(view, id, { ref }));
-    else {
-      const t = range.lo ?? range.hi, steps = t / m.step;
-      assert.ok(t === 0 || Math.abs(steps - Math.round(steps)) < 1e-6, id + ' threshold on its step');
-      if (range.lo === null) assert.ok(v <= median && t <= median + m.step / 2 && !(m.max !== undefined && t >= m.max));
-      else assert.ok(v >= median && t >= median - m.step / 2 && !(m.min !== undefined && t <= m.min));
-    }
-  }
-  // Readings without a history yet give nothing; the latest close always has some.
+  // A reading far out in one tail gets thresholds close to it on that side and none past it.
+  const top = view.values.r1.reduce((best, v, i) => Number.isFinite(v) && v > view.values.r1[best] ? i : best, 300);
+  const r1 = C.bestCandidates(view, top).filter(c => c.id === 'r1');
+  assert.ok(r1.length >= 5 && r1.every(c => c.range.hi === null), 'only "at least" ranges above the highest reading');
+  assert.ok(r1.some(c => c.range.lo >= view.values.r1[top] - 2), 'a threshold within 2 points of the reading');
+  // Readings without a history yet give nothing.
   assert.ok(C.bestCandidates(view, 100).every(c => !['ma200', 'dd252', 'r252', 'cross'].includes(c.id)));
-  assert.ok(C.bestCandidates(view, view.last).length > 30);
 });
 
-test('a situation is held as the first range and only applies to a close that meets it', () => {
-  const below = view.values.ma200.findLastIndex(v => v < -1), above = view.values.ma200.findLastIndex(v => v > 1);
-  const b = C.best(view, { ref:below, scene:'below200' });
-  assert.ok(b.scenes.includes('below200') && !b.scenes.includes('above200'));
-  assert.deepEqual(b.conditions.ma200, { lo:null, hi:0 });
-  assert.ok(Object.keys(b.conditions).length <= C.bestDefaults.size + 1);
-  assert.equal(b.scene, 'below200');
-  const t = tallyOf(view, b.conditions, { ref:below });
-  assert.equal(b.summary.n, t.n);
-  const off = C.best(view, { ref:above, scene:'below200' });
-  assert.equal(off.reason, 'scene');
-  assert.equal(off.conditions, null);
-  assert.ok(off.scenes.includes('above200'));
-  const drop = view.values.r1.findLastIndex(v => v <= -2);
-  assert.ok(C.best(view, { ref:drop }).scenes.includes('drop'));
-  assert.ok(!C.best(view, { ref:drop }).scenes.includes('rise'));
-  assert.throws(() => C.best(view, { scene:'crash' }), /限定情形/);
-  assert.throws(() => C.best(view, { horizon:7 }), /后续期限/);
+test('counting with bits matches counting close by close, for every spacing, history range and observation period', () => {
+  for (const [frame, gap, era, h] of [[view, 21, 'all', 21], [view, 1, 'all', 5], [view, 1, 'exclude_dotcom', 1], [C.frame(data, { wait:2 }), 5, 'all', 63],
+    [view, 10, 'exclude_dotcom', 252]]) {
+    const b = C.best(frame, { ref:1800, horizon:h, gap, era, minSamples:5, minApart:5 });
+    assert.ok(b.conditions, 'a pick for gap ' + gap + ', h ' + h);
+    const t = samplesOf(frame, entries(b.conditions), { gap, era, h });
+    assert.deepEqual([b.summary.n, b.wins, b.apart], [t.n, t.wins, t.apart], 'gap ' + gap + ', h ' + h);
+    const s = C.study(frame, { conditions:b.conditions, horizons:[h], gap, era, ref:1800 });
+    assert.equal(b.summary.n, s.summary[h].n);
+    assert.equal(b.summary.upPct, s.summary[h].upPct);
+    assert.equal(b.summary.median, s.summary[h].median);
+    assert.equal(b.summary.min, s.summary[h].min);
+    assert.equal(b.episodes, s.episodes.length);
+    assert.deepEqual(b.baseline, s.baseline[h]);
+  }
 });
 
-test('without enough results or any reading the search says which is missing', () => {
+test('the pick is the best of every range alone and every pair of two readings, as brute force finds it', () => {
+  // A smaller history keeps the plain-array count of every pair quick.
+  const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
+  for (const [frame, ref, h, gap, era] of [[short, short.last, 21, 21, 'all'], [short, 1100, 5, 1, 'all'], [short, 900, 63, 5, 'exclude_dotcom']]) {
+    const b = C.best(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
+    const want = brute(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
+    assert.ok(want, 'a pick for h ' + h);
+    assert.deepEqual(b.conditions, want.conditions, 'h ' + h + ', gap ' + gap);
+    assert.deepEqual([b.summary.n, b.wins, b.apart], [want.n, want.wins, want.apart]);
+    assert.equal(b.usable + b.pairs > b.candidates, true, 'pairs were compared');
+  }
+});
+
+test('the check picks on the history before the middle close alone and counts that pick from the middle close on', () => {
+  const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
+  const late = (frame, h, keep) => {
+    // Every close of the later half with a result, as the all-days comparison counts them.
+    let up = 0, all = 0;
+    for (let i = 0; i + frame.wait <= frame.last; i++) {
+      const p = frame.outcomes[h].pct[i + frame.wait], start = frame.starts[i + frame.wait];
+      if (i < start || (frame.obs && (i - 1 < start || frame.obs.status[i] !== 1)) || !keep(i) || !Number.isFinite(p)) continue;
+      all++;
+      if (p > 0) up++;
+    }
+    return 100 * up / all;
+  };
+  for (const [frame, ref, h, gap] of [[short, short.last, 21, 21], [short, 1100, 5, 1], [C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }), { wait:2 }), 900, 63, 5]]) {
+    const b = C.best(frame, { ref, horizon:h, gap, minSamples:10, minApart:10 }), k = b.check, split = Math.floor(frame.n / 2);
+    assert.equal(k.split, frame.dates[split]);
+    near(k.baseline, late(frame, h, i => i >= split));
+    const pick = brute(frame, { ref, horizon:h, gap, minSamples:5, minApart:5, keep:i => i + frame.wait + h < split });
+    assert.ok(pick, 'an early pick for h ' + h);
+    assert.deepEqual(k.conditions, pick.conditions);
+    assert.equal(k.same, JSON.stringify(k.conditions) === JSON.stringify(b.conditions));
+    const t = samplesOf(frame, entries(k.conditions), { gap, h, keep:i => i >= split });
+    assert.deepEqual([k.n, k.wins, k.apart], [t.n, t.wins, t.apart]);
+    near(k.upPct, 100 * t.wins / t.n);
+    const low = 100 * C.wilsonShare(t.wins / t.n, t.apart, C.bestDefaults.checkZ);
+    assert.equal(k.verdict, t.apart < 5 ? 'few' : low > k.baseline ? 'pass' : k.upPct > k.baseline ? 'weak' : 'fail');
+  }
+  // Without enough early history no pick is checked.
+  const none = C.best(short, { ref:short.last, minSamples:2000 });
+  assert.equal(none.check.verdict, 'none');
+  assert.equal(none.check.conditions, null);
+});
+
+test('samples whose periods overlap count once toward the sample size', () => {
+  // Every close on its own: a one-day result never overlaps the next, a month-long one does.
+  const day = C.best(view, { horizon:1, gap:1 }), month = C.best(view, { horizon:21, gap:1 });
+  assert.equal(day.apart, day.summary.n);
+  assert.ok(month.apart < month.summary.n, month.apart + ' of ' + month.summary.n);
+  assert.equal(month.apart, samplesOf(view, entries(month.conditions), { gap:1, h:21 }).apart);
+  // Merged samples start at least 21 sessions apart, so their one-month periods never overlap; their one-year ones do.
+  const merged = C.best(view, { horizon:21 }), year = C.best(view, { horizon:252 });
+  assert.equal(merged.apart, merged.summary.n);
+  assert.ok(!year.conditions || year.apart < year.summary.n);
+  assert.ok(month.apart >= C.bestDefaults.minApart && merged.apart >= C.bestDefaults.minApart);
+});
+
+test('without readings or enough samples the search says which is missing', () => {
   const none = C.best(view, { minSamples:100000 });
   assert.equal(none.reason, 'samples');
   assert.equal(none.conditions, null);
-  // Every range is dropped before any set is tried, so nothing was compared.
-  assert.ok(none.tested === 0 && none.candidates > 0);
+  assert.ok(none.candidates > 0 && none.usable === 0 && none.pairs === 0);
   assert.equal(C.best(C.compute(series), { ref:0 }).reason, 'readings');
-  // Merging a year of closes leaves too few samples in ten years of history.
-  assert.equal(C.best(view, { gap:252 }).reason, 'samples');
-});
-
-test('the split check picks on each half alone and counts its pick on the other half', () => {
-  const ref = view.last, h = 21, b = C.best(view, { ref, size:1 }), split = Math.floor(view.n / 2), least = Math.ceil(C.bestDefaults.minSamples / 2);
-  assert.equal(b.check.split, view.dates[split]);
-  const early = i => i + h < split, late = i => i >= split, candidates = C.bestCandidates(view, ref);
-  // The share of a half's closes that rose; the fixture has no gaps or observation period, so every close with a result counts.
-  const dayShare = keep => { let up = 0, all = 0; view.outcomes[h].pct.forEach((p, i) => { if (Number.isFinite(p) && keep(i)) { all++; if (p > 0) up++; } }); return up / all; };
-  near(100 * dayShare(() => true), b.baseline.upPct);
-  let wins = 0, n = 0, picks = 0, base = 0;
-  for (const [fit, other] of [[early, late], [late, early]]) {
-    // With one range, the pick on a half is simply the candidate ranked first on that half.
-    const ranked = candidates.map(c => ({ ...c, key:c.id + '=' + C.formatRange(c.range), ...tallyOf(view, { [c.id]:c.range }, { ref, keep:fit }) }))
-      .filter(c => c.n >= least).map(c => ({ ...c, score:C.wilson(c.wins, c.n) }))
-      .sort((a, z) => z.score - a.score || z.n - a.n || (a.key < z.key ? -1 : 1));
-    if (!ranked.length) continue;
-    const t = tallyOf(view, { [ranked[0].id]:ranked[0].range }, { ref, keep:other });
-    wins += t.wins; n += t.n; picks++; base += t.n * dayShare(other);
-  }
-  assert.deepEqual([b.check.wins, b.check.n, b.check.picks], [wins, n, picks]);
-  near(b.check.upPct, 100 * wins / n);
-  // The check is set against all days of the halves it counts on, weighted by its samples there.
-  near(b.check.baseline, 100 * base / n);
-  const full = C.best(view, { ref });
-  assert.ok(full.check.n > 0 && full.check.picks === 2);
+  // Two years of results leave fewer than 20 separate periods in ten years of history.
+  const long = C.best(view, { horizon:504 });
+  assert.equal(long.reason, 'samples');
+  assert.throws(() => C.best(view, { horizon:7 }), /后续期限/);
 });
