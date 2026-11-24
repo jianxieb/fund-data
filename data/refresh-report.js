@@ -1,6 +1,6 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-11-23T02:44:36+00:00",
+  "startedAt": "2026-11-24T06:01:55+00:00",
   "mode": "online",
   "dailyMode": true,
   "scope": "all",
@@ -20,7 +20,7 @@ var REFRESH_REPORT={
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 63.18,
+      "seconds": 28.97,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -31,7 +31,7 @@ var REFRESH_REPORT={
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 2.45,
+      "seconds": 2.61,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -42,7 +42,7 @@ var REFRESH_REPORT={
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 21.77,
+      "seconds": 25.1,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -51,12 +51,12 @@ var REFRESH_REPORT={
     },
     {
       "dataset": "stocks",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 74.53,
+      "status": "timeout",
+      "exitCode": 124,
+      "seconds": 90.38,
       "log": ".tmp-snap/refresh-stocks.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
+      "publishedRollback": true,
+      "retainedPrevious": true,
       "sourcePartial": false,
       "checkpointValidated": false
     },
@@ -64,7 +64,7 @@ var REFRESH_REPORT={
       "dataset": "overseas_stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 26.97,
+      "seconds": 22.81,
       "log": ".tmp-snap/refresh-overseas_stocks.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -75,7 +75,7 @@ var REFRESH_REPORT={
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 2.56,
+      "seconds": 2.52,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -86,7 +86,7 @@ var REFRESH_REPORT={
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 58.72,
+      "seconds": 49.45,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -95,20 +95,20 @@ var REFRESH_REPORT={
     },
     {
       "dataset": "portfolio",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 72.06,
+      "status": "partial",
+      "exitCode": 124,
+      "seconds": 105.33,
       "log": ".tmp-snap/refresh-portfolio.log",
       "publishedRollback": false,
       "retainedPrevious": false,
-      "sourcePartial": false,
-      "checkpointValidated": false
+      "sourcePartial": true,
+      "checkpointValidated": true
     },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.82,
+      "seconds": 1.84,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -116,8 +116,19 @@ var REFRESH_REPORT={
       "checkpointValidated": false
     }
   ],
-  "batchFundRecords": 1683,
-  "batchFundSeconds": 5.53,
+  "batchFundRecords": 1685,
+  "batchFundSeconds": 4.52,
+  "portfolioSync": {
+    "dataset": "portfolio_sync",
+    "status": "completed",
+    "exitCode": 0,
+    "seconds": 47.76,
+    "log": ".tmp-snap/refresh-portfolio_sync.log",
+    "publishedRollback": false,
+    "retainedPrevious": false,
+    "sourcePartial": false,
+    "checkpointValidated": false
+  },
   "benchmarkSync": {
     "dataset": "benchmark_sync",
     "status": "completed",
@@ -129,6 +140,6 @@ var REFRESH_REPORT={
     "sourcePartial": false,
     "checkpointValidated": false
   },
-  "completedAt": "2026-11-23T02:47:16+00:00",
-  "status": "completed"
+  "completedAt": "2026-11-24T06:06:11+00:00",
+  "status": "partial"
 };

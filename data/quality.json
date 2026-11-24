@@ -1,21 +1,97 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-23T02:47:42+00:00",
-  "asOf": "2026-11-23",
+  "checkedAt": "2026-11-24T06:06:34+00:00",
+  "asOf": "2026-11-24",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 4,
-    "unverified": 71
+    "warnings": 15,
+    "unverified": 72
   },
   "datasets": [
     {
+      "id": "source_refresh",
+      "label": "本次未更新的来源",
+      "asOf": null,
+      "dateRange": null,
+      "records": 0,
+      "issues": [
+        {
+          "code": "source_refresh_retained",
+          "severity": "warning",
+          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "stocks"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:519212：Remote end closed connection without response；保留历史截至2026-11-20",
+          "affected": "fund:519212"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:470009：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:470009"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:166005：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-20",
+          "affected": "fund:166005"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:202001：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:202001"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:000977：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:000977"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:004119：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:004119"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:501059：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:501059"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:018868：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:018868"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:159750：The read operation timed out；保留历史截至2026-11-20",
+          "affected": "fund:159750"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fx:CNY：本次汇率历史刷新尚未完成；保留历史截至2026-11-20",
+          "affected": "fx:CNY"
+        }
+      ],
+      "status": "warning"
+    },
+    {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-19",
-        "2026-11-19"
+        "2026-11-20",
+        "2026-11-23"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +154,10 @@
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-20",
-        "2026-11-20"
+        "2026-11-23",
+        "2026-11-23"
       ],
       "records": 79,
       "issues": [
@@ -322,6 +398,12 @@
         {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
+          "message": "CRWD经营复核仅覆盖2026-07-31，最新财报2026-10-31尚待经营复核",
+          "affected": "CRWD"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
           "message": "APP经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "APP"
         },
@@ -499,17 +581,17 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-20",
-        "2026-11-20"
+        "2026-11-23",
+        "2026-11-23"
       ],
       "records": 36,
       "issues": [
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-11-23）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -563,7 +645,7 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -576,10 +658,10 @@
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-20"
+        "2026-11-19",
+        "2026-11-23"
       ],
       "records": 1577,
       "issues": [
@@ -3418,10 +3500,10 @@
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-20",
-        "2026-11-20"
+        "2026-11-23",
+        "2026-11-23"
       ],
       "records": 13,
       "issues": [
@@ -3439,10 +3521,10 @@
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-20"
+        "2026-11-19",
+        "2026-11-23"
       ],
       "records": 1873,
       "issues": [],
