@@ -54,6 +54,13 @@
     '按参照日匹配第 {0} 项：取 ≤ {1}%，加入时只剩 {2} 段，少于 {3} 段，未勾选。': 'Reference-day matching, item {0}: taking ≤ {1}%; only {2} {2?segment remains:segments remain} when added, fewer than {3}, so it is not ticked.',
     '按参照日匹配第 {0} 项：取 ≥ {1}，加入时只剩 {2} 段，少于 {3} 段，未勾选；按现有条件勾选会剩 {4} 段。': 'Reference-day matching, item {0}: taking ≥ {1}; only {2} {2?segment remains:segments remain} when added, fewer than {3}, so it is not ticked; ticking it with the current conditions would leave {4} {4?segment:segments}.',
     '按参照日匹配第 {0} 项：取 ≥ {1}%，加入时只剩 {2} 段，少于 {3} 段，未勾选；按现有条件勾选会剩 {4} 段。': 'Reference-day matching, item {0}: taking ≥ {1}%; only {2} {2?segment remains:segments remain} when added, fewer than {3}, so it is not ticked; ticking it with the current conditions would leave {4} {4?segment:segments}.',
+    // Reference matching on VIX, which has no unit.
+    '按参照日匹配第 {0} 项：取 ≤ {1}，加入时仍有 {2} 段，已勾选。': 'Reference-day matching, item {0}: taking ≤ {1}; {2} {2?segment remains:segments remain} when added, so it is ticked.',
+    '按参照日匹配第 {0} 项：取 ≤ {1}，加入时只剩 {2} 段，少于 {3} 段，未勾选。': 'Reference-day matching, item {0}: taking ≤ {1}; only {2} {2?segment remains:segments remain} when added, fewer than {3}, so it is not ticked.',
+    '按参照日匹配第 {0} 项：取 ≤ {1}，加入时只剩 {2} 段，少于 {3} 段，未勾选；按现有条件勾选会剩 {4} 段。': 'Reference-day matching, item {0}: taking ≤ {1}; only {2} {2?segment remains:segments remain} when added, fewer than {3}, so it is not ticked; ticking it with the current conditions would leave {4} {4?segment:segments}.',
+    '按参照日匹配第 {0} 项：取 {1} 至 {2}，加入时仍有 {3} 段，已勾选。': 'Reference-day matching, item {0}: taking {1} to {2}; {3} {3?segment remains:segments remain} when added, so it is ticked.',
+    '按参照日匹配第 {0} 项：取 {1} 至 {2}，加入时只剩 {3} 段，少于 {4} 段，未勾选。': 'Reference-day matching, item {0}: taking {1} to {2}; only {3} {3?segment remains:segments remain} when added, fewer than {4}, so it is not ticked.',
+    '按参照日匹配第 {0} 项：取 {1} 至 {2}，加入时只剩 {3} 段，少于 {4} 段，未勾选；按现有条件勾选会剩 {5} 段。': 'Reference-day matching, item {0}: taking {1} to {2}; only {3} {3?segment remains:segments remain} when added, fewer than {4}, so it is not ticked; ticking it with the current conditions would leave {5} {5?segment:segments}.',
     '近{0}日': 'Last {0} {0?day:days}',
     '不设': 'None',
     '全部历史': 'All history',
