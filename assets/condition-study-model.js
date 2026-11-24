@@ -68,6 +68,20 @@
   // Market state first, then the speed of the move, then trend and volatility.
   const fitOrder = Object.freeze(['dd252', 'r21', 'r5', 'r1', 'ma200', 'vix', 'vol21', 'r3', 'r63']);
   const fitDefaults = Object.freeze({ width:0.75, minEpisodes:10, tail:0.1 });
+  // The best combo searches the signal-day readings that need no setting of their own; the prior-day copies and
+  // the lookbacks typed into a row's name are left out, as are readings known only after an observation period.
+  const bestIds = Object.freeze(['r1', 'r3', 'r5', 'r21', 'r63', 'r252', 'worst21', 'dd252', 'ddMax', 'rise252', 'since252',
+    'ma50', 'ma200', 'cross', 'vix', 'vix5', 'vol21', 'rsi14', 'down', 'up']);
+  // Thresholds are these points of each reading's history, rounded to its step; 0 is added where readings change sign.
+  const bestLevels = Object.freeze([0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.98]);
+  const bestDefaults = Object.freeze({ horizon:21, size:2, minSamples:20, beam:24, gain:0.02, z:1.96 });
+  // Situations a best combo can be held to; each is one fixed range the reference close has to meet.
+  const scenes = Object.freeze({
+    below200:Object.freeze({ id:'ma200', range:Object.freeze({ lo:null, hi:0 }) }),
+    above200:Object.freeze({ id:'ma200', range:Object.freeze({ lo:0, hi:null }) }),
+    drop:Object.freeze({ id:'r1', range:Object.freeze({ lo:null, hi:-2 }) }),
+    rise:Object.freeze({ id:'r1', range:Object.freeze({ lo:2, hi:null }) })
+  });
 
   const round = value => Number(value.toFixed(6));
   const floorStep = (value, step) => round(Math.floor(value / step + tolerance) * step);
@@ -483,6 +497,131 @@
       episodes:count(view, conditions, gap, era) };
   }
 
+  // The lower end of the Wilson score interval for a share of `wins` in `n`: small samples rank below large ones.
+  function wilson(wins, n, z = bestDefaults.z) {
+    if (!n) return 0;
+    const p = wins / n, z2 = z * z;
+    return (p + z2 / (2 * n) - z * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n))) / (1 + z2 / n);
+  }
+  const metricOrder = Object.freeze(Object.fromEntries(metrics.map((m, i) => [m.id, i])));
+  // Ranges the reference close meets on its own side of the median: everything at least as low (or as high) as a
+  // threshold it meets, up to the median, plus the band around it that the automatic match takes.
+  function bestCandidates(data, ref) {
+    const view = framed(data), at = refOf(view, ref), out = [];
+    for (const id of bestIds) {
+      const m = byId[id], s = view.stats[id], v = view.values[id][at];
+      if (!Number.isFinite(v) || s.n < 50) continue;
+      const median = quantile(s.sorted, .5), cuts = new Set(bestLevels.map(p => round(Math.round(quantile(s.sorted, p) / m.step) * m.step) + 0));
+      if (s.sorted[0] < 0 && s.sorted[s.n - 1] > 0) cuts.add(0);
+      const ranges = [];
+      for (const t of [...cuts].sort((a, b) => a - b)) {
+        if (v <= median && t >= v - tolerance && t <= median + tolerance && !(m.max !== undefined && t >= m.max)) ranges.push({ lo:null, hi:t });
+        if (v >= median && t <= v + tolerance && t >= median - tolerance && !(m.min !== undefined && t <= m.min)) ranges.push({ lo:t, hi:null });
+      }
+      const band = suggest(view, id, { ref:at });
+      if (band && band.lo !== null && band.hi !== null) ranges.push(band);
+      const seen = new Set();
+      for (const range of ranges) {
+        const text = formatRange(range);
+        if (seen.has(text) || !validRange(id, range) || !inRange(v, range)) continue;
+        seen.add(text);
+        out.push({ id, range });
+      }
+    }
+    return out;
+  }
+  // Samples among the matching closes, spaced and counted as a study counts them. `set` narrows the closes to those
+  // that also meet one more range; `keep` limits the samples to some signal days.
+  function tally(view, list, gap, h, keep, set = null) {
+    const pct = view.outcomes[h].pct;
+    let next = 0, episodes = 0, n = 0, wins = 0;
+    for (const i of list) {
+      if (i < next || (set && !set[i])) continue;
+      next = i + gap;
+      if (!historical(view, i) || (keep && !keep(i))) continue;
+      episodes++;
+      const p = pct[i + view.wait];
+      if (Number.isFinite(p)) { n++; if (p > 0) wins++; }
+    }
+    return { episodes, n, wins };
+  }
+  // Beam search from `root`: each step adds one range of another reading, keeps the `beam` best sets, and accepts an
+  // addition only when it raises the score by at least `gain`. Every set keeps the closes that meet all of its ranges.
+  function grow(view, pool, root, o) {
+    const rank = (a, b) => b.score - a.score || b.tally.n - a.tally.n || a.items.length - b.items.length || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+    let frontier = [root], best = root.items.length && root.tally.n >= o.minSamples ? root : null, tested = 0;
+    for (let step = 0; step < o.size && frontier.length; step++) {
+      const next = new Map();
+      for (const parent of frontier) for (const c of pool) {
+        if (parent.items.some(x => x.id === c.id)) continue;
+        const t = parent.list ? tally(view, parent.list, o.gap, o.h, o.keep, c.set) : tally(view, c.list, o.gap, o.h, o.keep);
+        tested++;
+        if (t.n < o.minSamples) continue;
+        const score = wilson(t.wins, t.n, o.z);
+        if (parent.items.length && score < parent.score + o.gain) continue;
+        const items = [...parent.items, c].sort((a, b) => metricOrder[a.id] - metricOrder[b.id]), key = items.map(x => x.key).join('&');
+        if (!next.has(key)) next.set(key, { items, list:parent.list ? parent.list.filter(i => c.set[i]) : c.list, tally:t, score, key });
+      }
+      frontier = [...next.values()].sort(rank).slice(0, o.beam);
+      if (frontier.length && (!best || rank(frontier[0], best) < 0)) best = frontier[0];
+    }
+    return { best, tested };
+  }
+  // The set of at most `size` ranges, all met by the reference close, whose samples rose most often after `horizon`
+  // sessions, ranked by the Wilson lower bound so a small sample counts for less. A scene adds its fixed range first.
+  // `check` repeats the search on each half of the history alone and counts how its pick did on the other half.
+  function best(data, { ref, horizon = bestDefaults.horizon, gap = 21, era = 'all', scene = null, size = bestDefaults.size,
+      minSamples = bestDefaults.minSamples, beam = bestDefaults.beam, gain = bestDefaults.gain, z = bestDefaults.z } = {}) {
+    const view = framed(data), at = refOf(view, ref), h = horizon;
+    checkStudy(gap, era);
+    if (!horizonChoices.includes(h)) throw new Error('未知的后续期限');
+    if (scene !== null && !Object.hasOwn(scenes, scene)) throw new Error('未知的限定情形');
+    const split = Math.floor(view.n / 2), meets = Object.keys(scenes).filter(k => inRange(view.values[scenes[k].id][at], scenes[k].range));
+    const out = { ref:at, date:view.dates[at], horizon:h, gap, era, scene, scenes:meets, minSamples, conditions:null, reason:null, tested:0, candidates:0,
+      summary:null, wins:null, episodes:0, baseline:baseline(view, era, [h])[h], check:{ n:0, wins:0, upPct:null, baseline:null, picks:0, split:view.dates[split] } };
+    if (scene && !meets.includes(scene)) return { ...out, reason:'scene' };
+    const entry = ({ id, range }) => {
+      const set = mask(view, [[id, range]], era), list = [];
+      for (let i = 0; i < view.n; i++) if (set[i]) list.push(i);
+      return { id, range, key:id + '=' + formatRange(range), set, list };
+    };
+    const anchor = scene ? entry(scenes[scene]) : null;
+    const pool = bestCandidates(view, at).filter(c => !anchor || c.id !== anchor.id).map(entry);
+    const search = (keep, least) => {
+      const root = anchor ? (t => ({ items:[anchor], list:anchor.list, tally:t, score:wilson(t.wins, t.n, z), key:anchor.key }))(tally(view, anchor.list, gap, h, keep)) :
+        { items:[], list:null, tally:{ n:0 }, score:-Infinity, key:'' };
+      // A range without enough samples of its own cannot take part in a set that has enough.
+      const usable = pool.filter(c => tally(view, c.list, gap, h, keep).n >= least);
+      return grow(view, usable, root, { gap, h, size, minSamples:least, beam, gain, z, keep });
+    };
+    const found = search(null, minSamples);
+    out.tested = found.tested; out.candidates = pool.length;
+    const early = i => i + view.wait + h < split, late = i => i >= split;
+    let base = 0;
+    for (const [fit, other] of [[early, late], [late, early]]) {
+      const pick = search(fit, Math.ceil(minSamples / 2)).best;
+      if (!pick) continue;
+      const t = tally(view, pick.list, gap, h, other), days = dayResults(view, era, h, other).pct;
+      out.check.n += t.n; out.check.wins += t.wins; out.check.picks++;
+      // The halves rose at different rates, so the check is set against all days of the half it counts, weighted alike.
+      if (t.n) base += t.n * days.filter(p => p > 0).length / days.length;
+    }
+    if (out.check.n) Object.assign(out.check, { upPct:100 * out.check.wins / out.check.n, baseline:100 * base / out.check.n });
+    if (!found.best) return { ...out, reason:pool.length || anchor ? 'samples' : 'readings' };
+    const done = [];
+    let next = 0;
+    for (const i of found.best.list) {
+      if (i < next) continue;
+      next = i + gap;
+      if (!historical(view, i)) continue;
+      out.episodes++;
+      const p = view.outcomes[h].pct[i + view.wait];
+      if (Number.isFinite(p)) done.push(p);
+    }
+    return { ...out, conditions:Object.fromEntries(found.best.items.map(c => [c.id, { ...c.range }])), score:found.best.score,
+      summary:summarize(done), wins:found.best.tally.wins };
+  }
+
   const empty = status => ({ status, date:null, close:null, pct:null, drawdown:null, low:null });
   function outcome(view, i, h) {
     if (view.obs && view.obs.status[i] !== COMPLETE) return empty(obsNames[view.obs.status[i]]);
@@ -525,18 +664,23 @@
   }
   // Every close with the same observation prefix as a sample, anchored the same way: with an observation
   // period, the would-be signal day needs a prior close and a finished period. Excluded eras match by signal day.
+  // Results of every trading day whose observation period has run, optionally only those whose signal day passes `keep`.
+  function dayResults(view, era, h, keep = null) {
+    const pct = [], drawdown = [], o = view.outcomes[h];
+    for (let anchor = 0; anchor <= view.last; anchor++) {
+      const i = anchor - view.wait;
+      if (i < view.starts[anchor] || (view.obs && (i - 1 < view.starts[anchor] || view.obs.status[i] !== COMPLETE)) ||
+          excluded(era, view.dates[i]) || !Number.isFinite(o.pct[anchor]) || (keep && !keep(i))) continue;
+      pct.push(o.pct[anchor]); drawdown.push(o.drawdown[anchor]);
+    }
+    return { pct, drawdown };
+  }
   function baseline(view, era, list) {
     const key = era + ':' + list.join(','), saved = view.cache?.get(key);
     if (saved) return saved;
     const out = {};
     for (const h of list) {
-      const pct = [], drawdown = [], o = view.outcomes[h];
-      for (let anchor = 0; anchor <= view.last; anchor++) {
-        const i = anchor - view.wait;
-        if (i < view.starts[anchor] || (view.obs && (i - 1 < view.starts[anchor] || view.obs.status[i] !== COMPLETE)) ||
-            excluded(era, view.dates[i]) || !Number.isFinite(o.pct[anchor])) continue;
-        pct.push(o.pct[anchor]); drawdown.push(o.drawdown[anchor]);
-      }
+      const { pct, drawdown } = dayResults(view, era, h);
       out[h] = { ...summarize(pct), drawdown:summarize(drawdown) };
     }
     view.cache?.set(key, out);
@@ -676,6 +820,6 @@
   }
 
   return { horizonChoices, defaultHorizons, gaps, waits, eras, lookback, chartAfter, mature, groups, params, metrics, byId, fitOrder, fitDefaults,
-    compute, frame, study, fit, suggest, count, validRange, rangeIssue, validParam, validWait, validGap, validEra, parseRange, formatRange,
-    quantile, summarize, path, spread, percentile, sessionOn, isDrop, fromDropStudy };
+    bestIds, bestDefaults, scenes, compute, frame, study, fit, best, bestCandidates, wilson, suggest, count, validRange, rangeIssue, validParam,
+    validWait, validGap, validEra, parseRange, formatRange, quantile, summarize, path, spread, percentile, sessionOn, isDrop, fromDropStudy };
 });

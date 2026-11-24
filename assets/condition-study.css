@@ -29,6 +29,38 @@
 .cs-info-pop p{margin:0 0 6px}
 .cs-info-pop p:last-child{margin-bottom:0}
 .cs-info-fit{display:block;padding-top:7px;border-top:1px solid #e3e9df;color:#2d4c37}
+/* Best combo for the reference date: its two controls on one row, then the ranges with their shares right beside them. */
+.cs-best{margin:0 0 16px;padding:16px 20px 14px;border:1px solid var(--ds-border);border-radius:12px;background:#fff}
+.cs-best-title h2{display:inline;font-size:17px;vertical-align:middle}
+.cs-best-title .cs-info{margin-left:8px;vertical-align:middle}
+.cs-best-title p{margin-top:2px;color:var(--ds-muted);font-size:12px}
+.cs-best-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px 28px;margin-top:10px}
+.cs-best-controls>.event-menu-field,.cs-best-scenes{display:flex;align-items:center;gap:8px;color:var(--ds-muted);font-size:12px}
+.cs-best-controls>.event-menu-field>span{margin:0;font-size:12px}
+.cs-best-scenes .segmented button{padding:5px 12px;font-size:12px}
+.cs-best-controls .event-study-menu{width:auto;font-size:12px}
+.cs-best-controls .event-study-menu>summary{min-height:30px;padding:4px 9px;white-space:nowrap}
+.cs-best-controls .event-study-menu .select-menu-list{width:max-content;min-width:100%}
+.cs-best-controls .event-study-menu .select-menu-option{font-size:12px;white-space:nowrap}
+.cs-best-body{display:flex;align-items:center;flex-wrap:wrap;gap:14px 44px;margin-top:14px}
+.cs-best-main{flex:0 1 auto;min-width:0;max-width:820px}
+.cs-best-list{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.cs-best-list li{display:inline-flex;align-items:baseline;gap:8px;padding:7px 12px;border-radius:9px;background:#f1f6ee;box-shadow:inset 0 0 0 1px #d4dfce;font-size:13px}
+.cs-best-list span{color:#4f6255}
+.cs-best-list b{color:#1f3d2a;font-weight:600;white-space:nowrap}
+.cs-best-text{margin:9px 0 0;color:#3b4f42;font-size:13px}
+.cs-best-stats{display:flex;flex:0 0 auto;gap:30px;margin:0;padding-left:40px;border-left:1px solid #e3e9df}
+.cs-best-stats>div{min-width:100px}
+.cs-best-stats dt{display:flex;align-items:center;gap:6px;color:var(--ds-muted);font-size:12px}
+.cs-best-stats dd{margin:2px 0 0}
+.cs-best-stats dd b{display:block;color:#1f3d2a;font-size:28px;font-weight:650;line-height:1.15}
+.cs-best-stats dd small{display:block;margin-top:1px;color:var(--ds-muted);font-size:11.5px}
+.cs-best-stats .is-base dd b{color:#5e7062;font-weight:550}
+.cs-best-stats .is-check{padding-left:30px;border-left:1px solid #e3e9df}
+.cs-best-foot{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:12px}
+.cs-best-foot .btn[aria-pressed=true]{background:#e8f0e2;border-color:#c8d7bf;color:#2d4c37}
+.cs-best-note{margin:0;color:var(--ds-muted);font-size:12px}
+.cs-best-empty{margin:12px 0 0;color:#8c3f33;font-size:13px}
 .cs-conditions{background:#f8faf6;border:1px solid var(--ds-border);border-radius:12px;padding:16px 20px 18px;margin:0 0 16px}
 .cs-conditions-head{display:flex;align-items:center;flex-wrap:wrap;gap:10px 24px;margin-bottom:12px}
 .cs-conditions-title{flex:1 1 420px;min-width:0}
@@ -179,7 +211,9 @@ dialog:has(.cs-detail){width:min(1100px,calc(100% - 32px))}
   .cs-no-ref .cs-row{grid-template-columns:minmax(190px,1.4fr) 150px minmax(210px,1fr) 100px}}
 @media(max-width:1100px){.cs-key{margin-left:0}}
 @media(max-width:800px){
-  .cs-conditions{padding:14px}
+  .cs-conditions,.cs-best{padding:14px}
+  .cs-best-stats{flex-wrap:wrap;gap:14px 24px;padding-left:0;border-left:0}
+  .cs-best-stats .is-check{padding-left:0;border-left:0}
   .cs-row-head{display:none}
   .cs-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name now" "range range" "strip count";gap:6px 10px;padding:8px}
   .cs-no-ref .cs-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name name" "range range" "strip count"}
