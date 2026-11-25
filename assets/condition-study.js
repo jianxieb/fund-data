@@ -64,8 +64,8 @@
   // `idle`: ticked rows that follow the reference date but have no reading there, so they are not applied.
   // `drafts`: rows ticked with no reading to take a range from; they wait for a typed number and stay out of the address.
   // `written`: the address the page itself last wrote; any other address starts without drafts.
-  // `best`: the best combo shown for the reference date, or null without one or while it is being compared.
-  // `queued`: the settings whose best combo is being compared.
+  // `best`: the best combo shown for the reference date, as it stands (`main`, then `check`, with the progress of the run), or
+  // null without a reference date. `queued`: the settings whose best combo is being compared.
   let H, st, data, ref, result, fitted, best = null, queued = null, idle = [], shown = null, signature = '', page = 1, vixLoad = null, written = null;
   const drafts = new Set();
 
@@ -74,10 +74,10 @@
   const signed = v => '<span class="' + (v < 0 ? 'negative' : v > 0 ? 'positive' : '') + '">' + pct(v) + '</span>';
   const share = v => v == null ? '—' : v.toFixed(1) + '%';
   const minus = text => String(text).replace('-', '−');
-  function label(m) {
-    if (m.id === 'rN') return '近 ' + st.params.rNDays + ' 日涨跌';
-    if (m.id === 'ddN') return '距近 ' + st.params.ddNDays + ' 日最高收盘';
-    if (m.id === 'drops') return '近 21 日跌超 ' + st.params.dropsPct + '% 的天数';
+  function label(m, p = st.params) {
+    if (m.id === 'rN') return '近 ' + p.rNDays + ' 日涨跌';
+    if (m.id === 'ddN') return '距近 ' + p.ddNDays + ' 日最高收盘';
+    if (m.id === 'drops') return '近 21 日跌超 ' + p.dropsPct + '% 的天数';
     if (m.id === 'peer1') return peerName() + '当日涨跌';
     return m.label;
   }
@@ -247,22 +247,69 @@
     if (!fits.has(id)) fits.set(id, C.fit(data, { era:st.era, ref }));
     return fits.get(id);
   }
-  // The comparison takes a few hundred milliseconds, so it runs once the page has drawn and the card fills in after it.
+  // The comparison takes a second or two, so it runs in short slices once the page has drawn and the page stays usable: the
+  // card shows how far it has got, fills in when the pick is ready and adds the check on the earlier history after that.
+  // The last few runs left part way for other settings keep their place, so coming back picks up where they stopped.
   function bestFor(key) {
     const id = [key, st.era, ref, st.best].join('|');
-    if (bests.has(id)) return bests.get(id);
-    if (queued !== id) {
-      queued = id;
-      const view = data, options = { ref, horizon:st.best, era:st.era };
-      afterPaint(() => {
-        if (queued !== id) return;
-        queued = null;
-        bests.set(id, C.best(view, options));
-        redraw();
-      });
-    }
-    return null;
+    let entry = bests.get(id);
+    if (!entry) bests.set(id, entry = { main:null, check:null, run:null, token:null, done:0, total:0 });
+    if (!(entry.main && (entry.check || !entry.main.items)) && queued !== id) runBest(id, entry, data, { ref, horizon:st.best, era:st.era });
+    return entry;
   }
+  function runBest(id, entry, view, options) {
+    queued = id;
+    // Only the newest chain of slices drives a run, even when the page leaves its settings and comes back before the
+    // previous slice has fired.
+    const token = entry.token = {};
+    if (paused.includes(entry)) paused.splice(paused.indexOf(entry), 1);
+    entry.run ||= entry.main ? C.checkRun(view, { ...options, main:entry.main }) : C.bestRun(view, options);
+    const slice = () => {
+      if (entry.token !== token) return;
+      // Other settings, or another page, stop it where it is.
+      if (queued !== id || location.hash.split('?')[0] !== route) {
+        if (queued === id) queued = null;
+        pause(entry);
+        return;
+      }
+      const end = Date.now() + 25;
+      let step;
+      do step = entry.run.next(); while (!step.done && Date.now() < end);
+      if (!step.done) {
+        entry.done = step.value.done;
+        entry.total = step.value.total;
+        showProgress(entry);
+        setTimeout(slice, 0);
+        return;
+      }
+      entry.done = entry.total = 0;
+      entry.run = null;
+      if (entry.main) { entry.check = step.value; queued = null; }
+      else {
+        entry.main = step.value;
+        if (entry.main.items) { entry.run = C.checkRun(view, { ...options, main:entry.main }); setTimeout(slice, 0); } else queued = null;
+      }
+      redraw();
+    };
+    afterPaint(slice);
+  }
+  // Runs left part way, oldest first; older ones start over if their settings come back.
+  const paused = [];
+  function pause(entry) {
+    entry.token = null;
+    paused.push(entry);
+    if (paused.length > 3) Object.assign(paused.shift(), { run:null, done:0, total:0 });
+  }
+  const progressText = e => e.total ? '已比较 ' + e.done.toLocaleString('zh-CN') + ' / ' + e.total.toLocaleString('zh-CN') + ' 组' : '';
+  // Nothing is counted while the readings are being built, so the bar starts empty.
+  const filled = e => (e.total ? 100 * e.done / e.total : 0).toFixed(1) + '%';
+  function showProgress(entry) {
+    const bar = document.querySelector('#cs-best-bar'), text = document.querySelector('#cs-best-count');
+    if (bar) bar.style.width = filled(entry);
+    if (text) text.textContent = progressText(entry);
+  }
+  const meter = e => '<div class="cs-best-progress" aria-hidden="true"><span id="cs-best-bar" style="width:' + filled(e) + '"></span></div>' +
+    '<p class="cs-best-count" id="cs-best-count">' + progressText(e) + '</p>';
   const afterPaint = run => typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => setTimeout(run, 0)) : setTimeout(run, 0);
 
   function waitOptions() {
@@ -463,64 +510,77 @@
       '<span class="cs-range">' + input('lo') + '<span>至</span>' + input('hi') + '<span class="cs-unit">' + esc(unit) + '</span>' + mode + '</span>' +
       '<span class="cs-count">' + count + '</span></div>';
   }
-  function bestInfo() {
-    const o = C.bestDefaults;
+  const count = v => v.toLocaleString('zh-CN');
+  function bestInfo(b) {
+    const o = C.bestDefaults, t = C.bestThresholds, L = C.bestLookbacks, ends = list => list[0] + '–' + list[list.length - 1];
+    const far = t.steps[t.steps.length - 1], tail = L.rN.all.filter(d => d > 252).join('、');
     return info('best', '最佳组合如何挑选', '最佳组合如何挑选', [
       '胜率是满足一组条件的历史交易日中，与多数同向（即中位数的涨跌方向）的占比：多数上涨时是上涨占比，多数下跌时是下跌占比。看涨和看跌的组合一起比较。',
-      '候选范围都覆盖参照日的读数，门槛跟着读数走：从读数往历史的另一端，每隔一段历史分布取一个门槛（取到指标的步长），组成「≥ 门槛」或「≤ 门槛」；读数两侧各取一个门槛组成区间。参与的指标：' + esc(C.bestIds.map(shortLabel).join('、')) + '。',
-      '每个范围单独算一次，不同指标的范围再两两组合各算一次，全部比较，按当前的历史范围和观察期计数。',
-      '比较的组合很多，总有一些碰巧走势一致，所以排序比的不是胜率本身，而是扣除偶然性后的下限。下限按同时比较约 10 万组从严计算（z = ' + o.z +
-        '）；天数少、或各天的后续期间大多重叠，扣得更多，样本量按后续期间互不重叠的天数计。每组至少要有 ' + o.minSamples + ' 天已有结果，其中后续期间互不重叠的至少 ' + o.minApart +
-        ' 天；两项的组合须比其中较好的一项单独时高出 ' + o.gain * 100 + ' 个百分点。']);
+      '每个范围都覆盖参照日的读数。门槛从读数往两侧取：离读数 1–' + far + ' 个步长，越远越疏；读数上下浮动 ' + t.scale[0] * 100 + '%–' + t.scale[t.scale.length - 1] * 100 +
+        '%；往历史两端再数过 ' + t.share[0] * 100 + '%–' + t.share[t.share.length - 1] * 100 + '% 的读数；读数有正有负时另加 0。任一下门槛（或不设）与任一上门槛（或不设）组成一个范围，最多覆盖 ' +
+        t.cover * 100 + '% 的历史。',
+      '下方条件中参照日有读数的每一项都参与（观察期各项除外）。近 N 日涨跌（N = 1–252，另加 ' + tail + '）、距近 N 日最高收盘（N = 2–252，另加 ' + tail + '）和近 21 日跌超 X% 的天数（X = ' + ends(L.drops.all) +
+        '，每 ' + L.drops.all[0] + ' 一档）每个回看天数都单独算。',
+      '每个范围单独算一次；不同指标的范围两两组合各算一次，其中近 N 日涨跌取 ' + L.rN.pairs.length + ' 个回看天数、距近 N 日最高收盘取 ' + L.ddN.pairs.length + ' 个、大跌门槛取 ' +
+        L.drops.pairs.length + ' 个；再从每种项数最好的 ' + o.width + ' 组逐项加入，最多 ' + o.items + ' 项；最后把领先的 ' + o.refine + ' 组的回看天数逐个换遍。按当前的历史范围和观察期计数。',
+      '比较的组合很多，总有一些碰巧走势一致，所以排序比的不是胜率本身，而是扣除偶然性后的下限。下限按比较的组数从严计算：比较 N 组时，每组按双侧 0.05 ÷ N 取 z。' +
+        (b?.plan ? '本次最多比较 ' + count(b.plan.total) + ' 组，z = ' + b.z.toFixed(2) + '。' : '') + '天数少、或各天的后续期间大多重叠，扣得更多：样本量按后续期间互不重叠的天数计。每组至少要有 ' +
+        o.minSamples + ' 天已有结果，其中后续期间互不重叠的至少 ' + o.minApart + ' 天；每多一项，须比少这一项时高出 ' + o.gain * 100 + ' 个百分点。']);
   }
-  function checkInfo(b) {
+  function checkInfo(k) {
     return info('best-check', '新数据检验如何计算', '新数据检验', [
       '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史胜率偏高。',
-      '检验只用 ' + b.check.split + ' 以前已走完的历史，按同样规则挑一组、定下涨跌方向，再统计它在 ' + b.check.split + ' 及以后按这个方向的胜率；这段历史挑选时没有用到。',
+      '检验只用 ' + k.split + ' 以前已走完的历史，按同样规则挑一组、定下涨跌方向，再统计它在 ' + k.split + ' 及以后按这个方向的胜率；这段历史挑选时没有用到。',
       '通过：胜率的 95% 置信下限高于 50%，也高于同期不设条件时同方向的占比。优势不明显：胜率高于这两者，但在误差范围内。未通过：胜率没有同时高于这两者。']);
   }
-  const sameConditions = (a, b) => Object.keys(a).length === Object.keys(b).length &&
-    Object.entries(b).every(([id, range]) => a[id] && C.formatRange(a[id]) === C.formatRange(range));
-  const chips = conditions => Object.entries(conditions).map(([id, range]) => '<li><span>' + esc(label(C.byId[id])) + '</span><b>' +
-    esc(rangeText(C.byId[id], range)) + '</b></li>').join('');
+  // A row at the lookback a combo used, which may differ from the page's own.
+  const itemLabel = it => label(C.byId[it.id], it.param ? { ...st.params, [it.param]:it.lookback } : st.params);
+  const chips = items => items.map(it => '<li><span>' + esc(itemLabel(it)) + '</span><b>' + esc(rangeText(C.byId[it.id], it.range)) + '</b></li>').join('');
+  // The page's conditions are the combo's: the same rows, ranges and lookbacks.
+  const sameSet = b => Object.keys(result.conditions).length === b.items.length && b.items.every(it => result.conditions[it.id] &&
+    C.formatRange(result.conditions[it.id]) === C.formatRange(it.range) && (!it.param || st.params[it.param] === it.lookback));
   const moves = { up:'上涨', down:'下跌' };
   // The pick on the earlier half of the history, counted on the later half that it never saw, in the way it called.
-  function checkLine(b) {
-    const k = b.check, half = [Math.ceil(b.minSamples / 2), Math.ceil(b.minApart / 2)], move = moves[k.dir];
+  function checkLine(b, k) {
+    const half = [Math.ceil(b.minSamples / 2), Math.ceil(b.minApart / 2)], move = moves[k.dir];
     const facts = k.verdict === 'none' ? '只用 ' + k.split + ' 以前的历史，没有一组有至少 ' + half[0] + ' 天已有结果、其中 ' + half[1] + ' 天的后续期间互不重叠。' :
       !k.n ? '只用 ' + k.split + ' 以前的历史挑选，挑出的组合在之后还没有已有结果的交易日。' :
       '只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组' : '挑出的组合看' + (k.dir === 'up' ? '涨' : '跌')) + '；它在之后的 ' + k.n + ' 天中 ' + k.wins +
         ' 天' + move + '，胜率 ' + share(k.winPct) + '，同期不设条件时' + move + '占比 ' + share(k.baseline) + '。';
     const verdict = { weak:'高出的部分在误差范围内。', fail:'上方的胜率多半来自挑选本身。',
       few:k.n ? '其中后续期间互不重叠的只有 ' + k.apart + ' 天，不足以检验。' : '' }[k.verdict] || '';
-    const pick = k.conditions && !k.same ? '<div class="cs-best-pick"><span>' + k.split + ' 以前挑出的组合</span><ul class="cs-best-list">' + chips(k.conditions) + '</ul></div>' : '';
-    return '<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>' + checkInfo(b) + '</p>' +
+    const pick = k.items && !k.same ? '<div class="cs-best-pick"><span>' + k.split + ' 以前挑出的组合</span><ul class="cs-best-list">' + chips(k.items) + '</ul></div>' : '';
+    return '<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>' + checkInfo(k) + '</p>' +
       '<p class="cs-best-check-text">' + facts + (verdict ? ' ' + verdict : '') + '</p>' + pick + '</div>';
   }
-  // The best combo for the reference date: one range it meets or two of different readings, whose samples most reliably
-  // moved one way after the chosen horizon, beside how often every close moved that way and the check on the later history
-  // the pick never saw. `b` is null while the comparison is still running.
-  function bestPanel(b) {
-    const date = data.dates[ref], s = b?.summary, term = terms[st.best], n = b?.conditions ? Object.keys(b.conditions).length : 0;
+  // While the check runs: the same search on the earlier half of the history.
+  const checkWait = e => '<div class="cs-best-check is-pending"><p class="cs-best-check-text" role="status">正在用 ' + data.dates[Math.floor(data.n / 2)] +
+    ' 以前的历史检验…</p>' + meter(e) + '</div>';
+  // The best combo for the reference date: the ranges it meets, from one reading to several, whose samples most reliably moved
+  // one way after the chosen horizon, beside how often every close moved that way and the check on the later history the pick
+  // never saw. `entry` holds what the run has found so far.
+  function bestPanel(entry) {
+    const b = entry.main, date = data.dates[ref], s = b?.summary, term = terms[st.best], n = b?.items ? b.items.length : 0;
     const controls = '<div class="cs-best-controls">' + H.menu('cs-best', '挑选依据', C.horizonChoices.map(h => [String(h), terms[h] + '后胜率']), String(st.best)) + '</div>';
     const tile = (cls, name, big, small) => '<div class="' + cls + '"><dt>' + name + '</dt><dd><b>' + big + '</b>' + small.map(t => '<small>' + t + '</small>').join('') + '</dd></div>';
     let body;
-    if (!b) body = '<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + date + ' 收盘满足的条件…</p>';
-    else if (!b.conditions) body = '<p class="cs-best-empty" role="status">' + (b.reason === 'readings' ? date + ' 的读数回看不足，无法挑选组合。' :
+    if (!b) body = '<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + date + ' 收盘满足的条件…</p>' + meter(entry);
+    else if (!b.items) body = '<p class="cs-best-empty" role="status">' + (b.reason === 'readings' ? date + ' 的读数回看不足，无法挑选组合。' :
       '覆盖 ' + date + ' 读数的范围中，没有一组有至少 ' + b.minSamples + ' 天已有结果、其中 ' + b.minApart + ' 天的后续期间互不重叠。') + '</p>';
     else {
-      const used = sameConditions(result.conditions, b.conditions), move = moves[b.dir];
-      body = '<div class="cs-best-body"><div class="cs-best-main"><ul class="cs-best-list">' + chips(b.conditions) + '</ul>' +
+      const used = sameSet(b), move = moves[b.dir], c = b.compared;
+      body = '<div class="cs-best-body"><div class="cs-best-main"><ul class="cs-best-list">' + chips(b.items) + '</ul>' +
         '<p class="cs-best-text">历史上' + (n > 1 ? '同时满足这 ' + n + ' 项' : '满足这一项') + '的 ' + s.n + ' 天中，' + b.wins + ' 天在' + term + '后' + move + '，占多数；涨跌中位数 ' +
         pct(s.median) + '，最低 ' + pct(s.min) + '，最高 ' + pct(s.max) + '。</p></div>' +
         '<dl class="cs-best-stats">' + tile('is-pick', '这组条件的胜率', share(b.winPct), [move + ' ' + b.wins + ' / ' + s.n + ' 天', ...(b.apart < s.n ? ['后续期间互不重叠的 ' + b.apart + ' 天'] : [])]) +
-        tile('is-base', '不设条件的' + move + '占比', share(b.basePct), ['全部交易日']) + '</dl></div>' + checkLine(b) +
+        tile('is-base', '不设条件的' + move + '占比', share(b.basePct), ['全部交易日']) + '</dl></div>' + (entry.check ? checkLine(b, entry.check) : checkWait(entry)) +
         '<div class="cs-best-foot"><button type="button" class="btn sm" data-cs-action="best" aria-pressed="' + used + '">' + (used ? '✓ 已使用这组条件' : '用这组条件') + '</button>' +
-        '<p class="cs-best-note">比较了 ' + (b.candidates + b.pairs).toLocaleString('zh-CN') + ' 组条件：' + b.candidates.toLocaleString('zh-CN') + ' 个单项范围、' +
-        b.pairs.toLocaleString('zh-CN') + ' 组两两组合。</p></div>';
+        '<p class="cs-best-note">比较了 ' + count(c.singles + c.pairs + c.more) + ' 组条件：' + count(c.singles) + ' 个单项范围、' + count(c.pairs) + ' 组两项组合、' +
+        count(c.more) + ' 组在领先组合上加一项或换回看天数。</p></div>';
     }
-    return '<section class="cs-best' + (b ? '' : ' is-pending') + '" aria-labelledby="cs-best-title" aria-busy="' + !b + '"><div class="cs-best-title"><h2 id="cs-best-title">最佳组合</h2>' + bestInfo() +
-      '<p>' + date + ' 收盘满足的条件中，扣除偶然性后胜率最高的一组</p></div>' + controls + body + '</section>';
+    const busy = !b || (!!b.items && !entry.check);
+    return '<section class="cs-best' + (b ? '' : ' is-pending') + '" aria-labelledby="cs-best-title" aria-busy="' + busy + '"><div class="cs-best-title"><h2 id="cs-best-title">最佳组合</h2>' +
+      bestInfo(b) + '<p>' + date + ' 收盘满足的条件中，扣除偶然性后胜率最高的一组</p></div>' + controls + body + '</section>';
   }
   function conditionPanel() {
     const date = ref === null ? null : data.dates[ref], n = Object.keys(result.conditions).length;
@@ -765,9 +825,9 @@
       '<p>信号日读数只用当天及以前的收盘：涨跌与 N 个交易日前的收盘比较；回撤取含当天的 N 个收盘中的最高点；均线含当天；波动率为 21 个日对数收益的样本标准差年化；RSI 为 14 日 Wilder 平滑；「信号前一日」各项截至前一交易日。范围两端都包含在内，留空表示不限。</p>' +
       '<p>设置观察期后，信号日之后的 N 个交易日用于判断是否收复前一日收盘、是否跌破信号日收盘等；观察期走完才计入样本，后续收益从观察期末收盘起算。按盘中最高价判定时，观察期内每天都须有已收盘的最高价。</p>' +
       '<p>每个满足全部条件的交易日都单独计入，相近日期的较长期限结果大量重叠。按参照日匹配时，依次尝试' + esc(fitList()) + '；每项取参照日读数附近的范围，读数处于历史最低或最高的 10% 时改为单侧，加入后不足 10 天的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对。</p>' +
-      '<p>设了参照日时，最佳组合比较覆盖参照日读数的每个范围及不同指标范围的两两组合，门槛跟着读数取；每组至少 ' + C.bestDefaults.minSamples +
-        ' 天已有结果、其中后续期间互不重叠的至少 ' + C.bestDefaults.minApart + ' 天，按所选期限胜率扣除偶然性后的下限排序。胜率是与多数同向（中位数的涨跌方向）的天数占比，看涨、看跌一起比较。' +
-        '新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。</p>' +
+      '<p>设了参照日时，最佳组合比较覆盖参照日读数的每个范围（三类可调回看的指标逐个回看天数都算）、不同指标范围的两两组合，以及由领先组合逐项扩展的三项及以上组合，门槛跟着读数取；每组至少 ' +
+        C.bestDefaults.minSamples + ' 天已有结果、其中后续期间互不重叠的至少 ' + C.bestDefaults.minApart + ' 天，按所选期限胜率扣除偶然性后的下限排序，比较的组数越多扣得越严。' +
+        '胜率是与多数同向（中位数的涨跌方向）的天数占比，看涨、看跌一起比较。新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。</p>' +
       '<p>结果描述历史样本，不代表下一次的概率；样本少时，范围稍变就可能明显改变结果。</p>' +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(markets[st.market][1]) + '/history/" target="_blank" rel="noopener noreferrer">指数历史收盘 ↗</a> · ' +
       '<a href="https://github.com/jianxieb/fund-data/blob/main/docs/condition-study-method.md" target="_blank" rel="noopener noreferrer">完整方法与核对记录 ↗</a></p></details>';
@@ -806,7 +866,7 @@
     if (sig !== signature) { signature = sig; page = 1; }
     if (!results.has(sig)) results.set(sig, C.study(data, { conditions, era:st.era, horizons:st.horizons, ref }));
     result = results.get(sig);
-    best = ref === null ? null : bestFor(frameKey);
+    best = ref === null ? null : bestFor([st.market, slot.data.asOf, st.wait, st.wait ? st.basis : '', peer?.data ? 'peer' : '', highSlot?.series ? 'highs' : ''].join('|'));
     charts.clear();
     return title + toolbar() + highNote() + (ref === null ? '' : bestPanel(best)) + conditionPanel() +
       (Object.keys(result.conditions).length ? mainChart() + summaryPanel() + episodesPanel() : emptyState()) + method();
@@ -822,13 +882,15 @@
     else return;
     write(next);
   }
-  // The combo's ranges become typed ones, and its horizon joins the results so its share is visible there too.
+  // The combo's ranges become typed ones, its lookbacks the rows' own, and its horizon joins the results so its share is
+  // visible there too.
   function applyBest() {
-    if (!best?.conditions) return;
+    const b = best?.main;
+    if (!b?.items) return;
     drafts.clear();
-    const state = readState(), horizons = C.horizonChoices.filter(h => h === best.horizon || state.horizons.includes(h));
-    const conditions = Object.fromEntries(Object.entries(best.conditions).map(([id, range]) => [id, { ...range }]));
-    write({ ...state, manual:true, conditions, follow:[], horizons });
+    const state = readState(), horizons = C.horizonChoices.filter(h => h === b.horizon || state.horizons.includes(h));
+    const conditions = Object.fromEntries(b.items.map(it => [it.id, { ...it.range }]));
+    write({ ...state, manual:true, conditions, follow:[], horizons, params:{ ...state.params, ...b.params } });
   }
   function askWait() {
     H.openModal(H.modalTitle('自定义观察期', '信号日之后观察的交易日数；后续收益从观察期末收盘起算。') +

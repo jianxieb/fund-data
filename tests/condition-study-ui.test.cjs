@@ -36,7 +36,7 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
   vix = vixFor(series), vixMode = 'ok', highsMode = 'ok' } = {}) {
   const assets = ['NDX', 'GSPC'].map(code => ({ id:'index:^' + code, code:'^' + code, kind:'index', currency:'USD', basis:'price_index' }));
   if (badIdentity) assets[0].basis = 'etf_price';
-  const location = { hash }, listeners = {}, downloads = [], modals = [], renders = [], state = { fail, fetches:[] }, nodes = {};
+  const location = { hash }, listeners = {}, downloads = [], modals = [], renders = [], state = { fail, fetches:[] }, nodes = {}, paints = [];
   const vixRow = { id:'index:^VIX', code:'^VIX', basis:'implied_volatility_index', status:'available', first:vix[0][0], asOf:vix.at(-1)[0],
     historyUrl:'data/condition-study/VIX-0123456789abcdef.json', sha256:'0'.repeat(64), ...(vixMode === 'stale' ? { refreshMissing:'source timed out' } : {}) };
   const vixHistory = { schemaVersion:1, id:vixRow.id, basis:vixRow.basis, field:'CLOSE', closedSessionsOnly:true, first:vixRow.first, asOf:vixRow.asOf,
@@ -66,6 +66,8 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
       history:async () => { if (state.fail) throw new Error('缺少日线 <503>'); return { dividends, series }; } } },
     document:{ addEventListener:(type, listener) => { listeners[type] = listener; }, createElement:element,
       querySelector:selector => sources[selector] ? { dataset:{ src:sources[selector] } } : nodes[selector] || null },
+    // The best combo starts after the page has drawn; here only a test that waits for it lets it start.
+    requestAnimationFrame:run => paints.push(run),
     location, URLSearchParams, setTimeout, fetch, innerWidth:1600, innerHeight:900, scrollX:0, scrollY:1000,
     history:{ replaceState:(_, __, next) => { location.hash = next; } } };
   vm.createContext(context);
@@ -108,12 +110,25 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
     for (let i = 0; i < 6; i++) await new Promise(setImmediate);
     return ui.view(H);
   }
+  const flush = () => { for (const run of paints.splice(0)) run(); };
+  // The best combo runs in slices after each draw: this lets it run until its card has the pick and its check, and shows
+  // `seen` every page drawn on the way.
+  async function done(seen = () => {}) {
+    for (let i = 0; i < 5000; i++) {
+      flush();
+      const html = await settle();
+      seen(html);
+      if (!html.includes('aria-busy="true"')) return html;
+      await new Promise(resolve => setTimeout(resolve, 3));
+    }
+    throw new Error('the best combo did not finish');
+  }
   const first = ui.view(H);
   const data = C.compute(series, ['ok', 'stale'].includes(vixMode) ? { vix } : {});
   // Both index files are the same walk here, so the other index's move equals the index's own.
   const frameFor = (options = {}) => C.frame(data, { peer:series, ...options });
   return { ui, H, series, vix, highs, data, view:frameFor(), frameFor, first, location, listeners, downloads, modals, renders, state, nodes,
-    click, chip, choice, toggle, enter, param, setDate, submitWait, settle };
+    click, chip, choice, toggle, enter, param, setDate, submitWait, settle, flush, done };
 }
 const checked = (html, id) => new RegExp('id="cs-' + id + '-on"[^>]*\\schecked').test(html);
 const inputValue = (html, id, side) => html.match(new RegExp('id="cs-' + id + '-' + side + '"[^>]*value="([^"]*)"'))?.[1];
@@ -123,6 +138,11 @@ function rowOf(html, id) {
   return html.slice(html.lastIndexOf('<div class="cs-row', at), end < 0 ? undefined : end);
 }
 const nameOf = m => ({ rN:'近 10 日涨跌', ddN:'距近 63 日最高收盘', drops:'近 21 日跌超 5% 的天数', peer1:'标普500当日涨跌' })[m.id] || m.label;
+// A row of a combo at the lookback the combo used.
+const itemName = it => ({ rN:'近 ' + it.lookback + ' 日涨跌', ddN:'距近 ' + it.lookback + ' 日最高收盘', drops:'近 21 日跌超 ' + it.lookback + '% 的天数' })[it.id] ||
+  nameOf(C.byId[it.id]);
+// The lookbacks an address carries: those that differ from the defaults, in the page's order.
+const lookbacks = params => Object.entries(C.params).filter(([k, spec]) => params[k] !== undefined && params[k] !== spec.fallback).map(([k]) => k + '=' + params[k] + '&').join('');
 
 test('the page starts with no reference date or condition, and one or two typed ranges are a complete study', async () => {
   const f = fixture();
@@ -906,70 +926,85 @@ test('old 指数大跌 links open here with the same settings', async () => {
   assert.ok(html.includes('匹配 <b>' + expected.episodes.length.toLocaleString('zh-CN') + '</b> 个交易日'));
 });
 
-test('a reference date shows its best combo; applying it types its ranges and adds its horizon to the results', async () => {
+test('a reference date shows its best combo; applying it types its ranges and lookbacks and adds its horizon to the results', async () => {
   const f = fixture();
   let html = await f.settle();
   assert.ok(!html.includes('cs-best'), 'no best combo without a reference date');
   f.click('action', 'latest');
-  // The page draws first and says the comparison is running; the card fills in after it.
+  // The page draws first and says the comparison is running; the card fills in after it, then adds the check.
   const pending = f.renders.at(-1);
   assert.ok(pending.includes('<section class="cs-best is-pending" aria-labelledby="cs-best-title" aria-busy="true">'));
-  assert.ok(pending.includes('<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + f.data.asOf + ' 收盘满足的条件…</p>'));
+  assert.ok(pending.includes('<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + f.data.asOf + ' 收盘满足的条件…</p>' +
+    '<div class="cs-best-progress" aria-hidden="true"><span id="cs-best-bar" style="width:0.0%"></span></div><p class="cs-best-count" id="cs-best-count"></p>'));
   assert.ok(pending.includes('<div id="cs-best">挑选依据：1个月后胜率</div>') && pending.includes('cs-conditions'), 'the rest of the page is already there');
-  html = await f.settle();
+  // The bar and the count move while it runs, without drawing the page again; the page is drawn when the pick is ready
+  // and when its check is.
+  const bar = f.nodes['#cs-best-bar'] = { style:{} }, count = f.nodes['#cs-best-count'] = { textContent:'' }, seen = [], drawn = f.renders.length;
+  html = await f.done(page => seen.push(page));
+  const b = C.best(f.view, { ref:f.data.last }), s = b.summary, move = moves[b.dir], k = b.check, n = v => v.toLocaleString('zh-CN');
+  assert.equal(count.textContent.replace(/已比较 [\d,]+ \/ /, ''), n(b.plan.total) + ' 组');
+  assert.match(bar.style.width, /^\d+(\.\d)?%$/);
+  assert.equal(f.renders.length - drawn, 2);
+  const waiting = seen.find(page => page.includes('cs-best-check is-pending'));
+  assert.ok(waiting && waiting.includes('aria-busy="true"') && waiting.includes('<p class="cs-best-check-text" role="status">正在用 ' + k.split + ' 以前的历史检验…</p>'),
+    'the pick shows while its check runs');
   assert.ok(html.includes('<section class="cs-best" aria-labelledby="cs-best-title" aria-busy="false">'));
   assert.equal(f.location.hash, '#condition-study?date=latest&mode=manual', 'showing the card changes no condition');
-  const b = C.best(f.view, { ref:f.data.last }), ids = Object.keys(b.conditions), s = b.summary, move = moves[b.dir];
   const card = html.slice(html.indexOf('<section class="cs-best"'), html.indexOf('<section class="cs-conditions'));
   assert.ok(card.includes('<h2 id="cs-best-title">最佳组合</h2>'));
   assert.ok(card.includes('<p>' + f.data.asOf + ' 收盘满足的条件中，扣除偶然性后胜率最高的一组</p>'));
   assert.ok(card.includes('<div id="cs-best">挑选依据：1个月后胜率</div>'));
   assert.ok(!card.includes('data-cs-scene') && !card.includes('限定情形'), 'no situation to choose');
-  for (const id of ids) assert.ok(card.includes('<li><span>' + nameOf(C.byId[id]) + '</span><b>'), id);
-  assert.ok(card.includes('历史上' + (ids.length > 1 ? '同时满足这 ' + ids.length + ' 项' : '满足这一项') + '的 ' + s.n + ' 天中，' + b.wins + ' 天在1个月后' + move + '，占多数；涨跌中位数 ' +
+  for (const it of b.items) assert.ok(card.includes('<li><span>' + itemName(it) + '</span><b>'), it.id);
+  const size = b.items.length;
+  assert.ok(card.includes('历史上' + (size > 1 ? '同时满足这 ' + size + ' 项' : '满足这一项') + '的 ' + s.n + ' 天中，' + b.wins + ' 天在1个月后' + move + '，占多数；涨跌中位数 ' +
     pct(s.median) + '，最低 ' + pct(s.min) + '，最高 ' + pct(s.max) + '。'));
-  // Every number says what it is: the win rate in the way most segments moved, beside how often every close moved that way.
+  // Every number says what it is: the win rate in the way most days moved, beside how often every close moved that way.
   assert.ok(card.includes('<dt>这组条件的胜率</dt><dd><b>' + b.winPct.toFixed(1) + '%</b><small>' + move + ' ' + b.wins + ' / ' + s.n + ' 天</small>' +
     (b.apart < s.n ? '<small>后续期间互不重叠的 ' + b.apart + ' 天</small>' : '') + '</dd>'));
   assert.ok(card.includes('<dt>不设条件的' + move + '占比</dt><dd><b>' + b.basePct.toFixed(1) + '%</b><small>全部交易日</small></dd>'));
   assert.ok(card.includes('胜率是满足一组条件的历史交易日中，与多数同向（即中位数的涨跌方向）的占比'), 'the explanation says what the win rate is');
+  assert.ok(card.includes('本次最多比较 ' + n(b.plan.total) + ' 组，z = ' + b.z.toFixed(2) + '。'), 'and how strict the bound was for this many sets');
   // The check says in words what it did and what came out.
-  const k = b.check, verdicts = { pass:'通过', weak:'优势不明显', fail:'未通过', few:'样本不足', none:'无法检验' };
+  const verdicts = { pass:'通过', weak:'优势不明显', fail:'未通过', few:'样本不足', none:'无法检验' };
   assert.ok(card.includes('<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>'));
   assert.ok(k.n > 0, 'the fixture has results after the middle close');
   assert.ok(card.includes('只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组' : '挑出的组合看' + (k.dir === 'up' ? '涨' : '跌')) + '；它在之后的 ' + k.n + ' 天中 ' +
     k.wins + ' 天' + moves[k.dir] + '，胜率 ' + k.winPct.toFixed(1) + '%，同期不设条件时' + moves[k.dir] + '占比 ' + k.baseline.toFixed(1) + '%。'));
   assert.equal(card.includes('class="cs-best-pick"'), !k.same, 'the earlier pick is shown only when it differs');
+  if (!k.same) for (const it of k.items) assert.ok(card.slice(card.indexOf('class="cs-best-pick"')).includes('<li><span>' + itemName(it) + '</span>'), it.id);
   assert.ok(card.includes('检验只用 ' + k.split + ' 以前已走完的历史，按同样规则挑一组、定下涨跌方向'));
-  assert.ok(card.includes('比较了 ' + (b.candidates + b.pairs).toLocaleString('zh-CN') + ' 组条件：' + b.candidates.toLocaleString('zh-CN') + ' 个单项范围、' +
-    b.pairs.toLocaleString('zh-CN') + ' 组两两组合。'));
+  const c = b.compared;
+  assert.ok(card.includes('比较了 ' + n(c.singles + c.pairs + c.more) + ' 组条件：' + n(c.singles) + ' 个单项范围、' + n(c.pairs) + ' 组两项组合、' + n(c.more) +
+    ' 组在领先组合上加一项或换回看天数。'));
   assert.ok(card.includes('data-cs-action="best" aria-pressed="false">用这组条件</button>'));
 
   f.click('action', 'best');
   html = await f.settle();
-  const typed = c => C.metrics.filter(m => c[m.id]).map(m => m.id + '=' + C.formatRange(c[m.id])).join('&');
-  assert.equal(f.location.hash, '#condition-study?date=latest&' + typed(b.conditions));
-  assert.ok(html.includes('data-cs-action="best" aria-pressed="true">✓ 已使用这组条件</button>'));
-  for (const id of ids) assert.ok(checked(html, id) && rowOf(html, id).includes('>手动填写<'), id);
+  const typed = list => C.metrics.filter(m => list[m.id]).map(m => m.id + '=' + C.formatRange(list[m.id])).join('&');
+  assert.equal(f.location.hash, '#condition-study?date=latest&' + lookbacks(b.params) + typed(b.conditions));
+  assert.ok(html.includes('data-cs-action="best" aria-pressed="true">✓ 已使用这组条件</button>'), 'the card stays and knows it is in use');
+  for (const it of b.items) assert.ok(checked(html, it.id) && rowOf(html, it.id).includes('>手动填写<'), it.id);
+  for (const it of b.items.filter(x => x.param)) assert.ok(rowOf(html, it.id).includes('data-cs-param="' + it.param + '" value="' + it.lookback + '"'), it.id + ' at its lookback');
   const month = html.match(/<tr><th scope="row">1个月<small>21 个交易日<\/small><\/th><td>(\d+)(?:<small>[^<]*<\/small>)?<\/td><td><strong><span[^>]*>[^<]*<\/span><\/strong><\/td><td><span[^>]*>[^<]*<\/span><\/td><td>([\d.]+%)<\/td>/);
   assert.deepEqual([Number(month[1]), month[2]], [s.n, s.upPct.toFixed(1) + '%'], 'the results table shows the same share');
 
   // Another horizon picks again without touching the conditions; applying adds that horizon to the results.
   f.ui.choose('best', '2');
-  html = await f.settle();
-  assert.equal(f.location.hash, '#condition-study?date=latest&best=2&' + typed(b.conditions));
+  html = await f.done();
+  assert.equal(f.location.hash, '#condition-study?date=latest&best=2&' + lookbacks(b.params) + typed(b.conditions));
   assert.ok(html.includes('<div id="cs-best">挑选依据：2日后胜率</div>'));
   const two = C.best(f.view, { ref:f.data.last, horizon:2 });
-  assert.ok(two.conditions);
+  assert.ok(two.items);
   assert.ok(html.includes(' 天在2日后' + moves[two.dir] + '，占多数；'));
   f.click('action', 'best');
   await f.settle();
-  assert.equal(f.location.hash, '#condition-study?date=latest&h=2,5,21,63,252&best=2&' + typed(two.conditions));
+  assert.equal(f.location.hash, '#condition-study?date=latest&h=2,5,21,63,252&best=2&' + lookbacks({ ...b.params, ...two.params }) + typed(two.conditions));
 });
 
 test('in a falling market the best combo calls a fall: its win rate is its share down, beside how often every close fell', async () => {
   const f = fixture({ hash:'#condition-study?date=latest&mode=manual', series:sessions(walk(2600, 2, -.0015)) });
-  const html = await f.settle();
+  const html = await f.done();
   const b = C.best(f.view, { ref:f.data.last }), s = b.summary;
   assert.equal(b.dir, 'down');
   const card = html.slice(html.indexOf('<section class="cs-best"'), html.indexOf('<section class="cs-conditions'));
@@ -979,22 +1014,45 @@ test('in a falling market the best combo calls a fall: its win rate is its share
   assert.ok(!card.includes('上涨 ' + b.wins), 'the falls are not called rises');
 });
 
-test('a setting changed before the comparison finishes shows only the pick for the new setting', async () => {
+test('a setting changed before the comparison finishes shows only the pick for the new setting, and a run left part way resumes', async () => {
   const f = fixture({ hash:'#condition-study?date=latest&mode=manual' });
   await f.settle();
+  const count = f.nodes['#cs-best-count'] = { textContent:'' };
+  f.nodes['#cs-best-bar'] = { style:{} };
+  // The one-month run gets part way first.
+  for (let i = 0; i < 2000 && !count.textContent; i++) { f.flush(); await f.settle(); }
+  assert.ok(count.textContent, 'the run has started counting');
   f.ui.choose('best', '5');
   f.ui.choose('best', '63');
   assert.ok(f.renders.at(-1).includes('正在比较 '), 'still comparing right after the change');
-  const html = await f.settle();
+  let html = await f.done();
   const b = C.best(f.view, { ref:f.data.last, horizon:63 });
   assert.ok(html.includes('<div id="cs-best">挑选依据：3个月后胜率</div>'));
   assert.ok(html.includes('<small>' + moves[b.dir] + ' ' + b.wins + ' / ' + b.summary.n + ' 天</small>') && html.includes(' 天在3个月后' + moves[b.dir] + '，占多数；'));
   assert.ok(!html.includes('正在比较 '));
+  // Back to one month: the run picks up where it stopped and gives the same pick as a run from the start.
+  f.ui.choose('best', '21');
+  const kept = f.renders.at(-1).match(/id="cs-best-count">已比较 ([\d,]+) \/ [\d,]+ 组</);
+  assert.ok(kept && Number(kept[1].replace(/,/g, '')) > 0, 'it kept its place');
+  html = await f.done();
+  const month = C.best(f.view, { ref:f.data.last });
+  assert.ok(html.includes('<small>' + moves[month.dir] + ' ' + month.wins + ' / ' + month.summary.n + ' 天</small>') && html.includes(' 天在1个月后'));
+  // Leaving the page stops a run; coming back carries on.
+  f.ui.choose('best', '10');
+  f.location.hash = '#overview';
+  f.flush();
+  await new Promise(resolve => setTimeout(resolve, 60));
+  const stopped = count.textContent;
+  await new Promise(resolve => setTimeout(resolve, 60));
+  assert.equal(count.textContent, stopped, 'no counting while away');
+  f.location.hash = '#condition-study?date=latest&best=10&mode=manual';
+  html = await f.done();
+  assert.ok(html.includes('<div id="cs-best">挑选依据：2周后胜率</div>') && html.includes('aria-busy="false"'));
 });
 
 test('a situation in an old address is ignored and dropped at the next change', async () => {
   const f = fixture({ hash:'#condition-study?date=latest&scene=below200&mode=manual' });
-  let html = await f.settle();
+  let html = await f.done();
   const b = C.best(f.view, { ref:f.data.last });
   assert.ok(!html.includes('data-cs-scene'));
   assert.ok(html.includes('<small>' + moves[b.dir] + ' ' + b.wins + ' / ' + b.summary.n + ' 天</small>'), 'the same pick as without a situation');
@@ -1006,7 +1064,7 @@ test('a situation in an old address is ignored and dropped at the next change', 
 test('the best combo names what is missing when nothing qualifies, and unknown values fall back', async () => {
   // One-year results leave fewer than 20 separate periods in about ten years of history.
   const f = fixture({ hash:'#condition-study?date=latest&best=252' });
-  const html = await f.settle();
+  const html = await f.done();
   assert.ok(html.includes('<p class="cs-best-empty" role="status">覆盖 ' + f.data.asOf + ' 读数的范围中，没有一组有至少 20 天已有结果、其中 20 天的后续期间互不重叠。</p>'));
   assert.ok(html.includes('<div id="cs-best">挑选依据：1年后胜率</div>'));
   assert.ok(!html.includes('data-cs-action="best"') && !html.includes('cs-best-check'), 'nothing to apply or check');

@@ -67,19 +67,30 @@
   // Market state first, then the speed of the move, then trend and volatility.
   const fitOrder = Object.freeze(['dd252', 'r21', 'r5', 'r1', 'ma200', 'vix', 'vol21', 'r3', 'r63']);
   const fitDefaults = Object.freeze({ width:0.75, minEpisodes:10, tail:0.1 });
-  // The best combo searches the signal-day readings that need no setting of their own; the prior-day copies and
-  // the lookbacks typed into a row's name are left out, as are readings known only after an observation period.
-  const bestIds = Object.freeze(['r1', 'r3', 'r5', 'r21', 'r63', 'r252', 'worst21', 'dd252', 'ddMax', 'rise252', 'since252',
-    'ma50', 'ma200', 'cross', 'vix', 'vix5', 'vol21', 'rsi14', 'down', 'up']);
-  // Thresholds sit these shares of a reading's history away from the reference reading, rounded outward to its step,
-  // so they follow the reading: a one-sided range takes one threshold (`side`), a band one below and one above (`band`).
-  // 0 is added where readings change sign. A one-sided range keeps at most `sideCover` of the history, a band `bandCover`.
-  const bestReach = Object.freeze({ side:Object.freeze([0.0025, 0.005, 0.01, 0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6]),
-    band:Object.freeze([0.02, 0.05, 0.1, 0.2, 0.35]), sideCover:0.85, bandCover:0.7 });
-  // `minApart`: samples whose result periods do not overlap. `gain`: what a second range must add to the better one alone.
-  // `z` ranks the sets: comparing some 100,000 of them, a 95% bound that holds for all of them at once needs z ≈ 5
-  // (two-sided 0.05 / 100,000). `checkZ` judges the one set the check picked, on data the pick never saw.
-  const bestDefaults = Object.freeze({ horizon:21, minSamples:20, minApart:20, gain:0.02, z:5, checkZ:1.96 });
+  // The best combo searches every reading the reference close has, except the observation-period ones, which are known only
+  // after the close. The three rows with a lookback of their own are searched at every lookback in `all`; a set holds at most
+  // one lookback of each row, as the page does, and pairs use the lookbacks in `pairs`. Lookbacks a fixed row already shows
+  // (近 21 日 is N = 21, 距 252 日最高收盘 is N = 252) are left out.
+  const bestIds = Object.freeze(metrics.filter(m => !m.param && m.group !== 'obs').map(m => m.id));
+  const span = (from, to, by = 1) => Array.from({ length:Math.round((to - from) / by) + 1 }, (_, i) => Number((from + i * by).toFixed(6)));
+  const bestLookbacks = Object.freeze({
+    rN:Object.freeze({ param:'rNDays', all:Object.freeze([...span(1, 252), 315, 378, 441, 504].filter(d => ![1, 3, 5, 21, 63, 252].includes(d))),
+      pairs:Object.freeze([2, 4, 6, 7, 8, 10, 12, 15, 17, 25, 30, 35, 42, 50, 84, 105, 126, 168, 189, 210]) }),
+    ddN:Object.freeze({ param:'ddNDays', all:Object.freeze([...span(2, 251), 315, 378, 441, 504]),
+      pairs:Object.freeze([3, 5, 7, 10, 15, 21, 30, 42, 63, 84, 126, 189]) }),
+    drops:Object.freeze({ param:'dropsPct', all:Object.freeze(span(0.5, 10, 0.5)), pairs:Object.freeze([1, 2, 3, 4, 5]) })
+  });
+  // Thresholds around the reference reading `v`, rounded outward to the reading's step: `steps` whole steps away (fixed
+  // intervals), `v × (1 ± k)` for each `scale` k (proportional) and `share` of the history away (distribution), plus 0 where
+  // readings change sign. A range runs from any low threshold (or none) to any high one (or none) and keeps at most `cover`
+  // of the history.
+  const bestThresholds = Object.freeze({ steps:Object.freeze([1, 2, 3, 4, 6, 8, 12, 16, 24, 32]), scale:Object.freeze([0.25, 0.5, 1, 2]),
+    share:Object.freeze([0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5]), cover:0.85 });
+  // `minApart`: samples whose result periods do not overlap. `gain`: what each further range must add over the set without it.
+  // Sets of three or more grow from the `width` best sets one range smaller, up to `items` ranges; the `refine` leading sets
+  // are then tried at every lookback. The ranking bound's z follows the number of sets compared (`bestZ`); `checkZ` judges
+  // the one set the check picked, on data the pick never saw.
+  const bestDefaults = Object.freeze({ horizon:21, minSamples:20, minApart:20, gain:0.02, width:40, items:6, refine:12, checkZ:1.96 });
 
   const round = value => Number(value.toFixed(6));
   const floorStep = (value, step) => round(Math.floor(value / step + tolerance) * step);
@@ -493,75 +504,113 @@
   }
 
   // The lower end of the Wilson score interval for a share `p` of `n` samples: small samples rank below large ones.
-  function wilsonShare(p, n, z = bestDefaults.z) {
+  function wilsonShare(p, n, z = 1.96) {
     if (!n) return 0;
     const z2 = z * z;
     return (p + z2 / (2 * n) - z * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n))) / (1 + z2 / n);
   }
-  // Ranges the reference close meets, with thresholds that follow its reading: at least (or at most) one threshold
-  // between the reading and the far end of the history, and bands from one threshold below the reading to one above.
-  function bestCandidates(data, ref) {
-    const view = framed(data), at = refOf(view, ref), out = [];
-    for (const id of bestIds) {
-      const m = byId[id], s = view.stats[id], v = view.values[id][at];
-      if (!Number.isFinite(v) || s.n < 50) continue;
-      const sorted = s.sorted, below = rank(sorted, v, false) / s.n, upTo = rank(sorted, v, true) / s.n;
-      // The threshold a share `d` of the history below (or above) the reading, rounded away from it; none past either end.
-      const low = d => {
-        if (below - d <= 0.002) return null;
-        let t = floorStep(quantile(sorted, below - d), m.step);
-        if (m.integer) t = Math.floor(t);
-        return t > v + tolerance || (m.min !== undefined && t <= m.min) ? null : t + 0;
-      };
-      const high = d => {
-        if (upTo + d >= 0.998) return null;
-        let t = ceilStep(quantile(sorted, upTo + d), m.step);
-        if (m.integer) t = Math.ceil(t);
-        return t < v - tolerance || (m.max !== undefined && t >= m.max) ? null : t + 0;
-      };
-      const distinct = list => [...new Set(list.filter(t => t !== null))];
-      const kept = (lo, hi) => ((hi === null ? s.n : rank(sorted, hi + tolerance, true)) - (lo === null ? 0 : rank(sorted, lo - tolerance, false))) / s.n;
-      const lows = distinct(bestReach.side.map(low)), highs = distinct(bestReach.side.map(high));
-      if (sorted[0] < 0 && sorted[s.n - 1] > 0) (v >= 0 ? lows : highs).push(0);
-      const ranges = [...distinct(lows).map(lo => [lo, null, bestReach.sideCover]), ...distinct(highs).map(hi => [null, hi, bestReach.sideCover])];
-      for (const lo of distinct(bestReach.band.map(low))) for (const hi of distinct(bestReach.band.map(high))) if (lo < hi) ranges.push([lo, hi, bestReach.bandCover]);
-      const seen = new Set();
-      for (const [lo, hi, cap] of ranges) {
-        const range = { lo, hi }, text = formatRange(range);
-        if (seen.has(text) || kept(lo, hi) > cap + tolerance || !validRange(id, range) || !inRange(v, range)) continue;
-        seen.add(text);
-        out.push({ id, range });
-      }
+  // z with a share `q` of the normal distribution above it (Acklam's approximation, relative error about 1e-9).
+  function upperZ(q) {
+    const t = Math.min(q, 1 - q);
+    let x;
+    if (t < 0.02425) {
+      const u = Math.sqrt(-2 * Math.log(t));
+      x = (((((-7.784894002430293e-03 * u - 3.223964580411365e-01) * u - 2.400758277161838e+00) * u - 2.549732539343734e+00) * u +
+        4.374664141464968e+00) * u + 2.938163982698783e+00) /
+        ((((7.784695709041462e-03 * u + 3.224671290700398e-01) * u + 2.445134137142996e+00) * u + 3.754408661907416e+00) * u + 1);
+    } else {
+      const u = t - 0.5, r = u * u;
+      x = (((((-3.969683028665376e+01 * r + 2.209460984245205e+02) * r - 2.759285104469687e+02) * r + 1.383577518672690e+02) * r -
+        3.066479806614716e+01) * r + 2.506628277459239e+00) * u /
+        (((((-5.447609879822406e+01 * r + 1.615858368580409e+02) * r - 1.556989798598866e+02) * r + 6.680131188771972e+01) * r -
+        1.328068155288572e+01) * r + 1);
     }
-    return out;
+    return q < 0.5 ? -x : x;
   }
-  // Closes as bits, 32 to a word.
-  function bitsOf(n, test) {
-    const out = new Uint32Array(Math.ceil(n / 32));
-    for (let i = 0; i < n; i++) if (test(i)) out[i >>> 5] |= 1 << (i & 31);
-    return out;
-  }
-  const ones = x => {
-    x -= (x >>> 1) & 0x55555555;
-    x = (x & 0x33333333) + ((x >>> 2) & 0x33333333);
-    return Math.imul((x + (x >>> 4)) & 0x0f0f0f0f, 0x01010101) >>> 24;
-  };
-  // Every matching close is a sample when each counts on its own: whole words are counted at once.
-  function tallyDaily(a, b, { count, rose, fell }) {
-    let n = 0, up = 0, down = 0;
-    for (let w = 0; w < a.length; w++) {
-      const x = (b ? a[w] & b[w] : a[w]) & count[w];
-      if (x) { n += ones(x); up += ones(x & rose[w]); down += ones(x & fell[w]); }
+  // The ranking bound for `sets` compared at once: a two-sided 0.05 / sets for each (Bonferroni), so every bound holds at once.
+  const bestZ = sets => upperZ(0.025 / Math.max(1, sets));
+  const lookbackStep = days => days <= 5 ? 0.5 : days <= 21 ? 1 : days <= 63 ? 2 : 5;
+  // A row at one lookback, with its sorted copy, kept with the closes so every frame and reference date reuses it.
+  const lookbackCache = new WeakMap();
+  function lookbackValues(base, id, value) {
+    let cache = lookbackCache.get(base);
+    if (!cache) lookbackCache.set(base, cache = new Map());
+    const key = id + ':' + value;
+    let slot = cache.get(key);
+    if (!slot) {
+      const values = id === 'rN' ? returnOver(base, value) : id === 'ddN' ? drawdownOver(base, value) : dropCount(base, value);
+      cache.set(key, slot = { values, sorted:values.filter(Number.isFinite).sort() });
     }
-    return { n, up, down };
+    return slot;
   }
-  // How many counted closes in both sets remain when each has to start at least `h` sessions after the one before.
-  function spaced(a, b, count, h) {
+  // One reading at the reference close: thresholds below its value `v` (nearest first) and above it, each close's bin between
+  // them (0 below the farthest low threshold, `mid` from the nearest low to the nearest high, `size - 1` above the farthest
+  // high, 255 unknown) and every range of bins `a`–`b` around `mid` that keeps at most `cover` of the history.
+  function bestReading(id, lookback, values, sorted, at, order) {
+    const m = byId[id], v = values[at], N = sorted.length;
+    if (!Number.isFinite(v) || N < 50) return null;
+    const step = id === 'rN' ? lookbackStep(lookback) : m.step, below = new Set(), above = new Set();
+    const low = t => {
+      t = (m.integer ? Math.floor(t + tolerance) : round(t)) + 0;
+      if (t <= v + tolerance && t > sorted[0] + tolerance && !(m.min !== undefined && t <= m.min + tolerance)) below.add(t);
+    };
+    const high = t => {
+      t = (m.integer ? Math.ceil(t - tolerance) : round(t)) + 0;
+      if (t >= v - tolerance && t < sorted[N - 1] - tolerance && !(m.max !== undefined && t >= m.max - tolerance)) above.add(t);
+    };
+    const f = floorStep(v, step), c = ceilStep(v, step);
+    for (const j of bestThresholds.steps) { low(f - (j - 1) * step); high(c + (j - 1) * step); }
+    if (Math.abs(v) >= step) for (const k of bestThresholds.scale) {
+      const x = v * (1 - k), y = v * (1 + k);
+      low(floorStep(Math.min(x, y), step));
+      high(ceilStep(Math.max(x, y), step));
+    }
+    const under = rank(sorted, v, false) / N, upTo = rank(sorted, v, true) / N;
+    for (const d of bestThresholds.share) {
+      if (under - d > 0) low(floorStep(quantile(sorted, under - d), step));
+      if (upTo + d < 1) high(ceilStep(quantile(sorted, upTo + d), step));
+    }
+    if (sorted[0] < 0 && sorted[N - 1] > 0) (v >= 0 ? low : high)(0);
+    const lows = [...below].sort((x, y) => y - x), highs = [...above].sort((x, y) => x - y), mid = lows.length, size = mid + highs.length + 1;
+    const bin = new Uint8Array(values.length).fill(255), held = new Int32Array(size + 1);
+    for (let i = 0; i < values.length; i++) {
+      const x = values[i];
+      if (!Number.isFinite(x)) continue;
+      let b = mid;
+      if (mid && x < lows[0] - tolerance) { let k = 1; while (k < mid && x < lows[k] - tolerance) k++; b = mid - k; }
+      else if (highs.length && x > highs[0] + tolerance) { let k = 1; while (k < highs.length && x > highs[k] + tolerance) k++; b = mid + k; }
+      bin[i] = b;
+      held[b + 1]++;
+    }
+    for (let b = 0; b < size; b++) held[b + 1] += held[b];
+    const ranges = [];
+    for (let a = mid; a >= 0; a--) for (let b = mid; b < size; b++) {
+      if ((a === 0 && b === size - 1) || held[b + 1] - held[a] > bestThresholds.cover * N + tolerance) continue;
+      ranges.push({ a, b, lo:a ? lows[mid - a] : null, hi:b < size - 1 ? highs[b - mid] : null });
+    }
+    if (!ranges.length) return null;
+    return { key:lookback === null ? id : id + ':' + lookback, id, param:lookback === null ? null : m.param, lookback, order, v, step,
+      lows, highs, mid, size, bin, ranges, P:null, pool:false };
+  }
+  // The closes of each bin and below as bits, 32 closes to a word, one row of `W` words per bin.
+  function bitsFor(r, W) {
+    if (r.P) return r.P;
+    const P = new Uint32Array(r.size * W), bin = r.bin;
+    for (let i = 0; i < bin.length; i++) if (bin[i] !== 255) P[bin[i] * W + (i >>> 5)] |= 1 << (i & 31);
+    for (let b = 1; b < r.size; b++) for (let w = 0; w < W; w++) P[b * W + w] |= P[(b - 1) * W + w];
+    return r.P = P;
+  }
+  // How many counted closes in bins `a`–`b` of a reading (its rows `P`), and in bins `c`–`d` of a second one (`Q`) if given,
+  // remain when each has to start at least `h` sessions after the one before.
+  function spacedRanges(W, count, h, P, a, b, Q, c, d) {
+    const pt = b * W, pu = (a - 1) * W, qt = d * W, qu = (c - 1) * W;
     let apart = 0, next = 0;
-    for (let w = 0; w < a.length;) {
+    for (let w = 0; w < W;) {
       const at = next >>> 5;
       if (at > w) { w = at; continue; }
-      let x = (b ? a[w] & b[w] : a[w]) & count[w];
+      let x = P[pt + w] & count[w];
+      if (a) x &= ~P[pu + w];
+      if (Q) { x &= Q[qt + w]; if (c) x &= ~Q[qu + w]; }
       if (at === w && (next & 31)) x &= -1 << (next & 31);
       if (!x) { w++; continue; }
       apart++;
@@ -569,96 +618,351 @@
     }
     return apart;
   }
-  // The samples among the closes in both `a` and `b` (or in `a`): `n` have a result that counts (in `marks.count`), `up` of
-  // those rose and `down` fell. `apart` is how many counted samples remain when each has to start at least `h` sessions
-  // after the one before, so that no two result periods overlap.
-  function sweep(a, b, marks, h) {
-    const t = tallyDaily(a, b, marks);
-    return { ...t, apart:h === 1 ? t.n : spaced(a, b, marks.count, h) };
+  // The readings of a reference close, built once per frame and date (the last three are kept) and shared by every horizon,
+  // history range and the check. `rows` limits them to some readings ('r1', 'rN:10'), so a test can check every set by hand.
+  // Built one reading at a time: each step yields `building` (nothing compared yet), so a page running it in short slices
+  // stays responsive while the lookback rows are computed.
+  const building = Object.freeze({ done:0, total:0 });
+  const drive = run => { let step; do step = run.next(); while (!step.done); return step.value; };
+  function* bestContext(view, at, rows = null) {
+    const id = rows ? at + '|' + rows.join(',') : at;
+    let slots = view.cache.get('best');
+    if (!slots) view.cache.set('best', slots = new Map());
+    if (slots.has(id)) {
+      const kept = slots.get(id);
+      slots.delete(id);
+      slots.set(id, kept);
+      return kept;
+    }
+    const readings = [], family = { rN:[], ddN:[], drops:[] }, wanted = key => !rows || rows.includes(key);
+    for (const [k, m] of metrics.entries()) {
+      if (m.group === 'obs') continue;
+      if (!m.param) {
+        if (!wanted(m.id)) continue;
+        const r = bestReading(m.id, null, view.values[m.id], view.stats[m.id].sorted, at, k * 1000);
+        if (r) { r.pool = true; readings.push(r); }
+        yield building;
+        continue;
+      }
+      const spec = bestLookbacks[m.id], grid = new Set(spec.pairs);
+      for (const [j, lookback] of spec.all.entries()) {
+        if (!wanted(m.id + ':' + lookback)) continue;
+        const { values, sorted } = lookbackValues(view.data, m.id, lookback);
+        const r = bestReading(m.id, lookback, values, sorted, at, k * 1000 + j);
+        if (r) { r.pool = grid.has(lookback); readings.push(r); family[m.id].push(r); }
+        yield building;
+      }
+    }
+    const pool = readings.filter(r => r.pool), sum = list => list.reduce((s, r) => s + r.ranges.length, 0);
+    let pairs = 0;
+    for (let x = 0; x < pool.length; x++) for (let y = x + 1; y < pool.length; y++) if (pool[x].id !== pool[y].id) pairs += pool[x].ranges.length * pool[y].ranges.length;
+    const ctx = { W:Math.ceil(view.n / 32), readings, pool, family, singles:sum(readings), pairs, poolRanges:sum(pool),
+      familyRanges:{ rN:sum(family.rN), ddN:sum(family.ddN), drops:sum(family.drops) } };
+    slots.set(id, ctx);
+    if (slots.size > 3) slots.delete(slots.keys().next().value);
+    return ctx;
   }
-  // Every range alone and every pair of ranges of two different readings. A pair has to beat the better of its ranges alone
-  // by `gain`. Equal scores go to more samples, then to fewer ranges, then to the one found first in the page order.
-  function bestSearch(pool, marks, o) {
-    const alone = [], { count } = marks;
-    for (const c of pool) {
-      const t = sweep(c.bits, null, marks, o.h);
-      if (t.n < o.least || t.apart < o.leastApart) continue;
-      alone.push({ c, t, score:o.score(t) });
-    }
-    const better = (x, y) => !y || x.score > y.score + 1e-12 ||
-      (Math.abs(x.score - y.score) <= 1e-12 && (x.t.n > y.t.n || (x.t.n === y.t.n && x.items.length < y.items.length)));
-    let top = null, pairs = 0;
-    for (const { c, t, score } of alone) {
-      const x = { items:[c], t, score, key:c.key };
-      if (better(x, top)) top = x;
-    }
-    for (let i = 0; i < alone.length; i++) for (let j = i + 1; j < alone.length; j++) {
-      const p = alone[i], q = alone[j];
-      if (p.c.id === q.c.id) continue;
-      pairs++;
-      const bar = Math.max(p.score, q.score) + o.gain - 1e-12;
-      // Counting the samples that do not overlap walks the closes, so first check that the most it could reach, the
-      // fewer of the two ranges' own, could still win: a subset never spreads over more separate periods.
-      const d = tallyDaily(p.c.bits, q.c.bits, marks), most = Math.min(p.t.apart, q.t.apart);
-      if (d.n < o.least || most < o.leastApart) continue;
-      const reach = o.score({ ...d, apart:most });
-      if (reach < bar || (top && reach < top.score - 1e-12)) continue;
-      const t = { ...d, apart:o.h === 1 ? d.n : spaced(p.c.bits, q.c.bits, count, o.h) };
-      if (t.apart < o.leastApart) continue;
-      const score = o.score(t);
-      if (score < bar) continue;
-      const x = { items:[p.c, q.c], t, score, key:p.c.key + '&' + q.c.key };
-      if (better(x, top)) top = x;
-    }
-    return { top, usable:alone.length, pairs };
+  // How many sets a search compares: every range alone, every pair of the paired lookbacks, and at most `width` sets per size
+  // grown by every paired range, plus two rounds of the `refine` leading sets at every lookback.
+  function bestPlan(ctx, { width, items, refine }) {
+    const more = Math.max(0, items - 2) * width * ctx.poolRanges + 2 * refine * (ctx.familyRanges.rN + ctx.familyRanges.ddN + ctx.familyRanges.drops);
+    return { singles:ctx.singles, pairs:ctx.pairs, more, total:ctx.singles + ctx.pairs + more };
   }
-  const asConditions = top => Object.fromEntries(top.items.map(c => [c.id, { ...c.range }]));
-  // A set's samples move one way more often than the other after `horizon` sessions: `dir` is that way (the sign of their
-  // median), and its win rate is the share of samples that moved that way. The pick is the range or pair of ranges, all met
-  // by the reference close, with the most reliable win rate: the Wilson lower bound with the samples whose result periods
-  // do not overlap as the sample size, so a small sample, or one that keeps counting the same stretch of the market, ranks
-  // lower. `check` repeats the search on the history before the middle close alone and counts how its pick did from then.
-  function best(data, { ref, horizon = bestDefaults.horizon, era = 'all', minSamples = bestDefaults.minSamples,
-      minApart = bestDefaults.minApart, gain = bestDefaults.gain, z = bestDefaults.z, checkZ = bestDefaults.checkZ } = {}) {
-    const view = framed(data), at = refOf(view, ref), h = horizon;
+  // The signal days `keep` lets through whose result counts: as bits, as a list in order, and the way each moved.
+  function bestMarks(view, era, h, keep) {
+    const W = Math.ceil(view.n / 32), pct = view.outcomes[h].pct, wait = view.wait, count = new Uint32Array(W), list = [], way = [];
+    for (let i = 0; i < view.n; i++) {
+      if (excluded(era, view.dates[i]) || (view.obs && view.obs.status[i] !== COMPLETE) || !historical(view, i) || !keep(i)) continue;
+      const p = pct[i + wait];
+      if (!Number.isFinite(p)) continue;
+      count[i >>> 5] |= 1 << (i & 31);
+      list.push(i);
+      way.push(p > 0 ? 1 : p < 0 ? -1 : 0);
+    }
+    return { W, count, days:Int32Array.from(list), dirs:Int8Array.from(way) };
+  }
+  // Every range alone at every lookback; every pair of ranges of two rows at the paired lookbacks; sets of three or more grown
+  // one range at a time from the `width` best sets one range smaller; then the `refine` leading sets with each row that has a
+  // lookback swapped for, or joined by, that row at every lookback. A set has to beat every set with one range fewer by `gain`
+  // and is ranked by the Wilson lower bound of its win rate, with the samples whose result periods do not overlap as the
+  // sample size. Ties go to more samples, then to fewer ranges, then to the set found first. Yields its progress.
+  function* bestSearch(ctx, marks, o) {
+    const { W, readings, pool } = ctx, { count, days, dirs } = marks, z2 = o.z * o.z;
+    const progress = { done:0, total:o.total }, compared = { singles:0, pairs:0, more:0 };
+    const score = (wins, n, apart) => wilsonShare(wins / n, apart, o.z);
+    // Whether the bound of a share `p` over `s` samples is above `T`: wilsonShare turned around, without its square root.
+    const clears = (p, s, T) => p > T && (p - T) * (p - T) * s > z2 * T * (1 - T);
+    const keyOf = items => items.map(it => it.r.key + '#' + it.i).join('&');
+    const better = (x, y) => !y || x.score > y.score + 1e-12 || (Math.abs(x.score - y.score) <= 1e-12 &&
+      (x.n > y.n || (x.n === y.n && (x.items.length < y.items.length || (x.items.length === y.items.length && x.rank < y.rank)))));
+    const boards = [], offered = new Set(), seen = new Set(), memo = new Map(), single = new Map();
+    let top = null, rank = 0;
+    function offer(items, t) {
+      const key = keyOf(items);
+      if (offered.has(key)) return;
+      offered.add(key);
+      const x = { items, key, n:t.n, up:t.up, down:t.down, apart:t.apart, score:t.score, rank:rank++ };
+      if (better(x, top)) top = x;
+      const list = boards[items.length] || (boards[items.length] = []);
+      if (list.length >= o.width && !better(x, list[list.length - 1])) return;
+      let k = list.length;
+      while (k > 0 && better(x, list[k - 1])) k--;
+      list.splice(k, 0, x);
+      if (list.length > o.width) list.pop();
+    }
+    // The score a set of `size` ranges has to pass to matter: the last on its full board (the best set overall is above it).
+    const floor = size => { const list = boards[size]; return list && list.length >= o.width ? list[list.length - 1].score : 0; };
+    const inside = (it, d) => { const b = it.r.bin[d], g = it.r.ranges[it.i]; return b !== 255 && b >= g.a && b <= g.b; };
+    // The counted closes of a set, in order, with the way each moved.
+    function members(items) {
+      const list = [], way = [];
+      for (let k = 0; k < days.length; k++) if (items.every(it => inside(it, days[k]))) { list.push(days[k]); way.push(dirs[k]); }
+      return { list, way };
+    }
+    // Exact counts of any set, walking its counted closes.
+    function exact(items) {
+      const key = keyOf(items);
+      let t = memo.get(key);
+      if (t) return t;
+      const { list, way } = members(items);
+      let up = 0, down = 0, apart = 0, next = -1;
+      for (let k = 0; k < list.length; k++) {
+        if (way[k] > 0) up++; else if (way[k] < 0) down++;
+        if (list[k] >= next) { apart++; next = list[k] + o.h; }
+      }
+      const n = list.length;
+      memo.set(key, t = { n, up, down, apart, score:n >= o.least && apart >= o.leastApart ? score(up >= down ? up : down, n, apart) : 0 });
+      return t;
+    }
+
+    // Every range alone. A range below the sample floors leaves every set that contains it below them too.
+    for (const r of readings) {
+      const R = r.ranges.length, B = r.size, hn = new Int32Array(B + 1), hu = new Int32Array(B + 1), hd = new Int32Array(B + 1);
+      for (let k = 0; k < days.length; k++) {
+        const b = r.bin[days[k]];
+        if (b === 255) continue;
+        hn[b + 1]++;
+        if (dirs[k] > 0) hu[b + 1]++; else if (dirs[k] < 0) hd[b + 1]++;
+      }
+      for (let b = 0; b < B; b++) { hn[b + 1] += hn[b]; hu[b + 1] += hu[b]; hd[b + 1] += hd[b]; }
+      const s = { apart:new Int32Array(R), score:new Float64Array(R), usable:[] };
+      for (let i = 0; i < R; i++) {
+        const { a, b } = r.ranges[i], n = hn[b + 1] - hn[a];
+        if (n < o.least) continue;
+        const up = hu[b + 1] - hu[a], down = hd[b + 1] - hd[a];
+        let apart = n;
+        if (o.h > 1) apart = spacedRanges(W, count, o.h, bitsFor(r, W), a, b, null, 0, 0);
+        if (apart < o.leastApart) continue;
+        s.apart[i] = apart;
+        s.score[i] = score(up >= down ? up : down, n, apart);
+        s.usable.push(i);
+        offer([{ r, i }], { n, up, down, apart, score:s.score[i] });
+      }
+      single.set(r, s);
+      if (!r.pool) r.P = null;
+      progress.done += R;
+      compared.singles += R;
+      yield progress;
+    }
+
+    // Every pair of ranges of two rows. A 2-D running count gives each pair's samples, rises and falls at once; the samples
+    // that do not overlap are counted only when the most they could reach (the fewer of the two ranges' own) could still win.
+    const hn2 = new Int32Array(64 * 64), hu2 = new Int32Array(64 * 64), hd2 = new Int32Array(64 * 64);
+    function pairUp(X, Y, sx, sy) {
+      const S = Y.size + 1, bx = X.bin, by = Y.bin;
+      hn2.fill(0, 0, (X.size + 1) * S); hu2.fill(0, 0, (X.size + 1) * S); hd2.fill(0, 0, (X.size + 1) * S);
+      for (let k = 0; k < days.length; k++) {
+        const d = days[k], p = bx[d], q = by[d];
+        if (p === 255 || q === 255) continue;
+        const c = (p + 1) * S + q + 1;
+        hn2[c]++;
+        if (dirs[k] > 0) hu2[c]++; else if (dirs[k] < 0) hd2[c]++;
+      }
+      for (let a = 1; a <= X.size; a++) for (let b = 1; b < S; b++) {
+        const c = a * S + b;
+        hn2[c] += hn2[c - 1] + hn2[c - S] - hn2[c - S - 1];
+        hu2[c] += hu2[c - 1] + hu2[c - S] - hu2[c - S - 1];
+        hd2[c] += hd2[c - 1] + hd2[c - S] - hd2[c - S - 1];
+      }
+      let least = floor(2);
+      for (const i of sx.usable) {
+        const gx = X.ranges[i], r0 = gx.a * S, r1 = (gx.b + 1) * S, ax = sx.apart[i], barX = sx.score[i] + o.gain - 1e-12;
+        for (const j of sy.usable) {
+          const gy = Y.ranges[j], c0 = gy.a, c1 = gy.b + 1, n = hn2[r1 + c1] - hn2[r0 + c1] - hn2[r1 + c0] + hn2[r0 + c0];
+          if (n < o.least) continue;
+          const up = hu2[r1 + c1] - hu2[r0 + c1] - hu2[r1 + c0] + hu2[r0 + c0], down = hd2[r1 + c1] - hd2[r0 + c1] - hd2[r1 + c0] + hd2[r0 + c0];
+          const wins = up >= down ? up : down, bar = Math.max(barX, sy.score[j] + o.gain - 1e-12), ay = sy.apart[j];
+          if (!clears(wins / n, Math.min(n, ax, ay), Math.max(least, bar))) continue;
+          let apart = n;
+          if (o.h > 1) apart = spacedRanges(W, count, o.h, bitsFor(X, W), gx.a, gx.b, bitsFor(Y, W), gy.a, gy.b);
+          if (apart < o.leastApart) continue;
+          const sc = score(wins, n, apart);
+          if (sc < bar) continue;
+          offer([{ r:X, i }, { r:Y, i:j }], { n, up, down, apart, score:sc });
+          least = floor(2);
+        }
+      }
+    }
+    for (let x = 0; x < pool.length; x++) for (let y = x + 1; y < pool.length; y++) {
+      const X = pool[x], Y = pool[y];
+      if (X.id === Y.id) continue;
+      const sx = single.get(X), sy = single.get(Y);
+      if (sx.usable.length && sy.usable.length) pairUp(X, Y, sx, sy);
+      progress.done += X.ranges.length * Y.ranges.length;
+      compared.pairs += X.ranges.length * Y.ranges.length;
+      yield progress;
+    }
+
+    // Each range of row `Y` added to the set `base`, whose counted closes are `D`: kept when it beats every set one range
+    // smaller by `gain`, `base` among them.
+    function extend(base, D, Y, s) {
+      const B = Y.size, hn = new Int32Array(B + 1), hu = new Int32Array(B + 1), hd = new Int32Array(B + 1), bin = Y.bin, { list, way } = D;
+      for (let k = 0; k < list.length; k++) {
+        const b = bin[list[k]];
+        if (b === 255) continue;
+        hn[b + 1]++;
+        if (way[k] > 0) hu[b + 1]++; else if (way[k] < 0) hd[b + 1]++;
+      }
+      for (let b = 0; b < B; b++) { hn[b + 1] += hn[b]; hu[b + 1] += hu[b]; hd[b + 1] += hd[b]; }
+      const size = base.items.length + 1, bar = base.score + o.gain - 1e-12;
+      for (const j of s.usable) {
+        const g = Y.ranges[j], n = hn[g.b + 1] - hn[g.a];
+        if (n < o.least) continue;
+        const up = hu[g.b + 1] - hu[g.a], down = hd[g.b + 1] - hd[g.a], wins = up >= down ? up : down;
+        if (!clears(wins / n, Math.min(n, base.apart, s.apart[j]), Math.max(floor(size), bar))) continue;
+        const items = [...base.items, { r:Y, i:j }].sort((p, q) => p.r.order - q.r.order), key = keyOf(items);
+        if (offered.has(key) || seen.has(key)) continue;
+        seen.add(key);
+        let apart = n;
+        if (o.h > 1) {
+          apart = 0;
+          for (let k = 0, next = -1; k < list.length; k++) {
+            const d = list[k], b = bin[d];
+            if (b !== 255 && b >= g.a && b <= g.b && d >= next) { apart++; next = d + o.h; }
+          }
+        }
+        if (apart < o.leastApart) continue;
+        const sc = score(wins, n, apart);
+        // Below the last on a full board a set cannot make the board or lead, so its smaller sets need no counting.
+        if (sc < bar || sc < floor(size) - 1e-12) continue;
+        if (items.some(it => it.r !== Y && exact(items.filter(x => x !== it)).score + o.gain - 1e-12 > sc)) continue;
+        offer(items, { n, up, down, apart, score:sc });
+      }
+    }
+    // Three ranges or more, grown from the best sets one range smaller.
+    for (let size = 3; size <= o.items; size++) {
+      const parents = (boards[size - 1] || []).slice();
+      if (!parents.length) break;
+      for (const base of parents) {
+        const D = members(base.items), used = new Set(base.items.map(it => it.r.id));
+        for (const Y of pool) {
+          progress.done += Y.ranges.length;
+          if (used.has(Y.id)) continue;
+          extend(base, D, Y, single.get(Y));
+          compared.more += Y.ranges.length;
+          yield progress;
+        }
+      }
+    }
+    // The leading sets at every lookback: a row with a lookback is swapped for that row at each lookback, and a set without
+    // the row is tried with it added.
+    const tried = new Set();
+    for (let pass = 0; pass < 2; pass++) {
+      const before = top, leaders = boards.flatMap(list => list).sort((x, y) => better(x, y) ? -1 : better(y, x) ? 1 : 0).slice(0, o.refine);
+      for (const base of leaders) for (const id of ['rN', 'ddN', 'drops']) {
+        const tag = base.key + '|' + id;
+        if (tried.has(tag)) continue;
+        tried.add(tag);
+        const k = base.items.findIndex(it => it.r.id === id), rest = k < 0 ? base.items : base.items.filter((_, q) => q !== k);
+        if (!rest.length || rest.length >= o.items) { progress.done += ctx.familyRanges[id]; continue; }
+        const t = exact(rest), stem = { items:rest, score:t.score, apart:t.apart }, D = members(rest);
+        for (const Y of ctx.family[id]) {
+          extend(stem, D, Y, single.get(Y));
+          progress.done += Y.ranges.length;
+          compared.more += Y.ranges.length;
+          yield progress;
+        }
+      }
+      if (top === before) break;
+    }
+    progress.done = progress.total;
+    yield progress;
+    return { top, compared };
+  }
+  const shareOf = (list, dir) => list.length ? 100 * list.filter(p => dir === 'up' ? p > 0 : p < 0).length / list.length : null;
+  const holds = (items, d) => items.every(it => { const b = it.r.bin[d], g = it.r.ranges[it.i]; return b !== 255 && b >= g.a && b <= g.b; });
+  // A set as the page shows it: its ranges, the lookbacks they use and a key that names it.
+  const describe = items => ({
+    key:items.map(it => it.r.key + '=' + formatRange(it.r.ranges[it.i])).join('&'),
+    items:items.map(it => ({ id:it.r.id, param:it.r.param, lookback:it.r.lookback, range:{ lo:it.r.ranges[it.i].lo, hi:it.r.ranges[it.i].hi } })),
+    conditions:Object.fromEntries(items.map(it => [it.r.id, { lo:it.r.ranges[it.i].lo, hi:it.r.ranges[it.i].hi }])),
+    params:Object.fromEntries(items.filter(it => it.r.param).map(it => [it.r.param, it.r.lookback]))
+  });
+  function* bestOptions(data, { ref, horizon = bestDefaults.horizon, era = 'all', minSamples = bestDefaults.minSamples, minApart = bestDefaults.minApart,
+      gain = bestDefaults.gain, width = bestDefaults.width, items = bestDefaults.items, refine = bestDefaults.refine, checkZ = bestDefaults.checkZ,
+      rows = null } = {}) {
+    const view = framed(data), at = refOf(view, ref);
     checkStudy(era);
-    if (!horizonChoices.includes(h)) throw new Error('未知的后续期限');
-    const split = Math.floor(view.n / 2), pct = view.outcomes[h].pct, wait = view.wait;
-    const usable = i => !excluded(era, view.dates[i]) && !(view.obs && view.obs.status[i] !== COMPLETE);
-    // Closes whose result counts, and those that rose or fell, among the signal days `keep` lets through.
-    const counted = keep => {
-      const ok = i => usable(i) && keep(i) && historical(view, i) && Number.isFinite(pct[i + wait]);
-      return { count:bitsOf(view.n, ok), rose:bitsOf(view.n, i => ok(i) && pct[i + wait] > 0), fell:bitsOf(view.n, i => ok(i) && pct[i + wait] < 0) };
-    };
-    const way = t => t.up >= t.down ? 'up' : 'down', hits = (t, dir) => dir === 'up' ? t.up : t.down;
-    // How often the closes in `list` moved the way `dir` says.
-    const share = (list, dir) => list.length ? 100 * list.filter(p => dir === 'up' ? p > 0 : p < 0).length / list.length : null;
-    const pool = bestCandidates(view, at).map(({ id, range }) => ({ id, range, key:id + '=' + formatRange(range),
-      bits:bitsOf(view.n, i => usable(i) && inRange(view.values[id][i], range)) }));
-    const score = t => wilsonShare(Math.max(t.up, t.down) / t.n, t.apart, z);
-    const run = (keep, least, leastApart) => bestSearch(pool, counted(keep), { h, least, leastApart, gain, score });
-    const found = run(() => true, minSamples, minApart);
-    // Picked on the signal days whose results had finished before the middle close, counted on those from it on.
-    const before = i => i + wait + h < split, after = i => i >= split, half = [Math.ceil(minSamples / 2), Math.ceil(minApart / 2)];
-    const pick = run(before, ...half).top, days = dayResults(view, era, h, after).pct;
-    const check = { split:view.dates[split], conditions:null, dir:null, same:false, n:0, wins:0, apart:0, winPct:null, baseline:null, verdict:'none' };
-    if (pick) {
-      const dir = way(pick.t), t = sweep(pick.items[0].bits, pick.items[1]?.bits ?? null, counted(after), h), wins = hits(t, dir);
-      Object.assign(check, { conditions:asConditions(pick), dir, same:!!found.top && pick.key === found.top.key && dir === way(found.top.t),
-        n:t.n, wins, apart:t.apart, winPct:t.n ? 100 * wins / t.n : null, baseline:share(days, dir) });
-      // The call holds when its later win rate beats both a coin flip and how often every close of the same years moved
-      // that way, clearly so when the lower bound of that rate does. One set is judged here, so the usual 95% bound applies.
-      const bar = Math.max(50, check.baseline ?? 0);
-      check.verdict = t.apart < half[1] ? 'few' : 100 * wilsonShare(wins / t.n, t.apart, checkZ) > bar ? 'pass' : check.winPct > bar ? 'weak' : 'fail';
+    if (!horizonChoices.includes(horizon)) throw new Error('未知的后续期限');
+    const ctx = yield* bestContext(view, at, rows), plan = bestPlan(ctx, { width, items, refine });
+    return { view, at, h:horizon, era, minSamples, minApart, gain, width, items, refine, checkZ, ctx, plan, z:bestZ(plan.total) };
+  }
+  const searchOf = (o, least, leastApart) => ({ h:o.h, least, leastApart, gain:o.gain, width:o.width, items:o.items, refine:o.refine, z:o.z, total:o.plan.total });
+  // The set, among those the reference close meets, whose samples most reliably moved one way after `horizon` sessions: `dir`
+  // is that way (the sign of their median) and its win rate the share that moved that way. Run step by step; each step yields
+  // `{ done, total }` sets compared, and the last returns the pick.
+  function* bestRun(data, options = {}) {
+    const o = yield* bestOptions(data, options), { view, at, h, era } = o, wait = view.wait;
+    const found = yield* bestSearch(o.ctx, bestMarks(view, era, h, () => true), searchOf(o, o.minSamples, o.minApart));
+    const out = { ref:at, date:view.dates[at], horizon:h, era, minSamples:o.minSamples, minApart:o.minApart, gain:o.gain, z:o.z, plan:o.plan,
+      compared:found.compared, readings:o.ctx.readings.length, key:null, items:null, conditions:null, params:null, reason:null, dir:null, score:null,
+      summary:null, wins:null, winPct:null, apart:null, episodes:0, baseline:baseline(view, era, [h])[h], basePct:null };
+    if (!found.top) return { ...out, reason:o.ctx.readings.length ? 'samples' : 'readings' };
+    const top = found.top, dir = top.up >= top.down ? 'up' : 'down', wins = dir === 'up' ? top.up : top.down, pct = view.outcomes[h].pct, samples = [];
+    for (let i = 0; i < view.n; i++) {
+      if (!excluded(era, view.dates[i]) && !(view.obs && view.obs.status[i] !== COMPLETE) && historical(view, i) && holds(top.items, i)) samples.push(i);
     }
-    const out = { ref:at, date:view.dates[at], horizon:h, era, minSamples, minApart, candidates:pool.length, usable:found.usable, pairs:found.pairs,
-      conditions:null, reason:null, dir:null, summary:null, wins:null, winPct:null, apart:null, episodes:0, baseline:baseline(view, era, [h])[h], basePct:null, check };
-    if (!found.top) return { ...out, reason:pool.length ? 'samples' : 'readings' };
-    const conditions = asConditions(found.top), samples = matching(mask(view, ordered(view, conditions), era)).filter(i => historical(view, i));
-    const t = found.top.t, dir = way(t);
-    // `basePct`: how often every close moved the pick's way, beside its win rate.
-    return { ...out, conditions, dir, score:found.top.score, summary:summarize(samples.map(i => pct[i + wait]).filter(Number.isFinite)),
-      wins:hits(t, dir), winPct:100 * hits(t, dir) / t.n, apart:t.apart, episodes:samples.length, basePct:share(dayResults(view, era, h).pct, dir) };
+    return { ...out, ...describe(top.items), dir, score:top.score, summary:summarize(samples.map(i => pct[i + wait]).filter(Number.isFinite)),
+      wins, winPct:100 * wins / top.n, apart:top.apart, episodes:samples.length, basePct:shareOf(dayResults(view, era, h).pct, dir) };
+  }
+  // The same search on the signal days whose results had finished before the middle close, with half the sample floors; its
+  // pick is counted, the way it called, on the signal days from the middle close on. `options.main` is the full pick.
+  function* checkRun(data, options = {}) {
+    const o = yield* bestOptions(data, options), { view, h, era } = o, wait = view.wait, split = Math.floor(view.n / 2);
+    const half = [Math.ceil(o.minSamples / 2), Math.ceil(o.minApart / 2)];
+    const found = yield* bestSearch(o.ctx, bestMarks(view, era, h, i => i + wait + h < split), searchOf(o, ...half));
+    const check = { split:view.dates[split], key:null, items:null, conditions:null, params:null, dir:null, same:false, n:0, wins:0, apart:0,
+      winPct:null, baseline:null, verdict:'none' };
+    if (!found.top) return check;
+    const top = found.top, dir = top.up >= top.down ? 'up' : 'down', later = bestMarks(view, era, h, i => i >= split);
+    let n = 0, up = 0, down = 0, apart = 0;
+    for (let k = 0, next = -1; k < later.days.length; k++) {
+      const d = later.days[k];
+      if (!holds(top.items, d)) continue;
+      n++;
+      if (later.dirs[k] > 0) up++; else if (later.dirs[k] < 0) down++;
+      if (d >= next) { apart++; next = d + h; }
+    }
+    const wins = dir === 'up' ? up : down;
+    Object.assign(check, describe(top.items), { dir, n, wins, apart, winPct:n ? 100 * wins / n : null,
+      baseline:shareOf(dayResults(view, era, h, i => i >= split).pct, dir) });
+    check.same = !!options.main?.key && options.main.key === check.key && options.main.dir === dir;
+    // The call holds when its later win rate beats both a coin flip and how often every close of the same years moved that
+    // way, clearly so when the lower bound of that rate does. One set is judged here, so the usual 95% bound applies.
+    const bar = Math.max(50, check.baseline ?? 0);
+    check.verdict = apart < half[1] ? 'few' : 100 * wilsonShare(wins / n, apart, o.checkZ) > bar ? 'pass' : check.winPct > bar ? 'weak' : 'fail';
+    return check;
+  }
+  // The pick and its check in one call, run to the end.
+  function best(data, options = {}) {
+    const main = drive(bestRun(data, options));
+    return { ...main, check:drive(checkRun(data, { ...options, main })) };
+  }
+  // The readings and ranges a search compares at a reference close.
+  function bestReadings(data, ref, rows = null) {
+    const view = framed(data), ctx = drive(bestContext(view, refOf(view, ref), rows));
+    return ctx.readings.map(r => ({ id:r.id, param:r.param, lookback:r.lookback, value:r.v, step:r.step, pool:r.pool, lows:[...r.lows],
+      highs:[...r.highs], ranges:r.ranges.map(g => ({ lo:g.lo, hi:g.hi })) }));
   }
 
   const empty = status => ({ status, date:null, close:null, pct:null, drawdown:null, low:null });
@@ -850,6 +1154,7 @@
   }
 
   return { horizonChoices, defaultHorizons, waits, eras, lookback, chartAfter, mature, groups, params, metrics, byId, fitOrder, fitDefaults,
-    bestIds, bestReach, bestDefaults, compute, frame, study, fit, best, bestCandidates, wilsonShare, suggest, count, validRange, rangeIssue, validParam,
+    bestIds, bestLookbacks, bestThresholds, bestDefaults, compute, frame, study, fit, best, bestRun, checkRun, bestReadings, bestZ, upperZ,
+    wilsonShare, suggest, count, validRange, rangeIssue, validParam,
     validWait, validEra, parseRange, formatRange, quantile, summarize, path, spread, percentile, sessionOn, isDrop, fromDropStudy };
 });

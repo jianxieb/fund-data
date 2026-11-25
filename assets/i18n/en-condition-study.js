@@ -395,6 +395,8 @@
     '最佳组合': 'Best combination',
     '{0} 收盘满足的条件中，扣除偶然性后胜率最高的一组': 'Of the conditions the {0} close meets, the set with the highest win rate once luck is allowed for',
     '正在比较 {0} 收盘满足的条件…': 'Comparing the conditions the {0} close meets…',
+    '已比较 {0} / {1} 组': 'Compared {0} / {1} sets',
+    '正在用 {0} 以前的历史检验…': 'Checking on the history before {0}…',
     '挑选依据': 'Ranked by',
     '{0}日后胜率': 'Win rate after {0} {0?day:days}',
     '{0}周后胜率': 'Win rate after {0} {0?week:weeks}',
@@ -470,7 +472,8 @@
     '{0} 以前挑出的组合': 'Set picked before {0}',
     '用这组条件': 'Use these conditions',
     '✓ 已使用这组条件': '✓ Using these conditions',
-    '比较了 {0} 组条件：{1} 个单项范围、{2} 组两两组合。': 'Compared {0} {0?set:sets} of conditions: {1} single {1?range:ranges} and {2} {2?pair:pairs} of ranges.',
+    '比较了 {0} 组条件：{1} 个单项范围、{2} 组两项组合、{3} 组在领先组合上加一项或换回看天数。':
+      'Compared {0} {0?set:sets} of conditions: {1} single {1?range:ranges}, {2} {2?pair:pairs} of ranges and {3} {3?set:sets} that add a range to a leading set or try it at another lookback.',
     '{0} 的读数回看不足，无法挑选组合。': 'The {0} readings lack enough history to pick a set.',
     '覆盖 {0} 读数的范围中，没有一组有至少 {1} 天已有结果、其中 {2} 天的后续期间互不重叠。':
       'No set of ranges covering the {0} readings has at least {1} {1?day:days} with results, {2} of them with periods that do not overlap.',
@@ -478,30 +481,39 @@
     '胜率是满足一组条件的历史交易日中，与多数同向（即中位数的涨跌方向）的占比：多数上涨时是上涨占比，多数下跌时是下跌占比。':
       'The win rate is the share of a set\'s past days that moved the same way as most of them (the way their median moved): the share up when most rose, the share down when most fell.',
     '看涨和看跌的组合一起比较。': 'Sets that call a rise and sets that call a fall are compared together.',
-    '候选范围都覆盖参照日的读数，门槛跟着读数走：从读数往历史的另一端，每隔一段历史分布取一个门槛（取到指标的步长），组成「≥ 门槛」或「≤ 门槛」；读数两侧各取一个门槛组成区间。':
-      'Every candidate range covers the reference day\'s reading, and its thresholds follow that reading: from the reading toward the far end of the history, a threshold every so often along the distribution (rounded to the reading\'s step) gives "≥ threshold" or "≤ threshold", and one threshold on each side of the reading gives a band.',
-    '参与的指标：当日、近{0}日、近{1}日、近{2}日、近{3}日、近{4}日、{5}日最差单日、距{6}日高点、距历史高点、高于{7}日低点、高点后、距{8}日线、距{9}日线、{10}/{11}日线、VIX、VIX {12}日变化、波动率、RSI、连跌、连涨。':
-      'Readings searched: same day, last {0} days, last {1} days, last {2} days, last {3} days, last {4} days, worst day in {5} days, distance from the {6}-day high, distance from the all-time high, above the {7}-day low, days since the high, distance from the {8}-day line, distance from the {9}-day line, {10}/{11}-day lines, VIX, VIX {12}-day change, volatility, RSI, down streak, up streak.',
-    '每个范围单独算一次，不同指标的范围再两两组合各算一次，全部比较，按当前的历史范围和观察期计数。':
-      'Each range is counted alone and every pair of ranges of two different readings is counted too, and all of them are compared, using the current history range and observation period.',
+    '每个范围都覆盖参照日的读数。': 'Every range covers the reference day\'s reading.',
+    '门槛从读数往两侧取：离读数 {0}–{1} 个步长，越远越疏；读数上下浮动 {2}%–{3}%；往历史两端再数过 {4}%–{5}% 的读数；读数有正有负时另加 {6}。':
+      'Thresholds are taken on both sides of the reading: {0}–{1} steps away, sparser farther out; the reading plus or minus {2}%–{3}% of itself; the readings a further {4}%–{5}% of the history toward either end; and {6} when readings can be positive or negative.',
+    '任一下门槛（或不设）与任一上门槛（或不设）组成一个范围，最多覆盖 {0}% 的历史。':
+      'Any lower threshold (or none) and any upper threshold (or none) make a range that covers at most {0}% of the history.',
+    '下方条件中参照日有读数的每一项都参与（观察期各项除外）。':
+      'Every condition below with a reading on the reference day takes part, except the observation-period ones.',
+    '近 N 日涨跌（N = {0}–{1}，另加 {2}、{3}、{4}、{5}）、距近 N 日最高收盘（N = {6}–{7}，另加 {8}、{9}、{10}、{11}）和近 {12} 日跌超 X% 的天数（X = {13}–{14}，每 {15} 一档）每个回看天数都单独算。':
+      'The rise or fall over the last N days (N = {0}–{1}, plus {2}, {3}, {4} and {5}), the distance from the highest close of the last N days (N = {6}–{7}, plus {8}, {9}, {10} and {11}) and the days in the last {12} with a fall of more than X% (X = {13}–{14}, in steps of {15}) are counted at every lookback.',
+    '每个范围单独算一次；不同指标的范围两两组合各算一次，其中近 N 日涨跌取 {0} 个回看天数、距近 N 日最高收盘取 {1} 个、大跌门槛取 {2} 个；再从每种项数最好的 {3} 组逐项加入，最多 {4} 项；最后把领先的 {5} 组的回看天数逐个换遍。':
+      'Each range is counted alone; every pair of ranges of two different readings is counted too, at {0} lookbacks for the N-day rise or fall, {1} for the distance from the N-day high and {2} big-drop thresholds; then ranges are added one at a time to the best {3} sets of each size, up to {4} ranges; last, every lookback is tried in the {5} leading sets.',
+    '按当前的历史范围和观察期计数。': 'Counts use the current history range and observation period.',
     '比较的组合很多，总有一些碰巧走势一致，所以排序比的不是胜率本身，而是扣除偶然性后的下限。':
       'With this many sets compared, some moved the same way by luck alone, so sets are ranked not by the win rate itself but by a lower bound that allows for luck.',
-    '下限按同时比较约 {0} 万组从严计算（z = {1}）；天数少、或各天的后续期间大多重叠，扣得更多，样本量按后续期间互不重叠的天数计。':
-      'The bound is set strictly enough for comparing about {0:wan} sets at once (z = {1}); few days, or days whose periods mostly overlap, lower it further, as the sample size is the number of days whose periods do not overlap.',
-    '每组至少要有 {0} 天已有结果，其中后续期间互不重叠的至少 {1} 天；两项的组合须比其中较好的一项单独时高出 {2} 个百分点。':
-      'Each set needs at least {0} {0?day:days} with results, {1} of them not overlapping; a pair has to rank {2} percentage {2?point:points} above the better of its two ranges alone.',
+    '下限按比较的组数从严计算：比较 N 组时，每组按双侧 {0} ÷ N 取 z。':
+      'The bound is stricter the more sets are compared: with N sets, z is set for a two-sided {0} ÷ N.',
+    '本次最多比较 {0} 组，z = {1}。': 'This search compares at most {0} {0?set:sets}, so z = {1}.',
+    '天数少、或各天的后续期间大多重叠，扣得更多：样本量按后续期间互不重叠的天数计。':
+      'Few days, or days whose periods mostly overlap, lower it further: the sample size is the number of days whose periods do not overlap.',
+    '每组至少要有 {0} 天已有结果，其中后续期间互不重叠的至少 {1} 天；每多一项，须比少这一项时高出 {2} 个百分点。':
+      'Each set needs at least {0} {0?day:days} with results, {1} of them not overlapping; each added range has to lift the bound {2} percentage {2?point:points} above the set without it.',
     '新数据检验如何计算': 'How the check on later data works',
     '新数据检验': 'Check on later data',
     '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史胜率偏高。':
       'The best combination is the best of a great many sets compared on the whole history, so the picking itself pushes its past win rate too high.',
-    '检验只用 {0} 以前已走完的历史，按同样规则挑一组、定下涨跌方向，再统计它在 {1} 及以后按这个方向的胜率；这天历史挑选时没有用到。':
+    '检验只用 {0} 以前已走完的历史，按同样规则挑一组、定下涨跌方向，再统计它在 {1} 及以后按这个方向的胜率；这段历史挑选时没有用到。':
       'The check picks a set and its direction by the same rules on the history finished before {0} alone, then counts its win rate in that direction from {1} on, a part of the history the pick never saw.',
     '通过：胜率的 {0}% 置信下限高于 {1}%，也高于同期不设条件时同方向的占比。':
       'Passed: the lower end of the {0}% confidence interval of its win rate is above {1}% and above the share moving the same way with no conditions over the same years.',
     '优势不明显：胜率高于这两者，但在误差范围内。': 'Edge unclear: the win rate is above both, but within the margin of error.',
     '未通过：胜率没有同时高于这两者。': 'Failed: the win rate is not above both.',
-    '设了参照日时，最佳组合比较覆盖参照日读数的每个范围及不同指标范围的两两组合，门槛跟着读数取；每组至少 {0} 天已有结果、其中后续期间互不重叠的至少 {1} 天，按所选期限胜率扣除偶然性后的下限排序。':
-      'With a reference date, the best combination compares every range covering the reference readings and every pair of ranges of two different readings, with thresholds that follow the readings; each set needs at least {0} {0?day:days} with results, {1} of them with periods that do not overlap, and sets are ranked by a lower bound of the win rate at the chosen horizon that allows for luck.',
+    '设了参照日时，最佳组合比较覆盖参照日读数的每个范围（三类可调回看的指标逐个回看天数都算）、不同指标范围的两两组合，以及由领先组合逐项扩展的三项及以上组合，门槛跟着读数取；每组至少 {0} 天已有结果、其中后续期间互不重叠的至少 {1} 天，按所选期限胜率扣除偶然性后的下限排序，比较的组数越多扣得越严。':
+      'With a reference date, the best combination compares every range covering the reference readings (at every lookback of the three readings that take one), every pair of ranges of two different readings, and sets of three or more grown from the leading ones, with thresholds that follow the readings; each set needs at least {0} {0?day:days} with results, {1} of them with periods that do not overlap, and sets are ranked by a lower bound of the win rate at the chosen horizon that allows for luck, stricter the more sets are compared.',
     '胜率是与多数同向（中位数的涨跌方向）的天数占比，看涨、看跌一起比较。':
       'The win rate is the share of days that moved the same way as most of them (the way their median moved); sets calling a rise or a fall are compared together.',
     '新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。': 'The check on later data picks on the first half of the history alone and counts how its pick did on the second half.',

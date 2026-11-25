@@ -71,6 +71,11 @@
 .cs-best-note{margin:0;color:var(--ds-muted);font-size:12px}
 .cs-best-empty{margin:12px 0 0;color:#8c3f33;font-size:13px}
 .cs-best-empty.cs-best-wait{color:var(--ds-muted)}
+/* While the comparison runs: how far it has got, as a bar and as a count of the sets compared. */
+.cs-best-progress{max-width:460px;height:4px;margin-top:10px;border-radius:2px;background:#e3e9df;overflow:hidden}
+.cs-best-progress span{display:block;height:100%;border-radius:2px;background:#4f8a5b;transition:width .2s linear}
+.cs-best-count{min-height:18px;margin:5px 0 0;color:var(--ds-muted);font-size:12px;font-variant-numeric:tabular-nums}
+.cs-best-check.is-pending .cs-best-progress{margin-top:8px}
 /* About the height of a filled card, so the page below does not jump when the comparison finishes. */
 .cs-best.is-pending{min-height:330px}
 .cs-conditions{background:#f8faf6;border:1px solid var(--ds-border);border-radius:12px;padding:16px 20px 18px;margin:0 0 16px}
