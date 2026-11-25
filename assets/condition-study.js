@@ -477,59 +477,61 @@
   function bestInfo() {
     const o = C.bestDefaults;
     return info('best', '最佳组合如何挑选', '最佳组合如何挑选', [
+      '胜率是一组条件的历史段中，与多数段同向（即中位数的涨跌方向）的占比：多数段上涨时是上涨占比，多数段下跌时是下跌占比。看涨和看跌的组合一起比较。',
       '候选范围都覆盖参照日的读数，门槛跟着读数走：从读数往历史的另一端，每隔一段历史分布取一个门槛（取到指标的步长），组成「≥ 门槛」或「≤ 门槛」；读数两侧各取一个门槛组成区间。参与的指标：' + esc(C.bestIds.map(shortLabel).join('、')) + '。',
       '每个范围单独算一次，不同指标的范围再两两组合各算一次，全部比较，按当前的相近满足日计法、历史范围和观察期计数。',
-      '比较的组合很多，总有一些碰巧涨得多，所以排序比的不是上涨占比本身，而是扣除偶然性后的下限。下限按同时比较约 10 万组从严计算（z = ' + o.z +
+      '比较的组合很多，总有一些碰巧走势一致，所以排序比的不是胜率本身，而是扣除偶然性后的下限。下限按同时比较约 10 万组从严计算（z = ' + o.z +
         '）；段数少、或各段的后续期间大多重叠，扣得更多，样本量按互不重叠的段数计。每组至少要有 ' + o.minSamples + ' 段已有结果，其中互不重叠的至少 ' + o.minApart +
         ' 段；两项的组合须比其中较好的一项单独时高出 ' + o.gain * 100 + ' 个百分点。']);
   }
   function checkInfo(b) {
     return info('best-check', '新数据检验如何计算', '新数据检验', [
-      '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史上涨占比偏高。',
-      '检验只用 ' + b.check.split + ' 以前已走完的历史，按同样规则挑一组，再统计它在 ' + b.check.split + ' 及以后的上涨占比；这段历史挑选时没有用到。',
-      '通过：上涨占比的 95% 置信下限仍高于同期不设条件。优势不明显：高于同期不设条件，但在误差范围内。未通过：不高于同期不设条件。']);
+      '最佳组合是在全部历史上比较大量组合后挑出的最好一组，挑选本身会让它的历史胜率偏高。',
+      '检验只用 ' + b.check.split + ' 以前已走完的历史，按同样规则挑一组、定下涨跌方向，再统计它在 ' + b.check.split + ' 及以后按这个方向的胜率；这段历史挑选时没有用到。',
+      '通过：胜率的 95% 置信下限高于 50%，也高于同期不设条件时同方向的占比。优势不明显：胜率高于这两者，但在误差范围内。未通过：胜率没有同时高于这两者。']);
   }
   const sameConditions = (a, b) => Object.keys(a).length === Object.keys(b).length &&
     Object.entries(b).every(([id, range]) => a[id] && C.formatRange(a[id]) === C.formatRange(range));
   const chips = conditions => Object.entries(conditions).map(([id, range]) => '<li><span>' + esc(label(C.byId[id])) + '</span><b>' +
     esc(rangeText(C.byId[id], range)) + '</b></li>').join('');
-  // The pick on the earlier half of the history, counted on the later half that it never saw.
+  const moves = { up:'上涨', down:'下跌' };
+  // The pick on the earlier half of the history, counted on the later half that it never saw, in the way it called.
   function checkLine(b) {
-    const k = b.check, half = [Math.ceil(b.minSamples / 2), Math.ceil(b.minApart / 2)];
+    const k = b.check, half = [Math.ceil(b.minSamples / 2), Math.ceil(b.minApart / 2)], move = moves[k.dir];
     const facts = k.verdict === 'none' ? '只用 ' + k.split + ' 以前的历史，没有一组有至少 ' + half[0] + ' 段已有结果、其中 ' + half[1] + ' 段的后续期间互不重叠。' :
       !k.n ? '只用 ' + k.split + ' 以前的历史挑选，挑出的组合在之后还没有已有结果的段。' :
-      '只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组；它' : '挑出的组合') + '在之后的 ' + k.n + ' 段中 ' + share(k.upPct) +
-        ' 上涨，同期不设条件 ' + share(k.baseline) + '。';
-    const verdict = { weak:'高出的部分在误差范围内。', fail:'上方的上涨占比多半来自挑选本身。',
+      '只用 ' + k.split + ' 以前的历史挑选，' + (k.same ? '挑出的也是这一组' : '挑出的组合看' + (k.dir === 'up' ? '涨' : '跌')) + '；它在之后的 ' + k.n + ' 段中 ' + k.wins +
+        ' 段' + move + '，胜率 ' + share(k.winPct) + '，同期不设条件时' + move + '占比 ' + share(k.baseline) + '。';
+    const verdict = { weak:'高出的部分在误差范围内。', fail:'上方的胜率多半来自挑选本身。',
       few:k.n ? '其中后续期间互不重叠的只有 ' + k.apart + ' 段，不足以检验。' : '' }[k.verdict] || '';
     const pick = k.conditions && !k.same ? '<div class="cs-best-pick"><span>' + k.split + ' 以前挑出的组合</span><ul class="cs-best-list">' + chips(k.conditions) + '</ul></div>' : '';
     return '<div class="cs-best-check is-' + k.verdict + '"><p><b>新数据检验 · ' + verdicts[k.verdict] + '</b>' + checkInfo(b) + '</p>' +
       '<p class="cs-best-check-text">' + facts + (verdict ? ' ' + verdict : '') + '</p>' + pick + '</div>';
   }
-  // The best combo for the reference date: one range it meets or two of different readings, whose samples rose most often
-  // after the chosen horizon, beside the share for every close and the check on the later history the pick never saw.
-  // `b` is null while the comparison is still running.
+  // The best combo for the reference date: one range it meets or two of different readings, whose samples most reliably
+  // moved one way after the chosen horizon, beside how often every close moved that way and the check on the later history
+  // the pick never saw. `b` is null while the comparison is still running.
   function bestPanel(b) {
     const date = data.dates[ref], s = b?.summary, term = terms[st.best], n = b?.conditions ? Object.keys(b.conditions).length : 0;
-    const controls = '<div class="cs-best-controls">' + H.menu('cs-best', '挑选依据', C.horizonChoices.map(h => [String(h), terms[h] + '后上涨占比']), String(st.best)) + '</div>';
+    const controls = '<div class="cs-best-controls">' + H.menu('cs-best', '挑选依据', C.horizonChoices.map(h => [String(h), terms[h] + '后胜率']), String(st.best)) + '</div>';
     const tile = (cls, name, big, small) => '<div class="' + cls + '"><dt>' + name + '</dt><dd><b>' + big + '</b>' + small.map(t => '<small>' + t + '</small>').join('') + '</dd></div>';
     let body;
     if (!b) body = '<p class="cs-best-empty cs-best-wait" role="status">正在比较 ' + date + ' 收盘满足的条件…</p>';
     else if (!b.conditions) body = '<p class="cs-best-empty" role="status">' + (b.reason === 'readings' ? date + ' 的读数回看不足，无法挑选组合。' :
       '覆盖 ' + date + ' 读数的范围中，没有一组有至少 ' + b.minSamples + ' 段已有结果、其中 ' + b.minApart + ' 段的后续期间互不重叠。') + '</p>';
     else {
-      const used = sameConditions(result.conditions, b.conditions);
+      const used = sameConditions(result.conditions, b.conditions), move = moves[b.dir];
       body = '<div class="cs-best-body"><div class="cs-best-main"><ul class="cs-best-list">' + chips(b.conditions) + '</ul>' +
-        '<p class="cs-best-text">历史上' + (n > 1 ? '同时满足这 ' + n + ' 项' : '满足这一项') + '的 ' + s.n + ' 段中，' + b.wins + ' 段在' + term + '后上涨；涨跌中位数 ' + pct(s.median) +
-        '，最差 ' + pct(s.min) + '。</p></div>' +
-        '<dl class="cs-best-stats">' + tile('is-pick', '这组条件的上涨占比', share(s.upPct), [b.wins + ' / ' + s.n + ' 段', ...(b.apart < s.n ? ['后续期间互不重叠的 ' + b.apart + ' 段'] : [])]) +
-        tile('is-base', '不设条件的上涨占比', share(b.baseline.upPct), ['全部交易日']) + '</dl></div>' + checkLine(b) +
+        '<p class="cs-best-text">历史上' + (n > 1 ? '同时满足这 ' + n + ' 项' : '满足这一项') + '的 ' + s.n + ' 段中，' + b.wins + ' 段在' + term + '后' + move + '，占多数；涨跌中位数 ' +
+        pct(s.median) + '，最低 ' + pct(s.min) + '，最高 ' + pct(s.max) + '。</p></div>' +
+        '<dl class="cs-best-stats">' + tile('is-pick', '这组条件的胜率', share(b.winPct), [move + ' ' + b.wins + ' / ' + s.n + ' 段', ...(b.apart < s.n ? ['后续期间互不重叠的 ' + b.apart + ' 段'] : [])]) +
+        tile('is-base', '不设条件的' + move + '占比', share(b.basePct), ['全部交易日']) + '</dl></div>' + checkLine(b) +
         '<div class="cs-best-foot"><button type="button" class="btn sm" data-cs-action="best" aria-pressed="' + used + '">' + (used ? '✓ 已使用这组条件' : '用这组条件') + '</button>' +
         '<p class="cs-best-note">比较了 ' + (b.candidates + b.pairs).toLocaleString('zh-CN') + ' 组条件：' + b.candidates.toLocaleString('zh-CN') + ' 个单项范围、' +
         b.pairs.toLocaleString('zh-CN') + ' 组两两组合。</p></div>';
     }
     return '<section class="cs-best' + (b ? '' : ' is-pending') + '" aria-labelledby="cs-best-title" aria-busy="' + !b + '"><div class="cs-best-title"><h2 id="cs-best-title">最佳组合</h2>' + bestInfo() +
-      '<p>' + date + ' 收盘满足的条件中，扣除偶然性后上涨占比最高的一组</p></div>' + controls + body + '</section>';
+      '<p>' + date + ' 收盘满足的条件中，扣除偶然性后胜率最高的一组</p></div>' + controls + body + '</section>';
   }
   function conditionPanel() {
     const date = ref === null ? null : data.dates[ref], n = Object.keys(result.conditions).length, merged = n ? result.matchingDays - result.episodes.length : 0;
@@ -786,7 +788,8 @@
       '<p>设置观察期后，信号日之后的 N 个交易日用于判断是否收复前一日收盘、是否跌破信号日收盘等；观察期走完才计入样本，后续收益从观察期末收盘起算。按盘中最高价判定时，观察期内每天都须有已收盘的最高价。</p>' +
       '<p>选「合并为一段」时，一段从首个满足全部条件的交易日开始，合并范围内再次满足的日期并入同一段，不另计后续涨跌；选「每天单独计」时每个满足日各算一段。按参照日匹配时，依次尝试' + esc(fitList()) + '；每项取参照日读数附近的范围，读数处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对。</p>' +
       '<p>设了参照日时，最佳组合比较覆盖参照日读数的每个范围及不同指标范围的两两组合，门槛跟着读数取；每组至少 ' + C.bestDefaults.minSamples +
-        ' 段已有结果、其中后续期间互不重叠的至少 ' + C.bestDefaults.minApart + ' 段，按所选期限上涨占比扣除偶然性后的下限排序。新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。</p>' +
+        ' 段已有结果、其中后续期间互不重叠的至少 ' + C.bestDefaults.minApart + ' 段，按所选期限胜率扣除偶然性后的下限排序。胜率是与多数段同向（中位数的涨跌方向）的段数占比，看涨、看跌一起比较。' +
+        '新数据检验只用前一半历史挑选，统计挑出的组合在后一半的表现。</p>' +
       '<p>结果描述历史样本，不代表下一次的概率；样本少时，范围稍变就可能明显改变结果。</p>' +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(markets[st.market][1]) + '/history/" target="_blank" rel="noopener noreferrer">指数历史收盘 ↗</a> · ' +
       '<a href="https://github.com/jianxieb/fund-data/blob/main/docs/condition-study-method.md" target="_blank" rel="noopener noreferrer">完整方法与核对记录 ↗</a></p></details>';

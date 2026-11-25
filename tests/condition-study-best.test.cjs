@@ -12,27 +12,46 @@ function sessions(closes, start = '2001-01-02') {
   });
 }
 // A seeded random walk with Cboe-style VIX closes on the same sessions.
-function walk(n, seed) {
+function walk(n, seed, drift = () => .0003) {
   let s = seed >>> 0;
   const u = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) + .5) / 4294967296;
   let close = 100;
   return Array.from({ length:n }, (_, i) => {
-    if (i) close *= Math.exp(.0003 + .012 * Math.sqrt(-2 * Math.log(u())) * Math.cos(2 * Math.PI * u()));
+    if (i) close *= Math.exp(drift(i) + .012 * Math.sqrt(-2 * Math.log(u())) * Math.cos(2 * Math.PI * u()));
     return Number(close.toFixed(2));
   });
 }
 const series = sessions(walk(2600, 7));
 const vix = series.map(([date], i) => [date, Number((14 + 14 * Math.abs(Math.sin(i / 23)) + (i % 7)).toFixed(2))]);
 const data = C.compute(series, { vix }), view = C.frame(data);
+// A market that drifts down, where most results are falls, and one that rises for its first half and falls for the second.
+const market = closes => {
+  const rows = sessions(closes);
+  return C.frame(C.compute(rows, { vix:rows.map(([date], i) => [date, Number((16 + 12 * Math.abs(Math.cos(i / 19)) + (i % 5)).toFixed(2))]) }));
+};
+const falling = market(walk(1400, 11, () => -.0015)), turning = market(walk(1400, 11, i => i < 700 ? .0015 : -.0015));
+// Every close with a result, as the all-days comparison counts them: the share that rose and the share that fell.
+function allDays(frame, h, { era = 'all', keep = () => true } = {}) {
+  let up = 0, down = 0, all = 0;
+  for (let i = 0; i + frame.wait <= frame.last; i++) {
+    const p = frame.outcomes[h].pct[i + frame.wait], start = frame.starts[i + frame.wait];
+    if (i < start || (frame.obs && (i - 1 < start || frame.obs.status[i] !== 1)) || (era === 'exclude_dotcom' && dotcom(frame.dates[i])) ||
+        !keep(i) || !Number.isFinite(p)) continue;
+    all++;
+    if (p > 0) up++;
+    if (p < 0) down++;
+  }
+  return { up:100 * up / all, down:100 * down / all };
+}
 const near = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual - expected) <= tolerance, actual + ' is not ' + expected);
 const inside = (v, { lo, hi }) => Number.isFinite(v) && (lo === null || v >= lo - 1e-9) && (hi === null || v <= hi + 1e-9);
 const dotcom = date => date >= '2000-01-01' && date <= '2002-12-31';
 
 // Counted close by close with plain arrays, apart from the search's bitsets: the samples a study takes (the first matching
-// close, then the first one `gap` sessions on), those whose result counts, and how many of those remain when each has to
-// start at least `h` sessions after the one before.
+// close, then the first one `gap` sessions on), those whose result counts, the rises and falls among them, and how many
+// remain when each has to start at least `h` sessions after the one before.
 function samplesOf(frame, list, { gap = 21, era = 'all', h = 21, keep = () => true } = {}) {
-  const out = { n:0, wins:0, apart:0 };
+  const out = { n:0, up:0, down:0, apart:0 };
   let next = 0, free = 0;
   for (let i = 0; i < frame.n; i++) {
     if ((era === 'exclude_dotcom' && dotcom(frame.dates[i])) || (frame.obs && frame.obs.status[i] !== 1) ||
@@ -43,13 +62,15 @@ function samplesOf(frame, list, { gap = 21, era = 'all', h = 21, keep = () => tr
     const p = frame.outcomes[h].pct[i + frame.wait];
     if (!Number.isFinite(p)) continue;
     out.n++;
-    if (p > 0) out.wins++;
+    if (p > 0) out.up++;
+    if (p < 0) out.down++;
     if (i >= free) { out.apart++; free = i + h; }
   }
-  return out;
+  return { ...out, dir:out.up >= out.down ? 'up' : 'down', wins:Math.max(out.up, out.down) };
 }
 const entries = conditions => Object.entries(conditions);
-// The pick by brute force: every candidate range alone and every pair of two readings, each counted close by close.
+// The pick by brute force: every candidate range alone and every pair of two readings, each counted close by close and
+// scored on the share that moved the way most of its samples did.
 function brute(frame, { ref, horizon:h = 21, gap = 21, era = 'all', keep, minSamples = C.bestDefaults.minSamples, minApart = C.bestDefaults.minApart } = {}) {
   const { z, gain } = C.bestDefaults, score = t => C.wilsonShare(t.wins / t.n, t.apart, z);
   const alone = [];
@@ -106,57 +127,76 @@ test('counting with bits matches counting close by close, for every spacing, his
     const b = C.best(frame, { ref:1800, horizon:h, gap, era, minSamples:5, minApart:5 });
     assert.ok(b.conditions, 'a pick for gap ' + gap + ', h ' + h);
     const t = samplesOf(frame, entries(b.conditions), { gap, era, h });
-    assert.deepEqual([b.summary.n, b.wins, b.apart], [t.n, t.wins, t.apart], 'gap ' + gap + ', h ' + h);
+    assert.deepEqual([b.dir, b.summary.n, b.wins, b.apart], [t.dir, t.n, t.wins, t.apart], 'gap ' + gap + ', h ' + h);
+    near(b.winPct, 100 * t.wins / t.n);
+    // The way most samples moved is the side their median is on.
+    assert.ok(b.dir === 'up' ? b.summary.median >= 0 : b.summary.median <= 0, b.dir + ' with median ' + b.summary.median);
+    near(b.basePct, allDays(frame, h, { era })[b.dir]);
     const s = C.study(frame, { conditions:b.conditions, horizons:[h], gap, era, ref:1800 });
     assert.equal(b.summary.n, s.summary[h].n);
     assert.equal(b.summary.upPct, s.summary[h].upPct);
     assert.equal(b.summary.median, s.summary[h].median);
     assert.equal(b.summary.min, s.summary[h].min);
+    assert.equal(b.summary.max, s.summary[h].max);
     assert.equal(b.episodes, s.episodes.length);
     assert.deepEqual(b.baseline, s.baseline[h]);
+    if (b.dir === 'up') near(b.basePct, b.baseline.upPct);
   }
 });
 
 test('the pick is the best of every range alone and every pair of two readings, as brute force finds it', () => {
   // A smaller history keeps the plain-array count of every pair quick.
   const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
-  for (const [frame, ref, h, gap, era] of [[short, short.last, 21, 21, 'all'], [short, 1100, 5, 1, 'all'], [short, 900, 63, 5, 'exclude_dotcom']]) {
+  const dirs = [];
+  for (const [frame, ref, h, gap, era] of [[short, short.last, 21, 21, 'all'], [short, 1100, 5, 1, 'all'], [short, 900, 63, 5, 'exclude_dotcom'],
+    [falling, falling.last, 21, 21, 'all'], [falling, 1000, 5, 1, 'all']]) {
     const b = C.best(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
     const want = brute(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
     assert.ok(want, 'a pick for h ' + h);
     assert.deepEqual(b.conditions, want.conditions, 'h ' + h + ', gap ' + gap);
-    assert.deepEqual([b.summary.n, b.wins, b.apart], [want.n, want.wins, want.apart]);
+    assert.deepEqual([b.dir, b.summary.n, b.wins, b.apart], [want.dir, want.n, want.wins, want.apart]);
     assert.equal(b.usable + b.pairs > b.candidates, true, 'pairs were compared');
+    dirs.push(b.dir);
   }
+  assert.deepEqual([...new Set(dirs)].sort(), ['down', 'up'], 'picks that call a rise and picks that call a fall');
 });
 
-test('the check picks on the history before the middle close alone and counts that pick from the middle close on', () => {
+test('a set whose samples mostly fell is scored on its share down, beside how often every close fell', () => {
+  const b = C.best(falling, { ref:falling.last });
+  assert.equal(b.dir, 'down');
+  const t = samplesOf(falling, entries(b.conditions));
+  assert.deepEqual([b.wins, b.summary.n], [t.down, t.n]);
+  near(b.winPct, 100 * t.down / t.n);
+  assert.ok(b.summary.median < 0 && b.winPct > 50);
+  // Beside it, how often every close fell, not how often it rose.
+  const all = allDays(falling, 21);
+  near(b.basePct, all.down);
+  assert.ok(all.down > all.up);
+  near(b.score, C.wilsonShare(t.down / t.n, t.apart, C.bestDefaults.z));
+});
+
+test('the check picks on the history before the middle close alone and counts that pick, in the way it called, from the middle close on', () => {
   const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
-  const late = (frame, h, keep) => {
-    // Every close of the later half with a result, as the all-days comparison counts them.
-    let up = 0, all = 0;
-    for (let i = 0; i + frame.wait <= frame.last; i++) {
-      const p = frame.outcomes[h].pct[i + frame.wait], start = frame.starts[i + frame.wait];
-      if (i < start || (frame.obs && (i - 1 < start || frame.obs.status[i] !== 1)) || !keep(i) || !Number.isFinite(p)) continue;
-      all++;
-      if (p > 0) up++;
-    }
-    return 100 * up / all;
-  };
-  for (const [frame, ref, h, gap] of [[short, short.last, 21, 21], [short, 1100, 5, 1], [C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }), { wait:2 }), 900, 63, 5]]) {
+  for (const [frame, ref, h, gap] of [[short, short.last, 21, 21], [short, 1100, 5, 1], [C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }), { wait:2 }), 900, 63, 5],
+    [falling, falling.last, 21, 21], [turning, turning.last, 21, 21]]) {
     const b = C.best(frame, { ref, horizon:h, gap, minSamples:10, minApart:10 }), k = b.check, split = Math.floor(frame.n / 2);
     assert.equal(k.split, frame.dates[split]);
-    near(k.baseline, late(frame, h, i => i >= split));
     const pick = brute(frame, { ref, horizon:h, gap, minSamples:5, minApart:5, keep:i => i + frame.wait + h < split });
     assert.ok(pick, 'an early pick for h ' + h);
-    assert.deepEqual(k.conditions, pick.conditions);
-    assert.equal(k.same, JSON.stringify(k.conditions) === JSON.stringify(b.conditions));
-    const t = samplesOf(frame, entries(k.conditions), { gap, h, keep:i => i >= split });
-    assert.deepEqual([k.n, k.wins, k.apart], [t.n, t.wins, t.apart]);
-    near(k.upPct, 100 * t.wins / t.n);
-    const low = 100 * C.wilsonShare(t.wins / t.n, t.apart, C.bestDefaults.checkZ);
-    assert.equal(k.verdict, t.apart < 5 ? 'few' : low > k.baseline ? 'pass' : k.upPct > k.baseline ? 'weak' : 'fail');
+    assert.deepEqual([k.conditions, k.dir], [pick.conditions, pick.dir]);
+    assert.equal(k.same, JSON.stringify(k.conditions) === JSON.stringify(b.conditions) && k.dir === b.dir);
+    // Counted the way the early pick called, against every close of the same years moving that way.
+    near(k.baseline, allDays(frame, h, { keep:i => i >= split })[k.dir]);
+    const t = samplesOf(frame, entries(k.conditions), { gap, h, keep:i => i >= split }), wins = t[k.dir];
+    assert.deepEqual([k.n, k.wins, k.apart], [t.n, wins, t.apart]);
+    near(k.winPct, 100 * wins / t.n);
+    const low = 100 * C.wilsonShare(wins / t.n, t.apart, C.bestDefaults.checkZ), bar = Math.max(50, k.baseline);
+    assert.equal(k.verdict, t.apart < 5 ? 'few' : low > bar ? 'pass' : k.winPct > bar ? 'weak' : 'fail');
   }
+  assert.equal(C.best(falling, { ref:falling.last, minSamples:10, minApart:10 }).check.dir, 'down');
+  // Picked in the rising years, the check calls a rise and is counted on rises in the falling years after them.
+  const turned = C.best(turning, { ref:turning.last, minSamples:10, minApart:10 });
+  assert.deepEqual([turned.dir, turned.check.dir, turned.check.same, turned.check.verdict], ['down', 'up', false, 'fail']);
   // Without enough early history no pick is checked.
   const none = C.best(short, { ref:short.last, minSamples:2000 });
   assert.equal(none.check.verdict, 'none');

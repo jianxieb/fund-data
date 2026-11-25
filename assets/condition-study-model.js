@@ -551,13 +551,13 @@
     return Math.imul((x + (x >>> 4)) & 0x0f0f0f0f, 0x01010101) >>> 24;
   };
   // Every matching close is a sample when each counts on its own: whole words are counted at once.
-  function tallyDaily(a, b, count, rose) {
-    let n = 0, wins = 0;
+  function tallyDaily(a, b, { count, rose, fell }) {
+    let n = 0, up = 0, down = 0;
     for (let w = 0; w < a.length; w++) {
       const x = (b ? a[w] & b[w] : a[w]) & count[w];
-      if (x) { n += ones(x); wins += ones(x & rose[w]); }
+      if (x) { n += ones(x); up += ones(x & rose[w]); down += ones(x & fell[w]); }
     }
-    return { n, wins };
+    return { n, up, down };
   }
   // How many counted closes in both sets remain when each has to start at least `h` sessions after the one before.
   function spaced(a, b, count, h) {
@@ -574,14 +574,15 @@
     return apart;
   }
   // The samples among the closes in both `a` and `b` (or in `a`), spaced by `gap` sessions as a study spaces them: `n` have a
-  // result that counts (in `count`), `wins` of those rose (in `rose`). `apart` is how many counted samples remain when each
-  // has to start at least `h` sessions after the one before, so that no two result periods overlap.
-  function sweep(a, b, count, rose, gap, h) {
+  // result that counts (in `marks.count`), `up` of those rose and `down` fell. `apart` is how many counted samples remain
+  // when each has to start at least `h` sessions after the one before, so that no two result periods overlap.
+  function sweep(a, b, marks, gap, h) {
+    const { count, rose, fell } = marks;
     if (gap === 1) {
-      const t = tallyDaily(a, b, count, rose);
+      const t = tallyDaily(a, b, marks);
       return { ...t, apart:h === 1 ? t.n : spaced(a, b, count, h) };
     }
-    let n = 0, wins = 0, apart = 0, next = 0, free = 0;
+    let n = 0, up = 0, down = 0, apart = 0, next = 0, free = 0;
     for (let w = 0; w < a.length;) {
       const at = next >>> 5;
       if (at > w) { w = at; continue; }
@@ -592,22 +593,24 @@
       next = i + gap;
       if (!(count[w] & one)) continue;
       n++;
-      if (rose[w] & one) wins++;
+      if (rose[w] & one) up++;
+      else if (fell[w] & one) down++;
       if (i >= free) { apart++; free = i + h; }
     }
-    return { n, wins, apart };
+    return { n, up, down, apart };
   }
   // Every range alone and every pair of ranges of two different readings. A pair has to beat the better of its ranges alone
   // by `gain`. Equal scores go to more samples, then to fewer ranges, then to the one found first in the page order.
-  function bestSearch(pool, count, rose, o) {
-    const alone = [], daily = o.gap === 1 && o.h > 1, merged = o.gap > 1;
+  function bestSearch(pool, marks, o) {
+    const alone = [], daily = o.gap === 1 && o.h > 1, merged = o.gap > 1, { count, rose, fell } = marks;
     for (const c of pool) {
-      const t = sweep(c.bits, null, count, rose, o.gap, o.h);
+      const t = sweep(c.bits, null, marks, o.gap, o.h);
       if (t.n < o.least || t.apart < o.leastApart) continue;
-      // With merged samples, the most a pair with this range can hold: its samples, the rises among them and those whose
-      // periods do not overlap are all closes of this range spaced at least `gap` (or `h`) apart, and no subset of these
-      // closes spreads further.
-      const most = merged ? { n:spaced(c.bits, null, count, o.gap), wins:spaced(c.bits, null, rose, o.gap), apart:spaced(c.bits, null, count, o.h) } : null;
+      // With merged samples, the most a pair with this range can hold: its samples, the rises or falls among them and those
+      // whose periods do not overlap are all closes of this range spaced at least `gap` (or `h`) apart, and no subset of
+      // these closes spreads further.
+      const most = merged ? { n:spaced(c.bits, null, count, o.gap), up:spaced(c.bits, null, rose, o.gap), down:spaced(c.bits, null, fell, o.gap),
+        apart:spaced(c.bits, null, count, o.h) } : null;
       alone.push({ c, t, score:o.score(t), most });
     }
     const better = (x, y) => !y || x.score > y.score + 1e-12 ||
@@ -626,21 +629,22 @@
       if (daily) {
         // Counting the samples that do not overlap walks the closes, so first check that the most it could reach, the
         // fewer of the two ranges' own, could still win: a subset never spreads over more separate periods.
-        const d = tallyDaily(p.c.bits, q.c.bits, count, rose), most = Math.min(p.t.apart, q.t.apart);
+        const d = tallyDaily(p.c.bits, q.c.bits, marks), most = Math.min(p.t.apart, q.t.apart);
         if (d.n < o.least || most < o.leastApart) continue;
         const reach = o.score({ ...d, apart:most });
         if (reach < bar || (top && reach < top.score - 1e-12)) continue;
         t = { ...d, apart:spaced(p.c.bits, q.c.bits, count, o.h) };
       } else {
         if (merged) {
-          // The score is at most that of a share of 1 on as many samples as the fewer of the rises and the separate
-          // periods it could hold, so a pair that could not win even then is skipped without walking the closes.
-          const n = Math.min(p.most.n, q.most.n), most = Math.min(p.most.wins, q.most.wins, p.most.apart, q.most.apart);
-          if (n < o.least || Math.min(p.most.apart, q.most.apart) < o.leastApart) continue;
-          const reach = most ? o.score({ n:most, wins:most, apart:most }) : 0;
+          // The score is at most that of a win rate of 1 on as many samples as the fewer of the moves either way and the
+          // separate periods it could hold, so a pair that could not win even then is skipped without walking the closes.
+          const n = Math.min(p.most.n, q.most.n), apart = Math.min(p.most.apart, q.most.apart);
+          const most = Math.min(apart, Math.max(Math.min(p.most.up, q.most.up), Math.min(p.most.down, q.most.down)));
+          if (n < o.least || apart < o.leastApart) continue;
+          const reach = most ? o.score({ n:most, up:most, down:0, apart:most }) : 0;
           if (reach < bar || (top && reach < top.score - 1e-12)) continue;
         }
-        t = sweep(p.c.bits, q.c.bits, count, rose, o.gap, o.h);
+        t = sweep(p.c.bits, q.c.bits, marks, o.gap, o.h);
       }
       if (t.n < o.least || t.apart < o.leastApart) continue;
       const score = o.score(t);
@@ -651,10 +655,11 @@
     return { top, usable:alone.length, pairs };
   }
   const asConditions = top => Object.fromEntries(top.items.map(c => [c.id, { ...c.range }]));
-  // The range or pair of ranges, all met by the reference close, whose samples rose most often after `horizon` sessions.
-  // The score is the Wilson lower bound with the samples whose result periods do not overlap as the sample size, so a
-  // small sample, or one that keeps counting the same stretch of the market, ranks lower. `check` repeats the search on the
-  // history before the middle close alone and counts how its pick did from that close on.
+  // A set's samples move one way more often than the other after `horizon` sessions: `dir` is that way (the sign of their
+  // median), and its win rate is the share of samples that moved that way. The pick is the range or pair of ranges, all met
+  // by the reference close, with the most reliable win rate: the Wilson lower bound with the samples whose result periods
+  // do not overlap as the sample size, so a small sample, or one that keeps counting the same stretch of the market, ranks
+  // lower. `check` repeats the search on the history before the middle close alone and counts how its pick did from then.
   function best(data, { ref, horizon = bestDefaults.horizon, gap = 21, era = 'all', minSamples = bestDefaults.minSamples,
       minApart = bestDefaults.minApart, gain = bestDefaults.gain, z = bestDefaults.z, checkZ = bestDefaults.checkZ } = {}) {
     const view = framed(data), at = refOf(view, ref), h = horizon;
@@ -662,34 +667,40 @@
     if (!horizonChoices.includes(h)) throw new Error('未知的后续期限');
     const split = Math.floor(view.n / 2), pct = view.outcomes[h].pct, wait = view.wait;
     const usable = i => !excluded(era, view.dates[i]) && !(view.obs && view.obs.status[i] !== COMPLETE);
-    // Closes whose result counts, and those that rose, among the signal days `keep` lets through.
+    // Closes whose result counts, and those that rose or fell, among the signal days `keep` lets through.
     const counted = keep => {
       const ok = i => usable(i) && keep(i) && historical(view, i) && Number.isFinite(pct[i + wait]);
-      return [bitsOf(view.n, ok), bitsOf(view.n, i => ok(i) && pct[i + wait] > 0)];
+      return { count:bitsOf(view.n, ok), rose:bitsOf(view.n, i => ok(i) && pct[i + wait] > 0), fell:bitsOf(view.n, i => ok(i) && pct[i + wait] < 0) };
     };
+    const way = t => t.up >= t.down ? 'up' : 'down', hits = (t, dir) => dir === 'up' ? t.up : t.down;
+    // How often the closes in `list` moved the way `dir` says.
+    const share = (list, dir) => list.length ? 100 * list.filter(p => dir === 'up' ? p > 0 : p < 0).length / list.length : null;
     const pool = bestCandidates(view, at).map(({ id, range }) => ({ id, range, key:id + '=' + formatRange(range),
       bits:bitsOf(view.n, i => usable(i) && inRange(view.values[id][i], range)) }));
-    const score = t => wilsonShare(t.wins / t.n, t.apart, z);
-    const run = (keep, least, leastApart) => bestSearch(pool, ...counted(keep), { gap, h, least, leastApart, gain, score });
+    const score = t => wilsonShare(Math.max(t.up, t.down) / t.n, t.apart, z);
+    const run = (keep, least, leastApart) => bestSearch(pool, counted(keep), { gap, h, least, leastApart, gain, score });
     const found = run(() => true, minSamples, minApart);
     // Picked on the signal days whose results had finished before the middle close, counted on those from it on.
     const before = i => i + wait + h < split, after = i => i >= split, half = [Math.ceil(minSamples / 2), Math.ceil(minApart / 2)];
     const pick = run(before, ...half).top, days = dayResults(view, era, h, after).pct;
-    const check = { split:view.dates[split], conditions:null, same:false, n:0, wins:0, apart:0, upPct:null, verdict:'none',
-      baseline:days.length ? 100 * days.filter(p => p > 0).length / days.length : null };
+    const check = { split:view.dates[split], conditions:null, dir:null, same:false, n:0, wins:0, apart:0, winPct:null, baseline:null, verdict:'none' };
     if (pick) {
-      const t = sweep(pick.items[0].bits, pick.items[1]?.bits ?? null, ...counted(after), gap, h);
-      Object.assign(check, { conditions:asConditions(pick), same:pick.key === found.top?.key, n:t.n, wins:t.wins, apart:t.apart, upPct:t.n ? 100 * t.wins / t.n : null });
-      // Clearly higher only when the lower bound of the later share is above every close of the same years. One set is
-      // judged here, so the usual 95% bound applies.
-      check.verdict = t.apart < half[1] ? 'few' : 100 * wilsonShare(t.wins / t.n, t.apart, checkZ) > check.baseline ? 'pass' : check.upPct > check.baseline ? 'weak' : 'fail';
+      const dir = way(pick.t), t = sweep(pick.items[0].bits, pick.items[1]?.bits ?? null, counted(after), gap, h), wins = hits(t, dir);
+      Object.assign(check, { conditions:asConditions(pick), dir, same:!!found.top && pick.key === found.top.key && dir === way(found.top.t),
+        n:t.n, wins, apart:t.apart, winPct:t.n ? 100 * wins / t.n : null, baseline:share(days, dir) });
+      // The call holds when its later win rate beats both a coin flip and how often every close of the same years moved
+      // that way, clearly so when the lower bound of that rate does. One set is judged here, so the usual 95% bound applies.
+      const bar = Math.max(50, check.baseline ?? 0);
+      check.verdict = t.apart < half[1] ? 'few' : 100 * wilsonShare(wins / t.n, t.apart, checkZ) > bar ? 'pass' : check.winPct > bar ? 'weak' : 'fail';
     }
     const out = { ref:at, date:view.dates[at], horizon:h, gap, era, minSamples, minApart, candidates:pool.length, usable:found.usable, pairs:found.pairs,
-      conditions:null, reason:null, summary:null, wins:null, apart:null, episodes:0, baseline:baseline(view, era, [h])[h], check };
+      conditions:null, reason:null, dir:null, summary:null, wins:null, winPct:null, apart:null, episodes:0, baseline:baseline(view, era, [h])[h], basePct:null, check };
     if (!found.top) return { ...out, reason:pool.length ? 'samples' : 'readings' };
     const conditions = asConditions(found.top), samples = space(mask(view, ordered(view, conditions), era), gap).filter(i => historical(view, i));
-    return { ...out, conditions, score:found.top.score, summary:summarize(samples.map(i => pct[i + wait]).filter(Number.isFinite)),
-      wins:found.top.t.wins, apart:found.top.t.apart, episodes:samples.length };
+    const t = found.top.t, dir = way(t);
+    // `basePct`: how often every close moved the pick's way, beside its win rate.
+    return { ...out, conditions, dir, score:found.top.score, summary:summarize(samples.map(i => pct[i + wait]).filter(Number.isFinite)),
+      wins:hits(t, dir), winPct:100 * hits(t, dir) / t.n, apart:t.apart, episodes:samples.length, basePct:share(dayResults(view, era, h).pct, dir) };
   }
 
   const empty = status => ({ status, date:null, close:null, pct:null, drawdown:null, low:null });
