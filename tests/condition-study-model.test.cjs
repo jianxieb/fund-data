@@ -53,7 +53,7 @@ test('warm-up lengths are exact and a long outage starts a fresh history', () =>
   near(split.values.r5[265], (split.closes[265] / split.closes[260] - 1) * 100);
   assert.ok(Number.isNaN(split.values.r21[280]));
   assert.equal(split.outcomes[5].pct.slice(255, 260).every(Number.isNaN), true, 'forward windows never bridge the outage');
-  const cut = C.study(split, { conditions:{ r1:{ lo:-100, hi:100 } }, gap:5 });
+  const cut = C.study(split, { conditions:{ r1:{ lo:-100, hi:100 } } });
   assert.equal(cut.uncounted.find(e => e.index > 254 && e.index < 260).outcomes[5].status, 'gap', 'a sample the outage cuts short is not counted');
   assert.ok(cut.episodes.every(e => e.index < 255 || e.index >= 260));
 });
@@ -84,36 +84,28 @@ test('flat decimal histories stay exactly on their averages; invalid series are 
     [['2020-02-30', 1], ['2020-03-02', 1]], [['2020-01-02', 1], ['2020-01-03', 1, 2]]]) assert.throws(() => C.compute(bad), /序列/);
 });
 
-test('conditions include both bounds, need a known value, and samples keep the chosen spacing', () => {
+test('conditions include both bounds and need a known value; every matching close is a sample', () => {
   // Days 10..29 all drop 1%: every one matches "1-day ≤ −0.99%".
   const closes = Array(60).fill(100);
   for (let i = 10; i < 30; i++) closes[i] = closes[i - 1] * .99;
   for (let i = 30; i < 60; i++) closes[i] = closes[29];
   const d = C.compute(sessions(closes));
-  const r = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:5 });
-  assert.equal(r.matchingDays, 20, 'exactly −1% equals the inclusive bound despite decimal residue');
-  assert.deepEqual(r.episodes.map(e => e.index).reverse(), [10, 15, 20, 25]);
-  assert.deepEqual(C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:21 }).episodes.map(e => e.index).reverse(), [10]);
-  // Each sample lists the later matching closes inside its spacing; with the signal days they are every matching close.
-  const merged = Object.fromEntries(r.episodes.map(e => [e.index, e.merged]));
-  assert.deepEqual(merged[10], d.dates.slice(11, 15));
-  assert.deepEqual(merged[25], d.dates.slice(26, 30));
-  assert.equal(r.episodes.reduce((sum, e) => sum + 1 + e.merged.length, 0), r.matchingDays);
-  assert.deepEqual(C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:21 }).episodes[0].merged, d.dates.slice(11, 30));
-  const separate = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:1 });
-  assert.equal(separate.episodes.length, 20);
-  assert.ok(separate.episodes.every(e => e.merged.length === 0));
-  const flat = C.study(d, { conditions:{ r1:{ lo:0, hi:null } }, gap:21 });
-  assert.deepEqual(flat.episodes.map(e => [e.index, e.merged.length]).reverse(), [[1, 8], [30, 20], [51, 8]], 'the last sample stops at the latest close');
-  assert.equal(flat.matchingDays, 39);
-  assert.equal(C.study(d, { conditions:{ r1:{ lo:-1, hi:-1 } }, gap:5 }).matchingDays, 20);
-  assert.equal(C.study(d, { conditions:{ r1:{ lo:null, hi:-1.01 } }, gap:5 }).matchingDays, 0);
+  const r = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 } } });
+  assert.equal(r.episodes.length, 20, 'exactly −1% equals the inclusive bound despite decimal residue');
+  assert.deepEqual(r.episodes.map(e => e.index).reverse(), Array.from({ length:20 }, (_, k) => 10 + k));
+  assert.ok(r.episodes.every(e => !('merged' in e)), 'nearby matching closes are never folded into one sample');
+  // Flat days match "≥ 0%": 1..9 and 30..59; the five newest have no results yet and stay out of the count.
+  const flat = C.study(d, { conditions:{ r1:{ lo:0, hi:null } } });
+  assert.equal(flat.episodes.length + flat.uncounted.length, 39);
+  assert.deepEqual(flat.uncounted.map(e => e.index), [59, 58, 57, 56, 55]);
+  assert.equal(C.study(d, { conditions:{ r1:{ lo:-1, hi:-1 } } }).episodes.length, 20);
+  assert.equal(C.study(d, { conditions:{ r1:{ lo:null, hi:-1.01 } } }).episodes.length, 0);
   // r21 is unknown before day 21: an active condition excludes those days, an inactive one keeps them.
-  const known = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 }, r21:{ lo:-100, hi:100 } }, gap:5 });
-  assert.deepEqual(known.episodes.map(e => e.index).reverse(), [21, 26]);
+  const known = C.study(d, { conditions:{ r1:{ lo:null, hi:-1 }, r21:{ lo:-100, hi:100 } } });
+  assert.deepEqual(known.episodes.map(e => e.index).reverse(), Array.from({ length:9 }, (_, k) => 21 + k));
   assert.throws(() => C.study(d, { conditions:{ nope:{ lo:1, hi:null } } }), /未知的行情条件/);
   assert.throws(() => C.study(d, { conditions:{ r1:{ lo:2, hi:1 } } }), /未知的行情条件/);
-  assert.throws(() => C.study(d, { conditions:{}, gap:7 }), /样本间隔/);
+  assert.throws(() => C.study(d, { conditions:{}, era:'nope' }), /历史范围/);
 });
 
 test('a sample counts once it has five sessions of results; newer matches, the latest close among them, stay out', () => {
@@ -121,31 +113,18 @@ test('a sample counts once it has five sessions of results; newer matches, the l
   const drops = [30, 40, 48, 51], closes = [100];
   for (let i = 1; i < 52; i++) closes.push(closes[i - 1] * (drops.includes(i) ? .94 : 1));
   const d = C.compute(sessions(closes)), conditions = { r1:{ lo:null, hi:-5 } };
-  const separate = C.study(d, { conditions, gap:1, horizons:[1, 5] });
+  const separate = C.study(d, { conditions, horizons:[1, 5] });
   assert.deepEqual(separate.episodes.map(e => e.index), [40, 30]);
   assert.deepEqual(separate.uncounted.map(e => e.index), [51, 48]);
   assert.equal(separate.uncounted[1].outcomes[1].status, 'complete');
   assert.equal(separate.summary[1].n, 2, 'a one-day result from a sample that does not count yet stays out of the summary');
-  assert.equal(separate.matchingDays, 2);
   assert.equal(separate.reference.matches, true);
-  assert.equal(separate.reference.episode, d.dates[51]);
-  // Merged into a sample that started three sessions earlier, the latest close leaves that sample uncounted too.
-  const merged = C.study(d, { conditions, gap:5 });
-  assert.deepEqual(merged.episodes.map(e => e.index), [40, 30]);
-  assert.deepEqual(merged.uncounted.map(e => [e.index, e.merged]), [[48, [d.dates[51]]]]);
-  assert.equal(merged.matchingDays, 2);
-  assert.equal(merged.reference.episode, d.dates[48]);
-  // Days merged into an older sample count with it; the latest close opens its own sample, which does not.
-  const long = C.study(d, { conditions, gap:21 });
-  assert.deepEqual(long.episodes.map(e => [e.index, e.merged]), [[30, [d.dates[40], d.dates[48]]]]);
-  assert.deepEqual(long.uncounted.map(e => e.index), [51]);
-  assert.equal(long.matchingDays, 3);
-  for (const [gap, r] of [[1, separate], [5, merged], [21, long]]) assert.equal(r.episodes.length, C.count(d, conditions, gap), 'the match count uses the unit of the previews');
+  assert.equal(separate.episodes.length, C.count(d, conditions), 'the match count uses the unit of the previews');
 });
 
 test('outcomes, risk and summaries use complete windows; previews keep every other condition', () => {
   const closes = wave(700), d = C.compute(sessions(closes));
-  const conditions = { r5:{ lo:null, hi:-1 }, ma50:{ lo:null, hi:0 } }, r = C.study(d, { conditions, gap:21 });
+  const conditions = { r5:{ lo:null, hi:-1 }, ma50:{ lo:null, hi:0 } }, r = C.study(d, { conditions });
   assert.ok(r.episodes.length > 3);
   const e = r.episodes.at(-1), i = e.index, h = 63, path = closes.slice(i, i + h + 1);
   near(e.outcomes[h].pct, (path.at(-1) / path[0] - 1) * 100);
@@ -164,12 +143,12 @@ test('outcomes, risk and summaries use complete windows; previews keep every oth
     near(s.upPct, 100 * done.filter(v => v > 0).length / done.length);
     assert.equal(r.baseline[horizon].n, closes.length - horizon);
   }
-  const recent = C.study(d, { conditions:{ r1:{ lo:-100, hi:100 } }, gap:252 }).episodes[0];
+  const recent = C.study(d, { conditions:{ r1:{ lo:-100, hi:100 } } }).episodes[0];
   assert.equal(recent.outcomes[252].status, 'pending');
   assert.equal(r.previews.r5.kind, 'without');
-  assert.equal(r.previews.r5.episodes, C.count(d, { ma50:conditions.ma50 }, 21));
+  assert.equal(r.previews.r5.episodes, C.count(d, { ma50:conditions.ma50 }));
   const band = C.suggest(d, 'vol21');
-  assert.deepEqual(r.previews.vol21, { kind:'with', range:band, episodes:C.count(d, { ...conditions, vol21:band }, 21) });
+  assert.deepEqual(r.previews.vol21, { kind:'with', range:band, episodes:C.count(d, { ...conditions, vol21:band }) });
 });
 
 test('suggested ranges contain the latest value, snap outward to steps and open at historical extremes', () => {
@@ -196,19 +175,19 @@ test('the latest-close fit is greedy, deterministic and keeps enough separate sa
   const closes = wave(3000);
   closes.push(closes.at(-1) * .95, closes.at(-1) * .93);
   const d = C.compute(sessions(closes));
-  const fit = C.fit(d, { gap:21 });
-  assert.deepEqual(C.fit(d, { gap:21 }), fit);
+  const fit = C.fit(d);
+  assert.deepEqual(C.fit(d), fit);
   assert.deepEqual([...fit.added, ...fit.skipped.map(s => s.id)].sort(), [...C.fitOrder].sort());
   assert.deepEqual(fit.added, C.fitOrder.filter(id => fit.added.includes(id)), 'conditions keep the fixed order');
   assert.ok(fit.episodes >= fit.minEpisodes);
   for (const s of fit.skipped) if (s.episodes !== null) assert.ok(s.episodes < fit.minEpisodes);
-  const r = C.study(d, { conditions:fit.conditions, gap:21 });
+  const r = C.study(d, { conditions:fit.conditions });
   assert.equal(r.reference.matches, true);
-  assert.deepEqual(r.uncounted.map(e => e.date), [r.reference.episode], 'the latest close has no results yet, so its sample is not counted');
+  assert.equal(r.uncounted[0].date, d.asOf, 'the latest close has no results yet, so it is not counted');
   assert.equal(r.episodes.length, fit.episodes);
-  const strict = C.fit(d, { gap:21, minEpisodes:100000 });
+  const strict = C.fit(d, { minEpisodes:100000 });
   assert.deepEqual(strict.conditions, {});
-  assert.throws(() => C.fit(d, { gap:4 }), /样本间隔/);
+  assert.throws(() => C.fit(d, { era:'nope' }), /历史范围/);
 });
 
 test('range text round-trips and invalid ranges are refused', () => {
@@ -235,7 +214,7 @@ test('range text round-trips and invalid ranges are refused', () => {
   assert.equal(C.rangeIssue('r5', { lo:null, hi:null }), 'empty');
   assert.equal(C.rangeIssue('missing', { lo:1, hi:null }), 'metric');
   assert.equal(C.rangeIssue('r5', { lo:-8, hi:-8 }), null);
-  assert.equal(C.validGap(21), true); assert.equal(C.validGap(20), false);
+  assert.equal('validGap' in C, false, 'there is no merge window to choose');
 });
 
 test('paths and their spread are set to 100 at each signal and stop at the latest close', () => {
@@ -289,14 +268,14 @@ test('VIX readings come only from same-date Cboe closes, ignore other dates and 
 test('the latest-close fit records every attempt in order, with the sample count that decided it', () => {
   const closes = wave(1600), rows = sessions(closes);
   const vix = rows.map(([date], i) => [date, 14 + 12 * Math.abs(Math.sin(i / 17))]);
-  const d = C.compute(rows, { vix }), fit = C.fit(d, { gap:21 });
+  const d = C.compute(rows, { vix }), fit = C.fit(d);
   assert.deepEqual(fit.steps.map(s => s.id), C.fitOrder);
   assert.ok(C.fitOrder.includes('vix'));
   const kept = {};
   for (const step of fit.steps) {
     if (!step.band) { assert.equal(step.episodes, null); continue; }
     assert.deepEqual(step.band, C.suggest(d, step.id));
-    assert.equal(step.episodes, C.count(d, { ...kept, [step.id]:step.band }, 21));
+    assert.equal(step.episodes, C.count(d, { ...kept, [step.id]:step.band }));
     assert.equal(step.kept, step.episodes >= 10);
     if (step.kept) kept[step.id] = step.band;
   }

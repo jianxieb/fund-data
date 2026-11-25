@@ -47,16 +47,15 @@ const near = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual -
 const inside = (v, { lo, hi }) => Number.isFinite(v) && (lo === null || v >= lo - 1e-9) && (hi === null || v <= hi + 1e-9);
 const dotcom = date => date >= '2000-01-01' && date <= '2002-12-31';
 
-// Counted close by close with plain arrays, apart from the search's bitsets: the samples a study takes (the first matching
-// close, then the first one `gap` sessions on), those whose result counts, the rises and falls among them, and how many
-// remain when each has to start at least `h` sessions after the one before.
-function samplesOf(frame, list, { gap = 21, era = 'all', h = 21, keep = () => true } = {}) {
+// Counted close by close with plain arrays, apart from the search's bitsets: the samples a study takes (every matching
+// close), those whose result counts, the rises and falls among them, and how many remain when each has to start at least
+// `h` sessions after the one before.
+function samplesOf(frame, list, { era = 'all', h = 21, keep = () => true } = {}) {
   const out = { n:0, up:0, down:0, apart:0 };
-  let next = 0, free = 0;
+  let free = 0;
   for (let i = 0; i < frame.n; i++) {
     if ((era === 'exclude_dotcom' && dotcom(frame.dates[i])) || (frame.obs && frame.obs.status[i] !== 1) ||
-        !list.every(([id, range]) => inside(frame.values[id][i], range)) || i < next) continue;
-    next = i + gap;
+        !list.every(([id, range]) => inside(frame.values[id][i], range))) continue;
     const end = i + frame.wait + 5;
     if (!(end <= frame.last && frame.starts[end] === frame.starts[i]) || !keep(i)) continue;
     const p = frame.outcomes[h].pct[i + frame.wait];
@@ -71,11 +70,11 @@ function samplesOf(frame, list, { gap = 21, era = 'all', h = 21, keep = () => tr
 const entries = conditions => Object.entries(conditions);
 // The pick by brute force: every candidate range alone and every pair of two readings, each counted close by close and
 // scored on the share that moved the way most of its samples did.
-function brute(frame, { ref, horizon:h = 21, gap = 21, era = 'all', keep, minSamples = C.bestDefaults.minSamples, minApart = C.bestDefaults.minApart } = {}) {
+function brute(frame, { ref, horizon:h = 21, era = 'all', keep, minSamples = C.bestDefaults.minSamples, minApart = C.bestDefaults.minApart } = {}) {
   const { z, gain } = C.bestDefaults, score = t => C.wilsonShare(t.wins / t.n, t.apart, z);
   const alone = [];
   for (const c of C.bestCandidates(frame, ref)) {
-    const t = samplesOf(frame, [[c.id, c.range]], { gap, era, h, keep });
+    const t = samplesOf(frame, [[c.id, c.range]], { era, h, keep });
     if (t.n >= minSamples && t.apart >= minApart) alone.push({ list:[c], t, score:score(t) });
   }
   const better = (x, y) => !y || x.score > y.score + 1e-12 ||
@@ -85,7 +84,7 @@ function brute(frame, { ref, horizon:h = 21, gap = 21, era = 'all', keep, minSam
   for (let i = 0; i < alone.length; i++) for (let j = i + 1; j < alone.length; j++) {
     const [p, q] = [alone[i], alone[j]];
     if (p.list[0].id === q.list[0].id) continue;
-    const list = [p.list[0], q.list[0]], t = samplesOf(frame, list.map(c => [c.id, c.range]), { gap, era, h, keep });
+    const list = [p.list[0], q.list[0]], t = samplesOf(frame, list.map(c => [c.id, c.range]), { era, h, keep });
     if (t.n < minSamples || t.apart < minApart) continue;
     const x = { list, t, score:score(t) };
     if (x.score >= Math.max(p.score, q.score) + gain - 1e-12 && better(x, top)) top = x;
@@ -121,18 +120,18 @@ test('every range covers the reference reading, with thresholds that follow it o
   assert.ok(C.bestCandidates(view, 100).every(c => !['ma200', 'dd252', 'r252', 'cross'].includes(c.id)));
 });
 
-test('counting with bits matches counting close by close, for every spacing, history range and observation period', () => {
-  for (const [frame, gap, era, h] of [[view, 21, 'all', 21], [view, 1, 'all', 5], [view, 1, 'exclude_dotcom', 1], [C.frame(data, { wait:2 }), 5, 'all', 63],
-    [view, 10, 'exclude_dotcom', 252]]) {
-    const b = C.best(frame, { ref:1800, horizon:h, gap, era, minSamples:5, minApart:5 });
-    assert.ok(b.conditions, 'a pick for gap ' + gap + ', h ' + h);
-    const t = samplesOf(frame, entries(b.conditions), { gap, era, h });
-    assert.deepEqual([b.dir, b.summary.n, b.wins, b.apart], [t.dir, t.n, t.wins, t.apart], 'gap ' + gap + ', h ' + h);
+test('counting with bits matches counting close by close, for every history range and observation period', () => {
+  for (const [frame, era, h] of [[view, 'all', 21], [view, 'all', 5], [view, 'exclude_dotcom', 1], [C.frame(data, { wait:2 }), 'all', 63],
+    [view, 'exclude_dotcom', 252]]) {
+    const b = C.best(frame, { ref:1800, horizon:h, era, minSamples:5, minApart:5 });
+    assert.ok(b.conditions, 'a pick for h ' + h);
+    const t = samplesOf(frame, entries(b.conditions), { era, h });
+    assert.deepEqual([b.dir, b.summary.n, b.wins, b.apart], [t.dir, t.n, t.wins, t.apart], 'h ' + h);
     near(b.winPct, 100 * t.wins / t.n);
     // The way most samples moved is the side their median is on.
     assert.ok(b.dir === 'up' ? b.summary.median >= 0 : b.summary.median <= 0, b.dir + ' with median ' + b.summary.median);
     near(b.basePct, allDays(frame, h, { era })[b.dir]);
-    const s = C.study(frame, { conditions:b.conditions, horizons:[h], gap, era, ref:1800 });
+    const s = C.study(frame, { conditions:b.conditions, horizons:[h], era, ref:1800 });
     assert.equal(b.summary.n, s.summary[h].n);
     assert.equal(b.summary.upPct, s.summary[h].upPct);
     assert.equal(b.summary.median, s.summary[h].median);
@@ -148,12 +147,12 @@ test('the pick is the best of every range alone and every pair of two readings, 
   // A smaller history keeps the plain-array count of every pair quick.
   const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
   const dirs = [];
-  for (const [frame, ref, h, gap, era] of [[short, short.last, 21, 21, 'all'], [short, 1100, 5, 1, 'all'], [short, 900, 63, 5, 'exclude_dotcom'],
-    [falling, falling.last, 21, 21, 'all'], [falling, 1000, 5, 1, 'all']]) {
-    const b = C.best(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
-    const want = brute(frame, { ref, horizon:h, gap, era, minSamples:10, minApart:10 });
+  for (const [frame, ref, h, era] of [[short, short.last, 21, 'all'], [short, 1100, 5, 'all'], [short, 900, 63, 'exclude_dotcom'],
+    [falling, falling.last, 21, 'all'], [falling, 1000, 5, 'all']]) {
+    const b = C.best(frame, { ref, horizon:h, era, minSamples:10, minApart:10 });
+    const want = brute(frame, { ref, horizon:h, era, minSamples:10, minApart:10 });
     assert.ok(want, 'a pick for h ' + h);
-    assert.deepEqual(b.conditions, want.conditions, 'h ' + h + ', gap ' + gap);
+    assert.deepEqual(b.conditions, want.conditions, 'h ' + h);
     assert.deepEqual([b.dir, b.summary.n, b.wins, b.apart], [want.dir, want.n, want.wins, want.apart]);
     assert.equal(b.usable + b.pairs > b.candidates, true, 'pairs were compared');
     dirs.push(b.dir);
@@ -177,17 +176,17 @@ test('a set whose samples mostly fell is scored on its share down, beside how of
 
 test('the check picks on the history before the middle close alone and counts that pick, in the way it called, from the middle close on', () => {
   const short = C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }));
-  for (const [frame, ref, h, gap] of [[short, short.last, 21, 21], [short, 1100, 5, 1], [C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }), { wait:2 }), 900, 63, 5],
-    [falling, falling.last, 21, 21], [turning, turning.last, 21, 21]]) {
-    const b = C.best(frame, { ref, horizon:h, gap, minSamples:10, minApart:10 }), k = b.check, split = Math.floor(frame.n / 2);
+  for (const [frame, ref, h] of [[short, short.last, 21], [short, 1100, 5], [C.frame(C.compute(series.slice(0, 1400), { vix:vix.slice(0, 1400) }), { wait:2 }), 900, 63],
+    [falling, falling.last, 21], [turning, turning.last, 21]]) {
+    const b = C.best(frame, { ref, horizon:h, minSamples:10, minApart:10 }), k = b.check, split = Math.floor(frame.n / 2);
     assert.equal(k.split, frame.dates[split]);
-    const pick = brute(frame, { ref, horizon:h, gap, minSamples:5, minApart:5, keep:i => i + frame.wait + h < split });
+    const pick = brute(frame, { ref, horizon:h, minSamples:5, minApart:5, keep:i => i + frame.wait + h < split });
     assert.ok(pick, 'an early pick for h ' + h);
     assert.deepEqual([k.conditions, k.dir], [pick.conditions, pick.dir]);
     assert.equal(k.same, JSON.stringify(k.conditions) === JSON.stringify(b.conditions) && k.dir === b.dir);
     // Counted the way the early pick called, against every close of the same years moving that way.
     near(k.baseline, allDays(frame, h, { keep:i => i >= split })[k.dir]);
-    const t = samplesOf(frame, entries(k.conditions), { gap, h, keep:i => i >= split }), wins = t[k.dir];
+    const t = samplesOf(frame, entries(k.conditions), { h, keep:i => i >= split }), wins = t[k.dir];
     assert.deepEqual([k.n, k.wins, k.apart], [t.n, wins, t.apart]);
     near(k.winPct, 100 * wins / t.n);
     const low = 100 * C.wilsonShare(wins / t.n, t.apart, C.bestDefaults.checkZ), bar = Math.max(50, k.baseline);
@@ -205,15 +204,11 @@ test('the check picks on the history before the middle close alone and counts th
 
 test('samples whose periods overlap count once toward the sample size', () => {
   // Every close on its own: a one-day result never overlaps the next, a month-long one does.
-  const day = C.best(view, { horizon:1, gap:1 }), month = C.best(view, { horizon:21, gap:1 });
+  const day = C.best(view, { horizon:1 }), month = C.best(view, { horizon:21 });
   assert.equal(day.apart, day.summary.n);
   assert.ok(month.apart < month.summary.n, month.apart + ' of ' + month.summary.n);
-  assert.equal(month.apart, samplesOf(view, entries(month.conditions), { gap:1, h:21 }).apart);
-  // Merged samples start at least 21 sessions apart, so their one-month periods never overlap; their one-year ones do.
-  const merged = C.best(view, { horizon:21 }), year = C.best(view, { horizon:252 });
-  assert.equal(merged.apart, merged.summary.n);
-  assert.ok(!year.conditions || year.apart < year.summary.n);
-  assert.ok(month.apart >= C.bestDefaults.minApart && merged.apart >= C.bestDefaults.minApart);
+  assert.equal(month.apart, samplesOf(view, entries(month.conditions), { h:21 }).apart);
+  assert.ok(month.apart >= C.bestDefaults.minApart);
 });
 
 test('without readings or enough samples the search says which is missing', () => {

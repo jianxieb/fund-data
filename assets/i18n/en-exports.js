@@ -392,7 +392,6 @@
     '条件来源': 'Condition source',
     '观察期交易日': 'Observation-window trading days',
     '信号收盘': 'Signal close',
-    '并入的满足日': 'Merged qualifying dates',
     '观察状态': 'Observation status',
     '前一日': 'Previous day',
     '前一日收盘': 'Previous day\'s close',

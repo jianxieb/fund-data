@@ -27,7 +27,7 @@ test('a recovery on day one counts even if the index falls back; results start a
   assert.equal(v.values.broke[30], 0);
   near(v.values.obsMove[30], (95 / 94 - 1) * 100);
   near(v.values.rebound[30], (95 - 94) / (100 - 94) * 100);
-  const recovered = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:1, hi:1 } }, gap:1, horizons:[1, 2, 3, 4] });
+  const recovered = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:1, hi:1 } }, horizons:[1, 2, 3, 4] });
   assert.deepEqual(recovered.episodes.map(e => e.index), [30]);
   const e = recovered.episodes[0];
   assert.equal(e.observation.recoveryDate, v.dates[31]);
@@ -35,8 +35,8 @@ test('a recovery on day one counts even if the index falls back; results start a
   assert.deepEqual(e.observation.days.map(d => d[1]), [100, 95]);
   for (const h of [1, 2, 3, 4]) near(e.outcomes[h].pct, (closes[32 + h] / 95 - 1) * 100);
   // Day 32's −5.00% meets the inclusive bound; it never regains day 31's close.
-  assert.deepEqual(C.study(v, { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:0, hi:0 } }, gap:1 }).episodes.map(x => x.index), [32]);
-  assert.equal(C.study(frameOf(closes, { wait:1 }), { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:1, hi:1 } }, gap:1 }).episodes[0].observation.anchorDate, v.dates[31]);
+  assert.deepEqual(C.study(v, { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:0, hi:0 } } }).episodes.map(x => x.index), [32]);
+  assert.equal(C.study(frameOf(closes, { wait:1 }), { conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:1, hi:1 } } }).episodes[0].observation.anchorDate, v.dates[31]);
   assert.throws(() => C.study(C.frame(v), { conditions:{ recov:{ lo:1, hi:1 } } }), /先设置观察期/);
   assert.equal(C.rangeIssue('recov', { lo:0, hi:1 }), 'choice');
   assert.equal(C.rangeIssue('broke', { lo:.5, hi:.5 }), 'choice');
@@ -49,19 +49,19 @@ test('an intraday touch recovers only on the high basis; returns stay on closes;
   assert.equal(byClose.values.recov[30], 0);
   assert.equal(byHigh.values.recov[30], 1);
   assert.equal(byHigh.obs.touch[30], 31);
-  const one = view => C.study(view, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1 }).episodes.find(e => e.index === 30);
+  const one = view => C.study(view, { conditions:{ r1:{ lo:null, hi:-5 } } }).episodes.find(e => e.index === 30);
   assert.equal(one(byHigh).outcomes[5].pct, one(byClose).outcomes[5].pct);
   assert.deepEqual(one(byHigh).observation.days[0], [rows[31][0], 99, 100]);
   // A missing day-32 high leaves recovery unknown: not unrecovered, and not a sample at all.
   const gap = C.frame(C.compute(rows), { wait:2, basis:'high', highs:highs.filter((_, i) => i !== 32) });
-  const seen = C.study(gap, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, ref:30 }).reference.observation;
+  const seen = C.study(gap, { conditions:{ r1:{ lo:null, hi:-5 } }, ref:30 }).reference.observation;
   assert.equal(seen.status, 'missingHigh');
   assert.equal(seen.recovered, null);
   assert.deepEqual(seen.missingHighDates, [rows[32][0]]);
   assert.equal(one(gap), undefined);
   // A high below its own close is treated as missing too.
   const low = C.frame(C.compute(rows), { wait:2, basis:'high', highs:highs.map(([d, h], i) => [d, i === 31 ? 98.5 : h]) });
-  assert.equal(C.study(low, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, ref:30 }).reference.observation.status, 'missingHigh');
+  assert.equal(C.study(low, { conditions:{ r1:{ lo:null, hi:-5 } }, ref:30 }).reference.observation.status, 'missingHigh');
   assert.throws(() => C.frame(C.compute(rows), { wait:2, basis:'high', highs:[[rows[1][0], 1], [rows[0][0], 1]] }), /最高价/);
   assert.throws(() => C.frame(C.compute(rows), { wait:2, basis:'open' }), /收复判定/);
 });
@@ -70,7 +70,7 @@ test('unfinished or interrupted observations never become samples; the reference
   const closes = wave(300);
   closes.push(closes.at(-1) * .94);
   const v = frameOf(closes, { wait:5 }), last = v.last;
-  const r = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1 });
+  const r = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 } } });
   assert.equal(r.episodes.length, 0);
   assert.deepEqual(r.reference.observation, { status:'pending', waitLeft:5 });
   assert.deepEqual(r.reference.failing, []);
@@ -81,7 +81,7 @@ test('unfinished or interrupted observations never become samples; the reference
   cut[197] = cut[196] * .94;
   const split = frameOf(cut, { wait:5 }, '2001-01-02', { 200:12 });
   assert.equal(split.starts[200], 200);
-  const g = C.study(split, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, ref:197 });
+  const g = C.study(split, { conditions:{ r1:{ lo:null, hi:-5 } }, ref:197 });
   assert.equal(g.reference.observation.status, 'gap');
   assert.equal(g.episodes.length, 0);
 });
@@ -96,7 +96,7 @@ test('the rebound uses the end-of-period close regardless of an earlier recovery
   assert.equal(breached.values.broke[30], 1, 'a lower close stays a breach after the rebound');
   near(breached.values.rebound[30], 50);
   const up = frameOf([...flat(30), 101, 102, 103, ...flat(10)], { wait:2 });
-  assert.equal(C.study(up, { conditions:{ r1:{ lo:0, hi:null } }, gap:1, ref:30 }).reference.observation.rebound, null, 'no lost points to regain');
+  assert.equal(C.study(up, { conditions:{ r1:{ lo:0, hi:null } }, ref:30 }).reference.observation.rebound, null, 'no lost points to regain');
 });
 
 test('big-drop counts exclude the signal day, include day −21 and follow the chosen size', () => {
@@ -152,63 +152,62 @@ test('pre-drop readings are the previous session\'s own values and never cross a
 
 test('excluding 2000–2002 drops those signal days from the samples and from the comparison', () => {
   const v = frameOf(wave(1300), {}, '1999-01-04'), conditions = { r1:{ lo:null, hi:0 } };
-  const all = C.study(v, { conditions, gap:1 }), cut = C.study(v, { conditions, gap:1, era:'exclude_dotcom' });
+  const all = C.study(v, { conditions }), cut = C.study(v, { conditions, era:'exclude_dotcom' });
   const outside = date => date < '2000-01-01' || date > '2002-12-31';
   assert.ok(all.episodes.some(e => !outside(e.date)));
   assert.deepEqual(cut.episodes.map(e => e.date), all.episodes.map(e => e.date).filter(outside));
   const expected = v.dates.filter((date, i) => outside(date) && i + 5 <= v.last).length;
   assert.equal(cut.baseline[5].n, expected);
   assert.equal(all.baseline[5].n, v.n - 5);
-  assert.equal(C.study(v, { conditions, gap:1, era:'exclude_dotcom', ref:v.dates.indexOf('2001-03-01') }).reference.excluded, true);
+  assert.equal(C.study(v, { conditions, era:'exclude_dotcom', ref:v.dates.indexOf('2001-03-01') }).reference.excluded, true);
   assert.throws(() => C.study(v, { conditions, era:'1990s' }), /历史范围/);
 });
 
 test('the fall since the signal day covers the observation and the longest selected horizon', () => {
   const closes = [...flat(30), 94, 92, 93, 91, 95, ...flat(10, 96)], v = frameOf(closes);
-  const e = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[1, 4] }).episodes[0];
+  const e = C.study(v, { conditions:{ r1:{ lo:null, hi:-5 } }, horizons:[1, 4] }).episodes[0];
   assert.deepEqual({ ...e.fall, pct:Number(e.fall.pct.toFixed(9)) },
     { status:'complete', pct:Number(((91 / 94 - 1) * 100).toFixed(9)), days:3, date:v.dates[33], through:v.dates[34] });
-  const longer = C.study(frameOf(closes, { wait:2 }), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[1] }).episodes[0];
+  const longer = C.study(frameOf(closes, { wait:2 }), { conditions:{ r1:{ lo:null, hi:-5 } }, horizons:[1] }).episodes[0];
   assert.equal(longer.fall.through, v.dates[33], 'two observation sessions plus one');
   assert.equal(longer.fall.days, 3);
-  const none = C.study(frameOf([...flat(30), 94, ...flat(10, 95)]), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).episodes[0];
+  const none = C.study(frameOf([...flat(30), 94, ...flat(10, 95)]), { conditions:{ r1:{ lo:null, hi:-5 } }, horizons:[5] }).episodes[0];
   assert.equal(none.fall.pct, 0);
   assert.equal(none.fall.days, 0);
-  const late = C.study(frameOf([...flat(30), 94, 93]), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).uncounted[0];
+  const late = C.study(frameOf([...flat(30), 94, 93]), { conditions:{ r1:{ lo:null, hi:-5 } }, horizons:[5] }).uncounted[0];
   assert.equal(late.fall.status, 'pending');
   assert.equal(late.fall.days, 1);
-  const cut = C.study(frameOf([...flat(30), 94, 93, ...flat(10, 90)], {}, '2001-01-02', { 32:12 }), { conditions:{ r1:{ lo:null, hi:-5 } }, gap:1, horizons:[5] }).uncounted[0];
+  const cut = C.study(frameOf([...flat(30), 94, 93, ...flat(10, 90)], {}, '2001-01-02', { 32:12 }), { conditions:{ r1:{ lo:null, hi:-5 } }, horizons:[5] }).uncounted[0];
   assert.equal(cut.fall.status, 'gap');
   near(cut.fall.pct, (93 / 94 - 1) * 100);
   for (const bad of [[7], [5, 5], []]) assert.throws(() => C.study(v, { conditions:{}, horizons:bad }), /后续期限/);
 });
 
-test('every matching day is its own sample with no spacing, and selected short horizons read the next closes', () => {
+test('every matching day is its own sample, and selected short horizons read the next closes', () => {
   const closes = [...flat(30), 98, 96, 94, 95, 96, 97, 98, 99, 100], v = frameOf(closes);
-  const r = C.study(v, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:1, horizons:[1, 2, 3, 4] });
+  const r = C.study(v, { conditions:{ r1:{ lo:null, hi:-1 } }, horizons:[1, 2, 3, 4] });
   assert.deepEqual(r.episodes.map(e => e.index), [32, 31, 30]);
   for (const e of r.episodes) for (const h of [1, 2, 3, 4]) near(e.outcomes[h].pct, (closes[e.index + h] / closes[e.index] - 1) * 100);
-  assert.deepEqual(C.study(v, { conditions:{ r1:{ lo:null, hi:-1 } }, gap:5 }).episodes.map(e => e.index), [30]);
   assert.equal(r.summary[1].n, 3);
   assert.deepEqual(Object.keys(r.summary), ['1', '2', '3', '4']);
 });
 
 test('a reference date moves the readings, the automatic match and the reference status', () => {
   const v = frameOf(wave(3000)), at = 2000;
-  const fit = C.fit(v, { gap:21, ref:at });
+  const fit = C.fit(v, { ref:at });
   assert.equal(fit.ref, at);
   assert.equal(fit.date, v.dates[at]);
   assert.ok(fit.added.length > 0);
   for (const step of fit.steps) if (step.band) assert.deepEqual(step.band, C.suggest(v, step.id, { ref:at }));
-  const r = C.study(v, { conditions:fit.conditions, gap:21, ref:at });
+  const r = C.study(v, { conditions:fit.conditions, ref:at });
   assert.equal(r.reference.index, at);
   assert.equal(r.reference.date, v.dates[at]);
   assert.equal(r.reference.matches, true, 'each band is built around the reference reading');
-  assert.ok(r.reference.episode <= v.dates[at] && r.episodes.some(e => e.date === r.reference.episode));
+  assert.ok(r.episodes.some(e => e.index === at), 'the reference close is one of the samples');
   assert.equal(r.reference.values.dd252, v.values.dd252[at]);
   for (const bad of [-1, 1.5, 3000]) assert.throws(() => C.study(v, { conditions:{}, ref:bad }), /参照日/);
   // Without a reference date the samples are the same; there is no reference status and no reading to preview a tick with.
-  const plain = C.study(v, { conditions:fit.conditions, gap:21, ref:null });
+  const plain = C.study(v, { conditions:fit.conditions, ref:null });
   assert.equal(plain.reference, null);
   assert.deepEqual(plain.episodes.map(e => e.date), r.episodes.map(e => e.date));
   assert.deepEqual(plain.summary, r.summary);
@@ -225,16 +224,16 @@ test('a reference date moves the readings, the automatic match and the reference
 
 test('with an observation period the comparison needs the prior close and a finished period', () => {
   const v = frameOf(wave(400), { wait:3 });
-  assert.equal(C.study(v, { conditions:{ r1:{ lo:-100, hi:100 } }, gap:1, horizons:[5] }).baseline[5].n, 391);
+  assert.equal(C.study(v, { conditions:{ r1:{ lo:-100, hi:100 } }, horizons:[5] }).baseline[5].n, 391);
   assert.equal(C.study(frameOf(wave(400)), { conditions:{}, horizons:[5] }).baseline[5].n, 395);
 });
 
 test('old 指数大跌 links open the same study here', () => {
-  assert.deepEqual(C.fromDropStudy(''), { market:'ndx', wait:2, basis:'close', era:'all', gap:1,
+  assert.deepEqual(C.fromDropStudy(''), { market:'ndx', wait:2, basis:'close', era:'all',
     params:{ rNDays:10, ddNDays:63, dropsPct:5 }, conditions:{ r1:{ lo:null, hi:-5 }, recov:{ lo:0, hi:0 } } });
   const full = C.fromDropStudy('#drop-study?market=spx&threshold=7.5&wait=21&group=recovered&recovery=high&era=exclude_dotcom&cap=10&rebound=half' +
     '&repeat=first&trend=below&drawdown=correction&vol=high&peer=severe&low=hold&peakDays=126&peakMin=8&lossDays=5&lossMin=6');
-  assert.deepEqual(full, { market:'spx', wait:21, basis:'high', era:'exclude_dotcom', gap:1, params:{ rNDays:5, ddNDays:126, dropsPct:7.5 },
+  assert.deepEqual(full, { market:'spx', wait:21, basis:'high', era:'exclude_dotcom', params:{ rNDays:5, ddNDays:126, dropsPct:7.5 },
     conditions:{ r1:{ lo:-10, hi:-7.5 }, recov:{ lo:1, hi:1 }, rebound:{ lo:50, hi:100 }, drops:{ lo:0, hi:0 }, ma200p:{ lo:null, hi:0 },
       dd252p:{ lo:10, hi:20 }, vol21p:{ lo:30, hi:null }, peer1:{ lo:null, hi:-4 }, broke:{ lo:0, hi:0 }, ddN:{ lo:8, hi:null }, rN:{ lo:null, hi:-6 } } });
   for (const [id, range] of Object.entries(full.conditions)) assert.ok(C.validRange(id, range), id);
