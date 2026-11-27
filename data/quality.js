@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-26T04:12:27+00:00",
-  "asOf": "2026-11-26",
+  "checkedAt": "2026-11-27T04:17:26+00:00",
+  "asOf": "2026-11-27",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 6,
+    "warnings": 5,
     "unverified": 73
   },
   "datasets": [
@@ -19,14 +19,8 @@ var DATA_QUALITY={
         {
           "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "海外基金：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "funds"
-        },
-        {
-          "code": "source_refresh_retained",
-          "severity": "warning",
-          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "stocks"
+          "message": "国内指数：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "indices"
         }
       ],
       "status": "warning"
@@ -34,10 +28,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-23",
+      "asOf": "2026-11-25",
       "dateRange": [
-        "2026-11-24",
-        "2026-11-24"
+        "2026-11-25",
+        "2026-11-25"
       ],
       "records": 46,
       "issues": [
@@ -535,7 +529,7 @@ var DATA_QUALITY={
       "label": "海外指数与ETF基准",
       "asOf": "2026-11-25",
       "dateRange": [
-        "2026-11-24",
+        "2026-11-25",
         "2026-11-25"
       ],
       "records": 36,
@@ -585,10 +579,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-25",
+      "asOf": "2026-11-27",
       "dateRange": [
-        "2026-11-25",
-        "2026-11-25"
+        "2026-11-27",
+        "2026-11-27"
       ],
       "records": 71,
       "issues": [],
@@ -610,10 +604,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-25",
+      "asOf": "2026-11-26",
       "dateRange": [
         "2026-11-20",
-        "2026-11-25"
+        "2026-11-26"
       ],
       "records": 1577,
       "issues": [
@@ -3473,10 +3467,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-25",
+      "asOf": "2026-11-26",
       "dateRange": [
         "2026-11-20",
-        "2026-11-25"
+        "2026-11-26"
       ],
       "records": 1873,
       "issues": [],
